@@ -9,7 +9,7 @@ Subproblem 2: Intersections between two cones
 
 $$\min_{\theta_1, \theta_2} \lVert R(k_2,\theta_2)p_2 - R(k_1,\theta_1)p_1 \rVert$$
 
-Subproblem 2 extension: Intersections between 2 offset cones
+Subproblem 2 extension: Intersection between 2 offset cones
 $$p_0 + R(k_1,\theta_1)p_1= R(k_2,\theta_2)p_2$$
 
 Subproblem 3: Intersections between a cone and a sphere
