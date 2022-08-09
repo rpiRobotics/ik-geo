@@ -3,6 +3,8 @@ Implementation of subproblem solutions from "Canonical Subproblems for Robot Inv
 
 Subproblem 1: Angle between two vectors on the edge of a cone
 
+[Interactive figure](https://www.geogebra.org/calculator/stydabbr)
+
 $$\min_\theta \lVert p_2- R(k,\theta)p_1\rVert$$
 
 Subproblem 2: Intersections between two cones
