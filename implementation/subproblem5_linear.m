@@ -18,8 +18,8 @@ beta3 = dot(k2,p3_s);
 % global N_ap
 % global x1_ap
 % sign = [1 -1];
-% t1 = (norm(k2)^2-2)*H_ap^2 + polyval(P_1, H_ap) + sign*sqrt(polyval(R_1, H_ap));
-% t3 = (norm(k2)^2-2)*H_ap^2 + polyval(P_3, H_ap) + sign*sqrt(polyval(R_3, H_ap));
+% t1 = -H_ap^2 + polyval(P_1, H_ap) + sign*sqrt(polyval(R_1, H_ap));
+% t3 = -H_ap^2 + polyval(P_3, H_ap) + sign*sqrt(polyval(R_3, H_ap));
 
 % Now solve the quadratic for H
 P_13 = P_1 - P_3;
@@ -82,15 +82,13 @@ theta1 = theta1(1:i_soln);
 theta2 = theta2(1:i_soln);
 theta3 = theta3(1:i_soln);
 
-
 end
 
 function [P, R] = cone_polynomials(p0_i, k_i, p_i, p_i_s, k2)
 % ||A x + p_S - H k_2||^2 = 
-% c H^2 + P(H) +- sqrt(R(H))
+% -H^2 + P(H) +- sqrt(R(H))
 % Reperesent polynomials P_i, R_i as coefficient vectors
 % (Highest powers of H first)
-% Don't bother calculating c H^2, as these terms cancel out
 
 kiXk2 = cross(k_i,k2);
 norm_kiXk2_sq = dot(kiXk2,kiXk2);
