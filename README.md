@@ -1,37 +1,37 @@
-# linear-subproblem-solutions
+# Linear Subproblem Solutions
 Implementation of subproblem solutions from "Canonical Subproblems for Robot Inverse Kinematics"
 
-### Subproblem 1: Angle between two vectors on the edge of a cone
+### Subproblem 1: Cone and point
 
 [Interactive figure](https://www.geogebra.org/calculator/stydabbr)
 
-$$\min_\theta \lVert p_2- R(k,\theta)p_1\rVert$$
+$$\min_\theta \lVert R(k,\theta)p_1 - p_2\rVert$$
 
-### Subproblem 2: Intersections between two cones
+### Subproblem 2: Two cones
 
 [Interactive figure](https://www.geogebra.org/calculator/prj5wqsu)
 
-$$\min_{\theta_1, \theta_2} \lVert R(k_2,\theta_2)p_2 - R(k_1,\theta_1)p_1 \rVert$$
+$$\min_{\theta_1, \theta_2} \lVert R(k_1,\theta_1)p_1 - R(k_2,\theta_2)p_2\rVert$$
 
-### Subproblem 2 extension: Intersection between 2 offset cones
+### Subproblem 2 extension: Two offset cones
 $$p_0 + R(k_1,\theta_1)p_1= R(k_2,\theta_2)p_2$$
 
-### Subproblem 3: Intersections between a cone and a sphere
+### Subproblem 3: Cone and sphere
 
-$$\min_\theta \lvert \lVert p_2-R(k,\theta)p_1\rVert-d\rvert$$
+$$\min_\theta \lvert \lVert R(k,\theta)p_1-p_2\rVert-d\rvert$$
 
-### Subproblem 4: Intersections between a cone and a plane
+### Subproblem 4: Cone and plane
 
 $$\min_\theta \lvert h^\top R(k,\theta)p -d \rvert$$
 
-### Subproblem 5: Intersections among three separated cones
+### Subproblem 5: Three cones
 
 $$ p_0 + R(k_1,\theta_1)p_1=
  R(k_2,\theta_2)(p_2+ R(k_3,\theta_3)p_3)$$
 
-### Subproblem 6: 4 cones with 2 angles
+### Subproblem 6: Four cones
 
 $$\begin{cases}
-    h^\top R(k_1, \theta_1)p_1 + h^\top R(k_2, \theta_2)p_2 = d_1\\
-    h^\top R(k_1, \theta_1)p_3 + h^\top R(k_2, \theta_2)p_4 = d_2
+    h_1^\top R(k_1, \theta_1)p_1 + h_2^\top R(k_2, \theta_2)p_2 = d_1\\
+    h_3^\top R(k_3, \theta_1)p_3 + h_3^\top R(k_4, \theta_2)p_4 = d_2
 \end{cases}$$
