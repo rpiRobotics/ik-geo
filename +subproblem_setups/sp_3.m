@@ -9,6 +9,15 @@ classdef sp_3
             P.d = norm(P.p2-rot(P.k,S.theta)*P.p1);
         end
 
+        function [P, S] = setup_LS()
+            P.p1 = rand_vec;
+            P.p2 = rand_vec;
+            P.k = rand_normal_vec;
+            S.theta = rand_angle;
+            
+            P.d = rand;
+        end
+
         function S = run(P)
             S.theta = subproblem3_linear(P.p1,P.p2,P.k,P.d);
         end

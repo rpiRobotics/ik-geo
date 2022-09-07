@@ -9,6 +9,15 @@ classdef sp_4
             P.d = P.h'*rot(P.k,S.theta)*P.p;
         end
 
+        function [P, S] = setup_LS()
+            P.p = rand_vec;
+            P.k = rand_normal_vec;
+            P.h = rand_normal_vec;
+            S.theta = rand_angle;
+            
+            P.d = rand;
+        end
+
         function S = run(P)
             S.theta = subproblem4_linear(P.h,P.p,P.k,P.d);
         end

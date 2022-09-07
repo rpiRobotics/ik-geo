@@ -12,6 +12,18 @@ classdef sp_2
             P.p2 = rot(P.k2, -S.theta2)*rot(P.k1,S.theta1)*P.p1;
         end
 
+        function [P, S] = setup_LS()
+            P.p1 = rand_vec;
+
+            P.k1 = rand_normal_vec;
+            P.k2 = rand_normal_vec;
+
+            S.theta1 = rand_angle;
+            S.theta2 = rand_angle;
+
+            P.p2 = rand_vec;
+        end
+
         function S = run(P)
             [S.theta1, S.theta2] = subproblem2_linear(P.p1,P.p2,P.k1,P.k2);
         end

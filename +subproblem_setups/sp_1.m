@@ -8,6 +8,14 @@ classdef sp_1
             P.p2 = rot(P.k,S.theta)*P.p1;
         end
 
+        function P = setup_LS()
+            P.p1 = rand_vec;
+            P.k = rand_normal_vec;
+            S.theta = rand_angle;
+
+            P.p2 = rand_vec;
+        end
+
         function S = run(P)
             S.theta = subproblem1_linear(P.p1,P.p2,P.k);
         end
@@ -21,7 +29,7 @@ classdef sp_1
         end
 
         function e = error(P, S)
-            norm(P.p2 - rot(P.k,S.theta)*P.p1)
+            e = norm(P.p2 - rot(P.k,S.theta)*P.p1);
         end
     end
 end
