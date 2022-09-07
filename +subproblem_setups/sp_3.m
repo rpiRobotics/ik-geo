@@ -32,7 +32,7 @@ classdef sp_3
 
         function e = error(P, S)
             for i = 1:length(S.theta)
-                e_i = norm(P.p2-rot(P.k,S.theta(i))*P.p1) - P.d;
+                e_i = abs(norm(P.p2-rot(P.k,S.theta(i))*P.p1) - P.d);
                 if i == 1
                     e = e_i;
                 else

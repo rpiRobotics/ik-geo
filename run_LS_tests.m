@@ -9,6 +9,7 @@ setups = {
 
 at_mins = NaN(size(setups));
 
+for N_trial = 1:100
 for i = 1:length(setups)
     setup = setups{i};
     P = setup.setup_LS();
@@ -19,26 +20,28 @@ for i = 1:length(setups)
         error('Not at min')
     end
 end
+end
 
 at_mins
 
 
-
-
 function at_min = is_at_min(P,S,setup)
-DELTA  = 1e-6;
+DELTA  = 1e-12;
+
 
 e_0 = setup.error(P,S);
 
 f = fieldnames(S);
 for i = 1:length(f)
+    for i_ind = 1:length(S.(f{i}))
     for sign = [+1 -1]
         S_test = S;
-        S_test.(f{i}) = S.(f{i}) + sign*DELTA;
-        if setup.error(P,S_test) < e_0 - 1e-6
+        S_test.(f{i})(i_ind) = S.(f{i})(i_ind) + sign*DELTA;
+        if setup.error(P,S_test) < e_0 - DELTA
             at_min = false;
             return
         end
+    end
     end
 end
 

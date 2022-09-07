@@ -1,4 +1,9 @@
 function [theta1, theta2] = subproblem2_linear(p1, p2, k1, k2)
+
+% Rescale for least-squares case
+p1 = p1/norm(p1);
+p2 = p2/norm(p2);
+
 KxP1 = cross(k1,p1);
 KxP2 = cross(k2,p2);
 
