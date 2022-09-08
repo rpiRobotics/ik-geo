@@ -1,3 +1,6 @@
-function theta = rand_angle()
-    theta = rand*2*pi-pi;
+function theta = rand_angle(size)
+    if nargin < 1
+        size = 1;
+    end
+    theta = rand(size)*2*pi-pi;
 end
