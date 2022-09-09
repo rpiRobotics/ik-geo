@@ -13,7 +13,6 @@ classdef IK_spherical_2_parallel
             P.kin.H(:,3) = P.kin.H(:,2);
 
             P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv zv rand_vec];
-            P.GC = S.q([2 4 6]) >= 0;
 
             [P.R, P.T] = fwdkin(P.kin, S.q);
         end
@@ -27,24 +26,27 @@ classdef IK_spherical_2_parallel
             P.kin.H(:,3) = P.kin.H(:,2);
             
             P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv zv rand_vec];
-            P.GC = randi(2,[1 3])-1;
 
             P.R = rot(rand_normal_vec, rand_angle);
             P.T = rand_vec;
         end
 
         function S = run(P)
-            S.q = IK.IK_spherical_2_parallel(P.R, P.T, P.GC, P.kin);
+            [S.Q, S.is_LS] = IK.IK_spherical_2_parallel(P.R, P.T, P.kin);
         end
 
         function S = run_mex(P)
-            S.q = IK.IK_spherical_2_parallel_mex(P.R, P.T, P.GC, P.kin);
+            [S.Q, S.is_LS] = IK.IK_spherical_2_parallel_mex(P.R, P.T, P.kin);
         end
 
         function [e, e_R, e_T] = error(P, S)
-            [R_t, T_t] = fwdkin(P.kin, S.q);
-            e_R = norm(R_t - P.R);
-            e_T = norm(T_t - P.T);
+            e_R = NaN([1 width(S.Q)]);
+            e_T = NaN([1 width(S.Q)]);
+            for i = 1:width(S.Q)
+                [R_t, T_t] = fwdkin(P.kin, S.Q(:,i));
+                e_R(i) = norm(R_t - P.R);
+                e_T(i) = norm(T_t - P.T);
+            end
             e = e_R + e_T;
         end
     end
