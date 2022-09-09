@@ -6,7 +6,7 @@ classdef IK_spherical_2_parallel
         function [P, S] = setup()
             zv = [0;0;0];
 
-            S.q = rand_angle([6 1]);
+            S.Q = rand_angle([6 1]);
             P.kin.joint_type = zeros(1,6);
 
             P.kin.H = rand_normal_vec(7);
@@ -14,7 +14,7 @@ classdef IK_spherical_2_parallel
 
             P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv zv rand_vec];
 
-            [P.R, P.T] = fwdkin(P.kin, S.q);
+            [P.R, P.T] = fwdkin(P.kin, S.Q);
         end
 
         function P = setup_LS()

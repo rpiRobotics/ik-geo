@@ -9,6 +9,6 @@ x = A'*p2;
 theta = atan2(x(1),x(2));
 
 if nargout > 1
-    is_LS = abs(norm(x) - 1) > 10*eps && abs(dot(k,p1) - dot(k,p2)) > 10*eps;
+    is_LS = abs(norm(p1) - norm(p2)) > 1e-8 || abs(dot(k,p1) - dot(k,p2)) > 1e-8;
 end
 end
