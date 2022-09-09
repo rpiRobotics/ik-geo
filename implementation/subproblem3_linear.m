@@ -1,4 +1,4 @@
-function theta = subproblem3_linear(p1, p2, k, d)
+function [theta, is_LS] = subproblem3_linear(p1, p2, k, d)
 %   || p2 - rot(k, theta)*p1 || = d
 
 KxP = cross(k,p1);
@@ -14,6 +14,9 @@ x_ls = A_1'*(-2*p2*b/norm_A_sq);
 
 if dot(x_ls,x_ls)>1
     theta = atan2(x_ls(1), x_ls(2));
+    if nargout > 1
+        is_LS = true;
+    end
     return
 end
 
@@ -26,4 +29,7 @@ sc_1 = x_ls + xi*A_perp;
 sc_2 = x_ls - xi*A_perp;
 
 theta = [atan2(sc_1(1), sc_1(2)) atan2(sc_2(1), sc_2(2))];
+if nargout > 1
+    is_LS = false;
+end
 end

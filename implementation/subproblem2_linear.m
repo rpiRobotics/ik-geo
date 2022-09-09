@@ -1,4 +1,8 @@
-function [theta1, theta2] = subproblem2_linear(p1, p2, k1, k2)
+function [theta1, theta2, is_LS] = subproblem2_linear(p1, p2, k1, k2)
+
+if nargout > 1
+    is_LS = abs(norm(p1) - norm(p2)) < eps;
+end
 
 % Rescale for least-squares case
 p1 = p1/norm(p1);
@@ -42,4 +46,7 @@ if norm(x_ls(1:2)) < 1
 else
     theta1 = atan2(x_ls(1), x_ls(2));
     theta2 = atan2(x_ls(3), x_ls(4));
+    if nargout > 1
+        is_LS = true;
+    end
 end
