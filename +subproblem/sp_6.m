@@ -1,4 +1,4 @@
-function [theta1, theta2] = subproblem6_linear_general(H, K, P, d1, d2)
+function [theta1, theta2] = sp_6(H, K, P, d1, d2)
 
 
 k1Xp1 = cross(K(:,1),P(:,1)); k2Xp2 = cross(K(:,2),P(:,2));
@@ -24,7 +24,7 @@ x_null_2 = x_null(:,2);
 
 % solve intersection of 2 ellipses
 
-[xi_1, xi_2] = solve_2_ellipse_numeric(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));
+[xi_1, xi_2] = subproblem.solve_2_ellipse_numeric(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));
 %[xi_1, xi_2] = solve_2_ellipse_symb(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));
 
 % solve_2_ellipse_symb(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));

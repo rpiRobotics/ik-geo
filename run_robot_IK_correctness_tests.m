@@ -7,11 +7,11 @@ setup.error(P,S_given)
 global q
 q = S_given.Q;
 
-N_trial = 1000;
+N_trial = 1;
 tic
 for i = 1:N_trial
-%S = setup.run(P);
-S = setup.run_mex(P);
+S = setup.run(P);
+%S = setup.run_mex(P);
 end
 t  = toc / N_trial
 

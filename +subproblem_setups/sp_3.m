@@ -19,7 +19,7 @@ classdef sp_3
         end
 
         function S = run(P)
-            S.theta = subproblem3_linear(P.p1,P.p2,P.k,P.d);
+            S.theta = subproblem.sp_3(P.p1,P.p2,P.k,P.d);
         end
 
         function S = run_grt(P)
@@ -27,7 +27,7 @@ classdef sp_3
         end
 
         function S = run_mex(P)
-            S.theta = subproblem3_linear_mex(P.p1,P.p2,P.k,P.d);
+            S.theta = subproblem.sp_3_mex(P.p1,P.p2,P.k,P.d);
         end
 
         function e = error(P, S)

@@ -14,11 +14,11 @@ classdef sp_2E
         end
 
         function S = run(P)
-            [S.theta1,S.theta2] = subproblem2_linear_extended(P.p0,P.p1,P.p2,P.k1,P.k2);
+            [S.theta1,S.theta2] = subproblem.sp_2E(P.p0,P.p1,P.p2,P.k1,P.k2);
         end
 
         function S = run_mex(P)
-            [S.theta1,S.theta2] = subproblem2_linear_extended_mex(P.p0,P.p1,P.p2,P.k1,P.k2);
+            [S.theta1,S.theta2] = ssubproblem.sp_2E_mex(P.p0,P.p1,P.p2,P.k1,P.k2);
         end
 
         function e = error(P, S)

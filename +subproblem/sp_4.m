@@ -1,4 +1,4 @@
-function [theta, is_LS] = subproblem4_linear(h, p, k, d)
+function [theta, is_LS] = sp_4(h, p, k, d)
 % h'* R(k,theta)*p = d
 
 A_11 = cross(k,p);

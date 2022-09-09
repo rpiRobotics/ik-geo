@@ -1,4 +1,4 @@
-function [theta, is_LS] = subproblem3_linear(p1, p2, k, d)
+function [theta, is_LS] = sp_3(p1, p2, k, d)
 %   || p2 - rot(k, theta)*p1 || = d
 
 KxP = cross(k,p1);

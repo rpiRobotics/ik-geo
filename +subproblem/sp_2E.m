@@ -1,4 +1,4 @@
-function [theta1, theta2] = subproblem2_linear_extended(p0, p1, p2, k1, k2)
+function [theta1, theta2] = sp_2E(p0, p1, p2, k1, k2)
 KxP1 = cross(k1,p1);
 KxP2 = cross(k2,p2);
 

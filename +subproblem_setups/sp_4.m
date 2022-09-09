@@ -19,7 +19,7 @@ classdef sp_4
         end
 
         function S = run(P)
-            S.theta = subproblem4_linear(P.h,P.p,P.k,P.d);
+            S.theta = subproblem.sp_4(P.h,P.p,P.k,P.d);
         end
 
         function S = run_grt(P)
@@ -27,7 +27,7 @@ classdef sp_4
         end
 
         function S = run_mex(P)
-            S.theta = subproblem4_linear_mex(P.h,P.p,P.k,P.d);
+            S.theta = subproblem.sp_4_mex(P.h,P.p,P.k,P.d);
         end
 
         function e = error(P, S)

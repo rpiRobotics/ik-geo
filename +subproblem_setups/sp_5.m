@@ -19,12 +19,12 @@ classdef sp_5
 
         function S = run(P)
             [S.theta1, S.theta2, S.theta3] = ...
-                subproblem5_linear(P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3);
+                subproblem.sp_5(P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3);
         end
 
         function S = run_mex(P)
             [S.theta1, S.theta2, S.theta3] = ...
-                subproblem5_linear_mex(P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3);
+                subproblem.sp_5_mex(P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3);
         end
 
         function e = error(P, S)

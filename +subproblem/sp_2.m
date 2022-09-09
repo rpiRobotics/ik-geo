@@ -1,4 +1,4 @@
-function [theta1, theta2, is_LS] = subproblem2_linear(p1, p2, k1, k2)
+function [theta1, theta2, is_LS] = sp_2(p1, p2, k1, k2)
 
 if nargout > 1
     is_LS = abs(norm(p1) - norm(p2)) < eps;

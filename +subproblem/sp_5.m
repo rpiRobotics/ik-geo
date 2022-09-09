@@ -1,4 +1,4 @@
-function [theta1, theta2, theta3] = subproblem5_linear(p0,p1,p2,p3,k1,k2,k3)
+function [theta1, theta2, theta3] = sp_5(p0,p1,p2,p3,k1,k2,k3)
 % p0 + R(k1,theta1)p1 = R(k2,theta2)(p2+R(k3,theta3)p3)
 
 theta1 = NaN([1 8]);
@@ -71,7 +71,7 @@ for i_sign = 1:4
     if abs(norm(v1-H*k2) - norm(v3-H*k2)) < 1E-6
         i_soln = 1 + i_soln;
         theta1(i_soln) = atan2(sc1(1), sc1(2));
-        theta2(i_soln) = subproblem1_linear(v3, v1, k2);
+        theta2(i_soln) = subproblem.sp_1(v3, v1, k2);
         theta3(i_soln) = atan2(sc3(1), sc3(2));     
     end
 
