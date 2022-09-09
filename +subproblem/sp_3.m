@@ -1,5 +1,5 @@
 function [theta, is_LS] = sp_3(p1, p2, k, d)
-%   || p2 - rot(k, theta)*p1 || = d
+%   || rot(k, theta)*p1 - p2 || = d
 
 KxP = cross(k,p1);
 

@@ -1,7 +1,7 @@
 function [theta1, theta2, is_LS] = sp_2(p1, p2, k1, k2)
-
+    % R(k1, theta1) p1 = R(k2, theta2) p2
 if nargout > 1
-    is_LS = abs(norm(p1) - norm(p2)) < eps;
+    is_LS = abs(norm(p1) - norm(p2)) > 1e-8;
 end
 
 % Rescale for least-squares case
