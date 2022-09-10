@@ -10,3 +10,9 @@ setup = IK_setups.IK_3_parallel;
 
 [P, S_given] = setup.setup();
 codegen -report +IK\IK_3_parallel.m -args {P.R, P.T, P.kin}
+
+%%
+setup = IK_setups.IK_spherical;
+
+[P, S_given] = setup.setup();
+codegen -report +IK\IK_spherical.m -args {P.R, P.T, P.kin}
