@@ -16,3 +16,9 @@ setup = IK_setups.IK_spherical;
 
 [P, S_given] = setup.setup();
 codegen -report +IK\IK_spherical.m -args {P.R, P.T, P.kin}
+
+%%
+setup = IK_setups.IK_2R_2R_3R;
+
+[P, S_given] = setup.setup();
+codegen -report +IK\IK_2R_2R_3R.m -args {P.R, P.T, P.sew, P.psi, P.kin}

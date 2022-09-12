@@ -15,7 +15,7 @@ function [R, p, p_inter] = fwdkin_inter(kin, theta, inter)
         end
         p = p + R*kin.P(:,i+1);
 
-        if i == i_inter
+        if any(i == inter)
             p_inter(:,i_inter) = p;
             i_inter = i_inter +1;
         end

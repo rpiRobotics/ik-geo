@@ -20,13 +20,14 @@ classdef sew_conv
                     obj.V'*p);
         end
 
-        function k = inv_kin(obj, S, W, psi)
+        function [k, n] = inv_kin(obj, S, W, psi)
             W_hat = vec_normalize(W-S);
             y_c = cross(W_hat, obj.V);
             y_c = y_c / norm(y_c);
             x_c = cross(y_c, W_hat);
 
             k = x_c * cos(psi) + y_c * sin(psi);
+            n = cross(W_hat, k);
         end
 
         function [J_e, J_w] = jacobian(obj, S, E, W)
