@@ -16,6 +16,11 @@ setup = IK_setups.IK_spherical;
 
 [P, S_given] = setup.setup();
 codegen -report +IK\IK_spherical.m -args {P.R, P.T, P.kin}
+%%
+setup = IK_setups.IK_spherical_2_intersecting;
+
+[P, S_given] = setup.setup();
+codegen -report +IK\IK_spherical_2_intersecting.m -args {P.R, P.T, P.kin}
 
 %%
 setup = IK_setups.IK_2R_2R_3R;

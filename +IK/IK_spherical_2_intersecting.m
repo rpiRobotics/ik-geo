@@ -6,7 +6,7 @@ is_LS_vec = [];
 p_16 = p_0T-R_0T*kin.P(:,7)-kin.P(:,1);
 
 % Solve subproblem 3 for q_3
-% || p_0T - R_0T p_6T - p_01 || = || p_23 + R_23 p_34 ||
+% || p_0T - R_0T p_6T - p_01 || = ||    p_23 + R_23 p_34 ||
 
 [t3, t3_is_ls] = subproblem.sp_3(kin.P(:,4), -kin.P(:,3), kin.H(:,3), norm(p_16));
 
