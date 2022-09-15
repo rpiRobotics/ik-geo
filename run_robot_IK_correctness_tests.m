@@ -1,8 +1,9 @@
 % setup = IK_setups.IK_spherical_2_parallel;
 % setup = IK_setups.IK_3_parallel;
+setup = IK_setups.IK_3_parallel_2_intersecting;
 % setup = IK_setups.IK_spherical_2_intersecting;
 % setup = IK_setups.IK_spherical;
-setup = IK_setups.IK_2R_2R_3R;
+% setup = IK_setups.IK_2R_2R_3R;
 
 [P, S_given] = setup.setup();
 setup.error(P,S_given)
@@ -13,15 +14,15 @@ q = S_given.Q;
 N_trial = 1000;
 tic
 for i = 1:N_trial
-%S = setup.run(P);
-S = setup.run_mex(P);
+S = setup.run(P);
+%S = setup.run_mex(P);
 end
 t  = toc / N_trial
 
 
 % S_given.Q
 % S.Q
-% S.is_LS
+ S.is_LS
 
 [e, e_R, e_T] = setup.error(P,S);
 e

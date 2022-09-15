@@ -11,6 +11,11 @@ setup = IK_setups.IK_3_parallel;
 [P, S_given] = setup.setup();
 codegen -report +IK\IK_3_parallel.m -args {P.R, P.T, P.kin}
 
+%% 
+setup = IK_setups.IK_3_parallel_2_intersecting;
+
+[P, S_given] = setup.setup();
+codegen -report +IK\IK_3_parallel_2_intersecting.m -args {P.R, P.T, P.kin}
 %%
 setup = IK_setups.IK_spherical;
 
