@@ -5,24 +5,24 @@ Implementation of subproblem solutions from "Canonical Subproblems for Robot Inv
 
 [Interactive figure](https://www.geogebra.org/calculator/stydabbr)
 
-$$\min_\theta \lVert R(k,\theta)p_1 - p_2\rVert$$
+$$\min\ \lVert R(k,\theta)p_1 - p_2\rVert$$
 
 ### Subproblem 2: Two cones
 
 [Interactive figure](https://www.geogebra.org/calculator/prj5wqsu)
 
-$$\min_{\theta_1, \theta_2} \lVert R(k_1,\theta_1)p_1 - R(k_2,\theta_2)p_2\rVert$$
+$$\min\ \lVert R(k_1,\theta_1)p_1 - R(k_2,\theta_2)p_2\rVert$$
 
 ### Subproblem 2 extension: Two offset cones
 $$p_0 + R(k_1,\theta_1)p_1= R(k_2,\theta_2)p_2$$
 
 ### Subproblem 3: Cone and sphere
 
-$$\min_\theta \lvert \lVert R(k,\theta)p_1-p_2\rVert-d\rvert$$
+$$\min\ \lvert \lVert R(k,\theta)p_1-p_2\rVert-d\rvert$$
 
 ### Subproblem 4: Cone and plane
 
-$$\min_\theta \lvert h^\top R(k,\theta)p -d \rvert$$
+$$\min\ \lvert h^\top R(k,\theta)p -d \rvert$$
 
 ### Subproblem 5: Three cones
 
