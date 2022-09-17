@@ -35,3 +35,17 @@ $$\begin{cases}
     h_1^\top R(k_1, \theta_1)p_1 + h_2^\top R(k_2, \theta_2)p_2 = d_1\\
     h_3^\top R(k_3, \theta_1)p_3 + h_3^\top R(k_4, \theta_2)p_4 = d_2
 \end{cases}$$
+
+
+## Folder breakdown
+`+IK`: Inverse kinematics solutions for different robot types
+
+`+IK_setups`: Test classes for IK solutions
+
+`+subproblem`: Subproblem solutions
+
+`+subproblem_setups`: Test classes for subproblem solutions
+
+`rand_helpers`: Functions to help generate random test cases
+
+`robot_examples`: Inverse kinematics solutions for specific robots
