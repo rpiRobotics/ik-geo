@@ -9,8 +9,8 @@ i_soln = 0;
 p1_s = p0+k1*k1'*p1;
 p3_s = p2+k3*k3'*p3;
 
-beta1 = dot(k2,p1_s);
-beta3 = dot(k2,p3_s);
+delta1 = dot(k2,p1_s);
+delta3 = dot(k2,p3_s);
 
 [P_1, R_1] = cone_polynomials(p0, k1, p1, p1_s, k2);
 [P_3, R_3] = cone_polynomials(p2, k3, p3, p3_s, k2);
@@ -49,10 +49,10 @@ J = [0 1; -1 0];
 for i_H = 1:length(H_vec)
 H = H_vec(i_H);
 
-const_1 = A_1'*k2*(H-beta1);
-const_3 = A_3'*k2*(H-beta3);
-pm_1 = J*A_1'*k2*sqrt(norm(A_1'*k2)^2 - (H-beta1)^2);
-pm_3 = J*A_3'*k2*sqrt(norm(A_3'*k2)^2 - (H-beta3)^2);
+const_1 = A_1'*k2*(H-delta1);
+const_3 = A_3'*k2*(H-delta3);
+pm_1 = J*A_1'*k2*sqrt(norm(A_1'*k2)^2 - (H-delta1)^2);
+pm_3 = J*A_3'*k2*sqrt(norm(A_3'*k2)^2 - (H-delta3)^2);
 
 for i_sign = 1:4
     sign_1 = signs(1,i_sign);
@@ -91,19 +91,21 @@ function [P, R] = cone_polynomials(p0_i, k_i, p_i, p_i_s, k2)
 % (Highest powers of H first)
 
 kiXk2 = cross(k_i,k2);
+kiXkiXk2 = cross(k_i,kiXk2);
 norm_kiXk2_sq = dot(kiXk2,kiXk2);
 
-beta = dot(k2,p_i_s);
-c1 = 2 * k2' * (p0_i - k_i*k_i'*p0_i)/ norm_kiXk2_sq;
-c2 = 2 * p0_i' * kiXk2/ norm_kiXk2_sq;
+kiXpi = cross(k_i,p_i);
+norm_kiXpi_sq = dot(kiXpi, kiXpi);
 
-P_const = -c1*beta + norm(cross(k_i,p_i))^2 + norm(p_i_s)^2;
-P = [c1 P_const];
+delta = dot(k2,p_i_s);
+alpha = p0_i' * kiXkiXk2/ norm_kiXk2_sq;
+beta =  p0_i' *  kiXk2  / norm_kiXk2_sq;
 
-%R = [1 -beta]; % (H-beta_i)
-%R = -conv2(R, R); % -(H-beta_i)^2
-R = [-1 2*beta -beta^2]; % -(H-beta_i)^2
-R(end) = R(end) + norm(cross(k_i,p_i))^2*norm_kiXk2_sq; % ||A_i' k_2||^2 - (H-beta_i)^2
-R = c2^2 * R;
+P_const = norm_kiXpi_sq + dot(p_i_s, p_i_s) + 2*alpha*delta;
+P = [-2*alpha P_const];
+
+R = [-1 2*delta -delta^2]; % -(H-delta_i)^2
+R(end) = R(end) + norm_kiXpi_sq*norm_kiXk2_sq; % ||A_i' k_2||^2 - (H-delta_i)^2
+R = (2*beta)^2 * R;
 
 end
