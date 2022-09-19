@@ -18,7 +18,12 @@ classdef sp_2E
         end
 
         function S = run_mex(P)
-            [S.theta1,S.theta2] = ssubproblem.sp_2E_mex(P.p0,P.p1,P.p2,P.k1,P.k2);
+            [S.theta1,S.theta2] = subproblem.sp_2E_mex(P.p0,P.p1,P.p2,P.k1,P.k2);
+        end
+
+        function generate_mex()
+            P = subproblem_setups.sp_2E.setup();
+            codegen -report +subproblem/sp_2E.m -args {P.p0,P.p1,P.p2,P.k1,P.k2}
         end
 
         function e = error(P, S)

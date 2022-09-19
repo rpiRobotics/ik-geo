@@ -30,6 +30,11 @@ classdef sp_3
             S.theta = subproblem.sp_3_mex(P.p1,P.p2,P.k,P.d);
         end
 
+        function generate_mex()
+            P = subproblem_setups.sp_3.setup();
+            codegen -report +subproblem/sp_3.m -args {P.p1,P.p2,P.k,P.d}
+        end
+
         function e = error(P, S)
             for i = 1:length(S.theta)
                 e_i = abs(norm(P.p2-rot(P.k,S.theta(i))*P.p1) - P.d);

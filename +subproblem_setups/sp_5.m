@@ -27,6 +27,11 @@ classdef sp_5
                 subproblem.sp_5_mex(P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3);
         end
 
+        function generate_mex()
+            P = subproblem_setups.sp_5.setup();
+            codegen -report +subproblem/sp_5.m -args {P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3}
+        end
+
         function e = error(P, S)
             for i = 1:length(S.theta1)
                 e_i = norm(P.p0 + rot(P.k1,S.theta1(i))*P.p1 - rot(P.k2,S.theta2(i))*(P.p2+rot(P.k3,S.theta3(i))*P.p3));
