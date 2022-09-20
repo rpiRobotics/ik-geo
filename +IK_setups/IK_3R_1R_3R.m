@@ -41,6 +41,11 @@ classdef IK_3R_1R_3R
             S.q = IK.IK_3R_1R_3R_mex(P.R, P.T, P.sew, P.psi, P.GC, P.kin);
         end
 
+        function generate_mex()
+            P = IK_setups.IK_3R_1R_3R.setup(); %#ok<NASGU> 
+            codegen -report +IK/IK_3R_1R_3R.m -args {P.R, P.T, P.sew, P.psi, P.GC, P.kin}
+        end
+
         function [e, e_R, e_T, e_psi] = error(P, S)
             [R_t, T_t, P_SEW_t] = fwdkin_inter(P.kin, S.q, [1 3 5]);
             e_R = norm(R_t - P.R);

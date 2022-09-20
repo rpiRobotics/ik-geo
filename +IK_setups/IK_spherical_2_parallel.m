@@ -39,6 +39,11 @@ classdef IK_spherical_2_parallel
             [S.Q, S.is_LS] = IK.IK_spherical_2_parallel_mex(P.R, P.T, P.kin);
         end
 
+        function generate_mex()
+            P = IK_setups.IK_spherical_2_parallel.setup(); %#ok<NASGU> 
+            codegen -report +IK/IK_spherical_2_parallel.m -args {P.R, P.T, P.kin}
+        end
+
         function [e, e_R, e_T] = error(P, S)
             e_R = NaN([1 width(S.Q)]);
             e_T = NaN([1 width(S.Q)]);

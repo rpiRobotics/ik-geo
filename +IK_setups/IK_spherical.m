@@ -25,7 +25,6 @@ classdef IK_spherical
 
             P.R = rot(rand_normal_vec, rand_angle);
             P.T = rand_vec;
-
         end
 
         function S = run(P)
@@ -34,6 +33,11 @@ classdef IK_spherical
 
         function S = run_mex(P)
             [S.Q, S.is_LS] = IK.IK_spherical_mex(P.R, P.T, P.kin);
+        end
+
+        function generate_mex()
+            P = IK_setups.IK_spherical.setup(); %#ok<NASGU> 
+            codegen -report +IK/IK_spherical.m -args {P.R, P.T, P.kin}
         end
 
         function [e, e_R, e_T] = error(P, S)
