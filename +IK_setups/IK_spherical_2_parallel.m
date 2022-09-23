@@ -24,8 +24,16 @@ classdef IK_spherical_2_parallel
 
             P.kin.H = rand_normal_vec(7);
             P.kin.H(:,3) = P.kin.H(:,2);
+
+            P.kin.H(:,1) = rand_perp_normal_vec(P.kin.H(:,2)); % make cylindrical
             
             P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv zv rand_vec];
+            P.kin.P(:,end) = 0; % Set task frame at the wrist
+
+            P.kin.P(:,4) = P.kin.P(:,4) - P.kin.H(:,2) * (P.kin.H(:,2)'*(P.kin.P(:,2)+P.kin.P(:,3)+P.kin.P(:,4)));
+
+            P.kin.H(:,5) = rand_perp_normal_vec(P.kin.H(:,4));
+            P.kin.H(:,6) = rand_perp_normal_vec(P.kin.H(:,5)); % h_4 _|_ h_5 _|_ h_6 to achieve any orientation 
 
             P.R = rot(rand_normal_vec, rand_angle);
             P.T = rand_vec;

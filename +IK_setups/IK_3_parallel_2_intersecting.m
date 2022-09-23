@@ -7,7 +7,7 @@ classdef IK_3_parallel_2_intersecting
             S.Q = rand_angle([6 1]);
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.H(:,3) = P.kin.H(:,2);
             P.kin.H(:,4) = P.kin.H(:,2);
 
@@ -20,12 +20,21 @@ classdef IK_3_parallel_2_intersecting
         function P = setup_LS()
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.H(:,3) = P.kin.H(:,2);
             P.kin.H(:,4) = P.kin.H(:,2);
 
             P.kin.P = rand_vec(7);
             P.kin.P(:,6) = 0;
+
+            P.kin.P(:,end) = 0; % Set task frame at the wrist
+            % h_2 _|_ p_12+p_23+p_34+p_45
+            P.kin.P(:,5) = P.kin.P(:,5) - P.kin.H(:,2) * (P.kin.H(:,2)'*(P.kin.P(:,2)+P.kin.P(:,3)+P.kin.P(:,4)+P.kin.P(:,5)));
+            
+            P.kin.H(:,1) = rand_perp_normal_vec(P.kin.H(:,2)); % h_1 _|_ h_2
+
+            P.kin.H(:,5) = rand_perp_normal_vec(P.kin.H(:,4));
+            P.kin.H(:,6) = rand_perp_normal_vec(P.kin.H(:,5)); % h_4 _|_ h_5 _|_ h_6
 
             P.R = rot(rand_normal_vec, rand_angle);
             P.T = rand_vec;

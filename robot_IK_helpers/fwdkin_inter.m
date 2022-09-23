@@ -6,6 +6,11 @@ function [R, p, p_inter] = fwdkin_inter(kin, theta, inter)
     i_inter = 1;
 
     for i = 1:numel(kin.joint_type)
+        if any(i == inter)
+            p_inter(:,i_inter) = p;
+            i_inter = i_inter +1;
+        end
+
         if (kin.joint_type(i) == 0 || ...       % rotational actuators
                     kin.joint_type(i) == 2)        
             R = R*rot(kin.H(:,i),theta(i));
@@ -14,10 +19,5 @@ function [R, p, p_inter] = fwdkin_inter(kin, theta, inter)
             p = p + R*kin.H(:,i)*theta(i);
         end
         p = p + R*kin.P(:,i+1);
-
-        if any(i == inter)
-            p_inter(:,i_inter) = p;
-            i_inter = i_inter +1;
-        end
     end
 end
