@@ -5,24 +5,24 @@ Implementation of subproblem solutions from "Canonical Subproblems for Robot Inv
 
 [Interactive figure](https://www.geogebra.org/calculator/stydabbr)
 
-$$\min\ \lVert R(k,\theta)p_1 - p_2\rVert$$
+$$\min_\theta \lVert R(k,\theta)p_1 - p_2\rVert$$
 
 ### Subproblem 2: Two cones
 
 [Interactive figure](https://www.geogebra.org/calculator/prj5wqsu)
 
-$$\min\ \lVert R(k_1,\theta_1)p_1 - R(k_2,\theta_2)p_2\rVert$$
+$$\min_{\theta_1,\theta_2} \lVert R(k_1,\theta_1)p_1 - R(k_2,\theta_2)p_2\rVert$$
 
 ### Subproblem 2 extension: Two offset cones
 $$p_0 + R(k_1,\theta_1)p_1= R(k_2,\theta_2)p_2$$
 
 ### Subproblem 3: Cone and sphere
 
-$$\min\ \lvert \lVert R(k,\theta)p_1-p_2\rVert-d\rvert$$
+$$\min_\theta \lvert \lVert R(k,\theta)p_1-p_2\rVert-d\rvert$$
 
 ### Subproblem 4: Cone and plane
 
-$$\min\ \lvert h^\top R(k,\theta)p -d \rvert$$
+$$\min_\theta \lvert h^\top R(k,\theta)p -d \rvert$$
 
 ### Subproblem 5: Three cones
 
@@ -48,4 +48,10 @@ $$\begin{cases}
 
 `rand_helpers`: Functions to help generate random test cases
 
+`robot_IK_helpers`: Functions to help with robot IK (and forward kinematics)
+
 `robot_examples`: Inverse kinematics solutions for specific robots
+
+`correctness_tests`: Tests to verify the correctness of subproblem and IK solutions
+
+`timing_tests`: Measures the runtime of subproblem and IK solutions
