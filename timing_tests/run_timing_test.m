@@ -10,7 +10,10 @@ for i = 1:N_trials
     problem_setup = setup_func();
     
     for i_run_func = 1:length(run_funcs)
-        run_func = run_funcs{i_run_func};
+        for i_throwout = 1:3
+            run_func = run_funcs{i_run_func};
+        end
+        
         for i_trial = 1:N_trials
             tic
             for i_attempt = 1:N_attempts
