@@ -1,5 +1,18 @@
 function [theta, is_LS] = sp_4(h, p, k, d)
-% h'* R(k,theta)*p = d
+% subproblem.sp_4  Subproblem 4: Cone and Plane
+%   theta = = subproblem.sp_4(h, p, k, d) finds theta such that
+%       h'*rot(k,theta)*p = d
+%   If there's no solution, minimize the least-squares residual
+%       | h'*rot(k,theta)*p - d |
+%
+%   If the problem is well-posed, there may be 1 or 2 exact solutions, or 1
+%   least-squares solution
+%   theta1 and theta2 are column vectors of the solutions
+%
+%   [theta, is_LS] = subproblem.sp_4(h, p, k, d) also produces
+%   a flag is_LS, which is true if theta is a least-squares solution
+%
+%   The problem is ill-posed if (p, k) or (h, k) are parallel
 
 A_11 = cross(k,p);
 A_1 = [A_11 -cross(k,A_11)];

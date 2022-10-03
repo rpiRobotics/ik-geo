@@ -1,5 +1,16 @@
 function [theta1, theta2] = sp_6(H, K, P, d1, d2)
-
+% subproblem.sp_6  Subproblem 6: Four cones
+%   [theta1, theta2] = subproblem.sp_6(H, K, P, d1, d2) finds
+%   theta1, theta2 such that
+%       h1'*rot(k1,theta1) + h2'*rot(k2,theta2) = d1
+%       h3'*rot(k3,theta1) + h4'*rot(k4,theta2) = d2
+%   where
+%       H = [h1 h2 h3 h4]
+%       K = [k1 k2 k3 k4]
+%       P = [p1 p2 p3 p4]
+%
+%   If the problem is well-posed, there may be up to 4 solutions
+%   theta1 and theta2 are column vectors of the solutions
 
 k1Xp1 = cross(K(:,1),P(:,1)); k2Xp2 = cross(K(:,2),P(:,2));
 k3Xp3 = cross(K(:,3),P(:,3)); k4Xp4 = cross(K(:,4),P(:,4));

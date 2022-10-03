@@ -1,5 +1,17 @@
-function [theta1, theta2, theta3] = sp_5(p0,p1,p2,p3,k1,k2,k3)
-% p0 + R(k1,theta1)p1 = R(k2,theta2)(p2+R(k3,theta3)p3)
+function [theta1, theta2, theta3] = sp_5(p0, p1, p2, p3, k1, k2, k3)
+% subproblem.sp_5  Subproblem 5: Three cones
+%   [theta1, theta2, theta3] = sp_5(p0, p1, p2, p3, k1, k2, k3) finds
+%   theta1, theta2, theta3 such that
+%       p0 + rot(k1,theta1)*p1 = rot(k2,theta2)*(p2+rot(k3,theta3)*p3)
+%
+%   If the problem is well-posed, there may be up to 4 solutions
+%   theta1, theta2, and theta3 are column vectors of the solutions
+%
+%   This subproblem solution assumes rotation axes 1 and 2 aren't coplanar
+%   If they are, rewrite the problem and solve using subproblem.sp_4() and
+%   subproblem.sp_3()
+%
+%   The problem is ill-posed if (k1, p1), or (k2, p2) are parallel
 
 theta1 = NaN([1 8]);
 theta2 = NaN([1 8]);

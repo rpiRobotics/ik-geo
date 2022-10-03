@@ -1,5 +1,22 @@
 function [theta1, theta2, is_LS] = sp_2(p1, p2, k1, k2)
-    % R(k1, theta1) p1 = R(k2, theta2) p2
+% subproblem.sp_2  Subproblem 2: Two Cones
+%   [theta1, theta2] = subproblem.sp_2(p1, p2, k1, k2) finds theta1, theta2
+%   such that
+%       rot(k1, theta1)*p1 = rot(k2, theta2)*p2
+%   If there's no solution, minimize the least-squares residual
+%           || rot(k1, theta1)*p1 - rot(k2, theta2)*p2 ||
+%
+%   If the problem is well-posed, there may be 1 or 2 solutions
+%   (These may be exact or least-squares solutions)
+%   theta1 and theta2 are column vectors of the solutions
+%
+%   [theta1, theta2, is_LS] = subproblem.sp_2(p1, p2, k1, k2) also produces
+%   a flag is_LS, which is true if (theta1, theta2) is a least-squares
+%   solution
+%
+%   The problem is ill-posed if (p1, k1), (p2, k2), or (k1, k2) are
+%   parallel
+    
 if nargout > 1
     is_LS = abs(norm(p1) - norm(p2)) > 1e-8;
 end

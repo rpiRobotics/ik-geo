@@ -1,4 +1,16 @@
 function [theta1, theta2] = sp_2E(p0, p1, p2, k1, k2)
+% subproblem.sp_2E  Subproblem 2 Extended: Two Offset Cones
+%   [theta1, theta2] = subproblem.sp_2E(p0, p1, p2, k1, k2) finds
+%   theta1, theta2 such that
+%       p0 + rot(k1, theta1)*p1 = rot(k2, theta2)*p2
+%
+%   This subproblem solution assumes there is 1 solution
+%   If there are two solutions (only if the rotation axes intersect),
+%   then rewrite the problem and use subproblem.sp_2()
+%
+%   The problem is ill-posed if (p1, k1), (p2, k2), or (k1, k2) are
+%   parallel
+
 KxP1 = cross(k1,p1);
 KxP2 = cross(k2,p2);
 

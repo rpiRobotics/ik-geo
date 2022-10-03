@@ -1,5 +1,18 @@
 function [theta, is_LS] = sp_3(p1, p2, k, d)
-%   || rot(k, theta)*p1 - p2 || = d
+% subproblem.sp_3  Subproblem 3: Cone and Sphere
+%   theta = subproblem.sp_3(p1, p2, k, d) finds theta such that
+%       || rot(k, theta)*p1 - p2 || = d
+%   If there's no solution, minimize the least-squares residual
+%       | || rot(k, theta)*p1 - p2 || - d |
+%
+%   If the problem is well-posed, there may be 1 or 2 exact solutions, or 1
+%   least-squares solution
+%   theta1 and theta2 are column vectors of the solutions
+%
+%   [theta, is_LS] = subproblem.sp_3(p1, p2, k, d) also produces
+%   a flag is_LS, which is true if theta is a least-squares solution
+%
+%   The problem is ill-posed if (p1, k) or (p2, k) are parallel
 
 KxP = cross(k,p1);
 
