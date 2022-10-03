@@ -56,6 +56,8 @@ $$\begin{cases}
 
 `timing_tests`: Measures the runtime of subproblem and IK solutions
 
+`unit_tests`: Testing for smaller helper functions
+
 ## Dependencies
 
 [general-robotics-toolbox](https://github.com/rpiRobotics/general-robotics-toolbox) for rotation matrix, forward kinematics, Jacobian
