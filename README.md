@@ -55,3 +55,9 @@ $$\begin{cases}
 `correctness_tests`: Tests to verify the correctness of subproblem and IK solutions
 
 `timing_tests`: Measures the runtime of subproblem and IK solutions
+
+## Dependencies
+
+[general-robotics-toolbox](https://github.com/rpiRobotics/general-robotics-toolbox) for rotation matrix, forward kinematics, Jacobian
+
+[matlab-diagrams](https://github.com/aelias36/matlab-diagrams) for a few visualizations
