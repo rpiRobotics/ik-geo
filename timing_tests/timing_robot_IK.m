@@ -12,7 +12,7 @@ runtimes_IK_spherical_2_parallel = run_timing_test(@IK_setups.IK_spherical_2_par
 %%
 runtimes_IK_3_parallel = run_timing_test(@IK_setups.IK_3_parallel.setup, {@IK_setups.IK_3_parallel.run_mex}, N_trials, 100)
 %%
-runtimes_IK_3_parallel_2_intersecting = run_timing_test(@IK_setups.IK_3_parallel_2_intersecting.setup, {@IK_setups.IK_3_parallel_2_intersecting.run_mex}, N_trials, 40)
+runtimes_IK_3_parallel_2_intersecting = run_timing_test(@IK_setups.IK_3_parallel_2_intersecting.setup, {@IK_setups.IK_3_parallel_2_intersecting.run_mex}, N_trials, 100)
 %% 
 histogram(runtimes_gen_6_dof); hold on
 histogram(runtimes_IK_2_intersecting); 
