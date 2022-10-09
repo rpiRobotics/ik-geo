@@ -50,8 +50,8 @@ for i_q3 = 1:length(t3)
                     -kin.H(:,6));
                 q_i = [q1 q2 q3 q4 q5 q6]';
                 Q = [Q q_i];
-                is_LS_vec = [is_LS_vec t3_is_ls||t12_is_ls||q5_is_LS||q4_is_LS||q6_is_LS];
-                %is_LS_vec = [is_LS_vec [t3_is_ls t12_is_ls q5_is_LS q4_is_LS q6_is_LS]'];
+                %is_LS_vec = [is_LS_vec t3_is_ls||t12_is_ls||q5_is_LS||q4_is_LS||q6_is_LS];
+                is_LS_vec = [is_LS_vec [t3_is_ls t12_is_ls q5_is_LS q4_is_LS q6_is_LS]'];
                 % TODO Do we need to check all of these?
             end
     end

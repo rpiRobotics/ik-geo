@@ -1,30 +1,9 @@
 function [Q, is_LS_vec] = IK_2_intersecting(R_06, p_0T, kin)
 % Axes 5 and 6 intersect
 
-% Q = [];
-% is_LS_vec = [];
 p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
-q4_vec = linspace(-pi, pi, 100);
-e_q4 = NaN(size(q4_vec));
-
-% for i = 1:length(q4_vec)
-%     e_q4_i = alignment_err_given_q4(q4_vec(i), p_16, R_06, kin);
-%     if ~isnan(e_q4_i)
-%         e_q4(i) = e_q4_i;
-%     end
-% end
-
 q4_star = fminbnd(@(x)alignment_err_given_q4(x, p_16, R_06, kin),-pi,pi);
-%[~, q_guess_idx] = min(e_q4);
-
-%q4_star = fminbnd(@(x)alignment_err_given_q4(x, p_16, R_06, kin),q4_vec(q_guess_idx)-1e-4,q4_vec(q_guess_idx)+1e-4);
-%options = optimset('TolFun',1e-16);
-%options = optimset('TolFun',1e-5);
-%q4_star = fminsearch(@(x)alignment_err_given_q4(x, p_16, R_06, kin), q4_vec(q_guess_idx), options);
-
-% plot(q4_vec, e_q4)
-% xline(q4_star);
 
 [~, Q, is_LS_vec] = alignment_err_given_q4(q4_star, p_16, R_06, kin);
 
