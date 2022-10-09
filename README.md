@@ -42,9 +42,15 @@ $$\begin{cases}
 
 `+IK_setups`: Test classes for IK solutions
 
+`+hardcoded_IK`: Inverse kinemtics solutions for specific robots (kinematic parameters are set)
+
+`+hardcoded_IK_setups`: Test classes for hardcoded IK solutions
+
 `+subproblem`: Subproblem solutions
 
 `+subproblem_setups`: Test classes for subproblem solutions
+
+`correctness_tests`: Tests to verify the correctness of subproblem and IK solutions
 
 `rand_helpers`: Functions to help generate random test cases
 
@@ -52,11 +58,15 @@ $$\begin{cases}
 
 `robot_examples`: Inverse kinematics solutions for specific robots
 
-`correctness_tests`: Tests to verify the correctness of subproblem and IK solutions
-
 `timing_tests`: Measures the runtime of subproblem and IK solutions
 
 `unit_tests`: Testing for smaller helper functions
+# 
+`cpp`: C++ implementation
+
+`rust`: Rust implementation
+
+`python`: Python implementation
 
 ## Dependencies
 
