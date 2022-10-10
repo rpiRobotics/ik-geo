@@ -1,0 +1,11 @@
+[package]
+name = "linear-subproblem-solutions-rust"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+nalgebra = "0.31.1"
+fastrand = "1.8.0"
+
+[lib]
+doctest = false
