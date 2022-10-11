@@ -18,8 +18,8 @@ q = S_given.Q;
 N_trial = 1;
 tic
 for i = 1:N_trial
-%S = setup.run(P);
-S = setup.run_mex(P);
+S = setup.run(P);
+%S = setup.run_mex(P);
 end
 t  = toc / N_trial
 

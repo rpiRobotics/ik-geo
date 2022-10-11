@@ -55,8 +55,9 @@ function [e, Q, is_LS_vec] = alignment_err_given_q12(q1, q2, p_16, R_06, kin)
 
         if nargout > 1
             % Find q6 with subproblem 1
-            p = [0;0;1]; % Can't be colinear with h_6
+            p = [0;0;1]; % Can't be collinear with h_6
             [q6, q6_is_ls] = subproblem.sp_1(p, R_05'*R_06*p, kin.H(:,6));
+            % TODO: q6_is_ls will tend to be true since e_i isn't exactly 0
 
             q_i = [q1; q2; q3; q4; q5; q6];
             Q = [Q q_i];
