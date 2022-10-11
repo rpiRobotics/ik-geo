@@ -8,3 +8,6 @@ codegen -report +hardcoded_IK/IRB_6640.m -args {P.R, P.T}
 %%
 P = hardcoded_IK_setups.three_parallel_bot.setup;
 codegen -report +hardcoded_IK/three_parallel_bot.m -args {P.R, P.T}
+%%
+P = hardcoded_IK_setups.KUKA_R800_fixed_q3.setup;
+codegen -report +hardcoded_IK\KUKA_R800_fixed_q3.m -args {P.R, P.T}
