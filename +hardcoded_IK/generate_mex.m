@@ -17,3 +17,6 @@ codegen -report +hardcoded_IK\yumi_fixed_q3.m -args {P.R, P.T}
 %%
 P = hardcoded_IK_setups.RRC_fixed_q6.setup;
 codegen -report +hardcoded_IK\RRC_fixed_q6.m -args {P.R, P.T}
+%%
+P = hardcoded_IK_setups.spherical_bot.setup;
+codegen -report +hardcoded_IK\spherical_bot.m -args {P.R, P.T}
