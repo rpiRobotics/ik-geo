@@ -9,3 +9,5 @@ runtimes_three_parallel_bot = run_timing_test(@hardcoded_IK_setups.three_paralle
 runtimes_KUKA = run_timing_test(@hardcoded_IK_setups.KUKA_R800_fixed_q3.setup, {@hardcoded_IK_setups.KUKA_R800_fixed_q3.run_mex}, N_trials, 100)
 %%
 runtimes_yumi = run_timing_test(@hardcoded_IK_setups.yumi_fixed_q3.setup, {@hardcoded_IK_setups.yumi_fixed_q3.run_mex}, 10, 10, true)
+%%
+runtimes_RRC = run_timing_test(@hardcoded_IK_setups.RRC_fixed_q6.setup, {@hardcoded_IK_setups.RRC_fixed_q6.run_mex}, N_trials, 40)
