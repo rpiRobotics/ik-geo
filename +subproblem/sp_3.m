@@ -13,6 +13,17 @@ function [theta, is_LS] = sp_3(p1, p2, k, d)
 %   a flag is_LS, which is true if theta is a least-squares solution
 %
 %   The problem is ill-posed if (p1, k) or (p2, k) are parallel
+%
+%   Inputs:
+%       p1: 3x1 vector
+%       p2: 3x1 vector
+%       k:  3x1 vector with norm(k) = 1
+%       d:  1x1
+%   Outputs:
+%       theta: 1xN angle (in radians)
+%           (N is the number of solutions)
+%       is_LS: 1x1 boolean
+
 
 KxP = cross(k,p1);
 

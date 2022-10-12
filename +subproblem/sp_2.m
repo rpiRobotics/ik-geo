@@ -16,6 +16,18 @@ function [theta1, theta2, is_LS] = sp_2(p1, p2, k1, k2)
 %
 %   The problem is ill-posed if (p1, k1), (p2, k2), or (k1, k2) are
 %   parallel
+%
+%   Inputs:
+%       p1: 3x1 vector
+%       p2: 3x1 vector
+%       k1: 3x1 vector with norm(k1) = 1
+%       k2: 3x1 vector with norm(k2) = 1
+%   Outputs:
+%       theta1: 1xN angle vector (in radians)
+%       theta2: 1xN angle vector (in radians)
+%           (N is the number of solutions)
+%       is_LS: 1x1 boolean
+
     
 if nargout > 1
     is_LS = abs(norm(p1) - norm(p2)) > 1e-8;

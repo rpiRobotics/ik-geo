@@ -10,6 +10,16 @@ function [theta1, theta2] = sp_2E(p0, p1, p2, k1, k2)
 %
 %   The problem is ill-posed if (p1, k1), (p2, k2), or (k1, k2) are
 %   parallel
+%
+%   Inputs:
+%       p0: 3x1 vector
+%       p1: 3x1 vector
+%       p2: 3x1 vector
+%       k1: 3x1 vector with norm(k1) = 1
+%       k2: 3x1 vector with norm(k2) = 1
+%   Outputs:
+%       theta1: 1x1 angle (in radians)
+%       theta2: 1x1 angle (in radians)
 
 KxP1 = cross(k1,p1);
 KxP2 = cross(k2,p2);
