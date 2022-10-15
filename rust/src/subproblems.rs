@@ -1,9 +1,47 @@
-use nalgebra::{ Vector3, Matrix3x2, Matrix4x3, Matrix4x1, DVector };
+use nalgebra::{ Vector3, Matrix3x2, Matrix4x3, Matrix4x1, Matrix3x4, Matrix3 };
 
-/// Solves for theta where rot(k, theta) * p1 = p2 if possible.
-/// If not, minimizes || rot(k, theta) * p1 - p2 ||
-/// Also returns a boolean of whether or not theta is a least-squares solution
-pub fn subproblem1(p1: Vector3<f64>, p2: Vector3<f64>, k: Vector3<f64>) -> (f64, bool) {
+#[derive(Clone)]
+pub enum SolutionSet2<T> {
+    One(T),
+    Two(T, T),
+}
+
+impl<T> SolutionSet2<T> where T: Copy {
+    pub fn expect_one(&self) -> T {
+        match self {
+            Self::One(s) => *s,
+            Self::Two(..) => panic!("Found two solutions where one was expected"),
+        }
+    }
+
+    pub fn expect_two(&self) -> [T; 2] {
+        match self {
+            Self::One(_) => panic!("Found one solution where two were expected"),
+            Self::Two(s1, s2) => [*s1, *s2],
+        }
+    }
+
+    pub fn get_first(&self) -> T {
+        match self {
+            Self::One(s) => *s,
+            Self::Two(s, _) => *s,
+        }
+    }
+
+    pub fn get_all(&self) -> Vec<T> {
+        match self {
+            Self::One(s) => vec![*s],
+            Self::Two(s1, s2) => vec![*s1, *s2],
+        }
+    }
+}
+
+/**
+Solves for `theta` where `rot(k, theta) * p1 = p2` if possible.
+If not, minimizes `|| rot(k, theta) * p1 - p2 ||`.
+Also returns a boolean of whether or not `theta` is a least-squares solution.
+*/
+pub fn subproblem1(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>) -> (f64, bool) {
     let kxp = k.cross(&p1);
     let a = Matrix3x2::from_columns(&[kxp, -k.cross(&kxp)]);
     let x = a.transpose() * p2;
@@ -14,11 +52,13 @@ pub fn subproblem1(p1: Vector3<f64>, p2: Vector3<f64>, k: Vector3<f64>) -> (f64,
     (theta, is_ls)
 }
 
-/// Solves for theta1 and theta2 where rot(k1, theta1)*p1 = rot(k2, theta2)*p2 if possible
-/// If not, minimizes || rot(k1, theta1)*p1 - rot(k2, theta2)*p2 ||
-/// Also returns a boolean of whether or not { theta1, theta2 } is a least-squares solution
-/// There may be 1 or 2 solutions for theta1 and theta2 so they are returned as 1 or 2 sized dynamic vectors
-pub fn subproblem2(p1: Vector3<f64>, p2: Vector3<f64>, k1: Vector3<f64>, k2: Vector3<f64>) -> (DVector<f64>, DVector<f64>, bool) {
+/**
+Solves for `theta1` and `theta2` where `rot(k1, theta1) * p1 = rot(k2, theta2) * p2` if possible.
+If not, minimizes `|| rot(k1, theta1) * p1 - rot(k2, theta2) * p2 ||`.
+Also returns a boolean of whether or not `{ theta1, theta2 }` is a least-squares solution.
+There may be 1 or 2 solutions for `theta1` and `theta2`.
+*/
+pub fn subproblem2(p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>) -> (SolutionSet2<f64>, SolutionSet2<f64>, bool) {
     let is_ls = (p1.norm() - p2.norm()).abs() >= 1e-8;
 
     let p1 = p1.normalize();
@@ -55,15 +95,15 @@ pub fn subproblem2(p1: Vector3<f64>, p2: Vector3<f64>, k1: Vector3<f64>, k2: Vec
         let sc_1 = x_ls + xi * a_perp_tilde;
         let sc_2 = x_ls - xi * a_perp_tilde;
 
-        let theta1 = DVector::from_vec(vec![
+        let theta1 = SolutionSet2::Two(
             sc_1[0].atan2(sc_1[1]),
             sc_2[0].atan2(sc_2[1]),
-        ]);
+        );
 
-        let theta2 = DVector::from_vec(vec![
+        let theta2 = SolutionSet2::Two(
             sc_1[2].atan2(sc_1[3]),
             sc_2[2].atan2(sc_2[3]),
-        ]);
+        );
 
         (theta1, theta2, is_ls)
     }
@@ -71,6 +111,46 @@ pub fn subproblem2(p1: Vector3<f64>, p2: Vector3<f64>, k1: Vector3<f64>, k2: Vec
         let theta1 = x_ls[0].atan2(x_ls[1]);
         let theta2 = x_ls[2].atan2(x_ls[3]);
 
-        (DVector::from_vec(vec![theta1]), DVector::from_vec(vec![theta2]), true)
+        (SolutionSet2::One(theta1), SolutionSet2::One(theta2), true)
     }
+}
+
+/**
+Solves for `theta1` and `theta2` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * p2`.
+Assumes only one solution. If there could be two, `subproblem2` should be used.
+*/
+pub fn subproblem2extended(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>) -> (f64, f64) {
+    let kxp1 = k1.cross(&p1);
+    let kxp2 = k2.cross(&p2);
+
+    let a1  = Matrix3x2::from_columns(&[kxp1, -k1.cross(&kxp1)]);
+    let a2  = Matrix3x2::from_columns(&[kxp2, -k2.cross(&kxp2)]);
+    let a2_neg = -a2;
+
+    let a = Matrix3x4::from_columns(&[a1.column(0), a1.column(1), a2_neg.column(0), a2_neg.column(1)]);
+
+    let p = -k1 * k1.dot(&p1) + k2 * k2.dot(p2) - p0;
+
+    let radius1_sq = kxp1.dot(&kxp1);
+    let radius2_sq = kxp2.dot(&kxp2);
+
+    let alpha = radius1_sq / (radius1_sq + radius2_sq);
+    let beta = radius2_sq / (radius1_sq + radius2_sq);
+    let m_inv = Matrix3::identity() + k1 * k1.transpose() * (alpha / (1.0 - alpha));
+    let aat_inv = 1.0 / (radius1_sq + radius2_sq) * (m_inv + m_inv * k2 * k2.transpose() * m_inv * beta / (1.0 - (k2.transpose() * m_inv * k2 * beta)[0]));
+    let x_ls = a.transpose() * aat_inv * p;
+
+    let n_sym = k1.cross(&k2);
+    let pinv_a1 = a1.transpose() / radius1_sq;
+    let pinv_a2 = a2.transpose() / radius2_sq;
+    let a_perp_tilde = Matrix4x3::from_rows(&[pinv_a1.row(0), pinv_a1.row(1), pinv_a2.row(0), pinv_a2.row(1)]) * n_sym;
+
+    let num = (x_ls.fixed_rows::<2>(2).norm_squared() - 1.0) * a_perp_tilde.fixed_rows::<2>(0).norm_squared() - (x_ls.fixed_rows::<2>(0).norm_squared() - 1.0) * a_perp_tilde.fixed_rows::<2>(2).norm_squared();
+    let den = 2.0 * (x_ls.fixed_rows::<2>(0).transpose() * a_perp_tilde.fixed_rows::<2>(0) * a_perp_tilde.fixed_rows::<2>(2).norm_squared() - x_ls.fixed_rows::<2>(2).transpose() * a_perp_tilde.fixed_rows::<2>(2) * a_perp_tilde.fixed_rows::<2>(0).norm_squared())[0];
+
+    let xi = num / den;
+
+    let sc = x_ls + xi * a_perp_tilde;
+
+    (sc[0].atan2(sc[1]), sc[2].atan2(sc[3]))
 }
