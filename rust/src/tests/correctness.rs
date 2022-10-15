@@ -1,14 +1,15 @@
-use super::setups::{ Setup, Subproblem1Setup, Subproblem2Setup };
+use super::setups::{ Setup, Subproblem1Setup, Subproblem2Setup, Subproblem2ExtendedSetup };
 
 const TEST_ITERATIONS: usize = 1000;
 
 #[test]
 fn run_tests() {
-    const ERROR_THRESHOLD: f64 = 1e-12;
+    const ERROR_THRESHOLD: f64 = 1e-9;
 
     let setups: Vec<Box<dyn Setup>> = vec![
         Box::new(Subproblem1Setup::new()),
         Box::new(Subproblem2Setup::new()),
+        Box::new(Subproblem2ExtendedSetup::new()),
     ];
 
     for mut setup in setups {
@@ -19,11 +20,11 @@ fn run_tests() {
             setup.run();
 
             let error = setup.error();
-            assert!(error <= ERROR_THRESHOLD);
+            assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
             total_error += error;
         }
 
-        println!("{} Avg Error:\t{}", setup.name(), total_error / TEST_ITERATIONS as f64);
+        println!("{}\tAvg Error:\t{}", setup.name(), total_error / TEST_ITERATIONS as f64);
     }
 }
 
@@ -39,7 +40,7 @@ fn run_tests_ls() {
             setup.setup_ls();
             setup.run();
 
-            assert!(setup.is_at_local_min());
+            assert!(setup.is_at_local_min(), "{} solution was not at local minimum", setup.name());
         }
     }
 }

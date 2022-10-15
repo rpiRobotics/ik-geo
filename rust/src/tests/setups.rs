@@ -7,19 +7,15 @@ use {
             random_norm_vector3
         },
 
-        subproblems::{ subproblem1, subproblem2 }
+        subproblems::{ SolutionSet2, subproblem1, subproblem2, subproblem2extended }
     },
 
-    nalgebra::{ Vector3, DVector },
+    nalgebra::Vector3,
 };
 
 /// An interface for setting up subproblem testing. Resposible for generating parameters, running
 /// the function, and calculating data such as the error.
 pub trait Setup {
-    fn name(&self) -> &'static str;
-    fn is_at_local_min(&self) -> bool;
-    fn error(&self) -> f64;
-
     /// Initialize parameters to test the case where theta is solved for exactly
     fn setup(&mut self);
 
@@ -27,6 +23,10 @@ pub trait Setup {
     fn setup_ls(&mut self);
 
     fn run(&mut self);
+
+    fn error(&self) -> f64;
+    fn is_at_local_min(&self) -> bool;
+    fn name(&self) -> &'static str;
 }
 
 pub struct Subproblem1Setup {
@@ -44,8 +44,19 @@ pub struct Subproblem2Setup {
     k1: Vector3<f64>,
     k2: Vector3<f64>,
 
-    theta1: DVector<f64>,
-    theta2: DVector<f64>,
+    theta1: SolutionSet2<f64>,
+    theta2: SolutionSet2<f64>,
+}
+
+pub struct Subproblem2ExtendedSetup {
+    p0: Vector3<f64>,
+    p1: Vector3<f64>,
+    p2: Vector3<f64>,
+    k1: Vector3<f64>,
+    k2: Vector3<f64>,
+
+    theta1: f64,
+    theta2: f64,
 }
 
 impl Subproblem1Setup {
@@ -72,18 +83,33 @@ impl Subproblem2Setup {
             k1: Vector3::zeros(),
             k2: Vector3::zeros(),
 
-            theta1: DVector::zeros(0),
-            theta2: DVector::zeros(0),
+            theta1: SolutionSet2::One(0.0),
+            theta2: SolutionSet2::One(0.0),
         }
     }
 
-    fn calculate_error(&self, theta1: &DVector<f64>, theta2: &DVector<f64>) -> f64 {
+    fn calculate_error(&self, theta1: &Vec<f64>, theta2: &Vec<f64>) -> f64 {
         theta1.iter()
             .zip(theta2.iter())
             .map(|(&t1, &t2)| {
                 (rot(self.k2, t2) * self.p2 - rot(self.k1,t1) * self.p1).norm()
             })
             .sum()
+    }
+}
+
+impl Subproblem2ExtendedSetup {
+    pub fn new() -> Self {
+        Self {
+            p0: Vector3::zeros(),
+            p1: Vector3::zeros(),
+            p2: Vector3::zeros(),
+            k1: Vector3::zeros(),
+            k2: Vector3::zeros(),
+
+            theta1: 0.0,
+            theta2: 0.0,
+        }
     }
 }
 
@@ -118,7 +144,7 @@ impl Setup for Subproblem1Setup {
     }
 
     fn run(&mut self) {
-        (self.theta, _) = subproblem1(self.p1, self.p2, self.k);
+        (self.theta, _) = subproblem1(&self.p1, &self.p2, &self.k);
     }
 
     fn name(&self) -> &'static str {
@@ -128,13 +154,16 @@ impl Setup for Subproblem1Setup {
 
 impl Setup for Subproblem2Setup {
     fn setup(&mut self) {
+        let theta1 = random_angle();
+        let theta2 = random_angle();
+
         self.p1 = random_vector3();
         self.k1 = random_norm_vector3();
         self.k2 = random_norm_vector3();
-        self.theta1 = DVector::from_vec(vec![random_angle()]);
-        self.theta2 = DVector::from_vec(vec![random_angle()]);
+        self.theta1 = SolutionSet2::One(theta1);
+        self.theta2 = SolutionSet2::One(theta2);
 
-        self.p2 = rot(self.k2, -self.theta2[0]) * rot(self.k1,self.theta1[0]) * self.p1;
+        self.p2 = rot(self.k2, -theta2) * rot(self.k1, theta1) * self.p1;
     }
 
     fn setup_ls(&mut self) {
@@ -143,16 +172,16 @@ impl Setup for Subproblem2Setup {
         self.k1 = random_norm_vector3();
         self.k2 = random_norm_vector3();
         self.k2 = random_norm_vector3();
-        self.theta1 = DVector::from_vec(vec![random_angle()]);
-        self.theta2 = DVector::from_vec(vec![random_angle()]);
+        self.theta1 = SolutionSet2::One(random_angle());
+        self.theta2 = SolutionSet2::One(random_angle());
     }
 
     fn run(&mut self) {
-        (self.theta1, self.theta2, _) = subproblem2(self.p1, self.p2, self.k1, self.k2);
+        (self.theta1, self.theta2, _) = subproblem2(&self.p1, &self.p2, &self.k1, &self.k2);
     }
 
     fn error(&self) -> f64 {
-        self.calculate_error(&self.theta1, &self.theta2)
+        self.calculate_error(&self.theta1.get_all(), &self.theta2.get_all())
     }
 
     fn is_at_local_min(&self) -> bool {
@@ -161,10 +190,10 @@ impl Setup for Subproblem2Setup {
         let error = self.error();
         let error_check = error - DELTA;
 
-        let mut solutions = [self.theta1.clone(), self.theta2.clone()];
+        let mut solutions = [self.theta1.get_all(), self.theta2.get_all()];
 
         for i in 0..solutions.len() {
-            for j in 0..self.theta1.len() {
+            for j in 0..solutions[i].len() {
                 for sign in [-1.0, 1.0] {
                     let solution_prev = solutions[i][j];
                     solutions[i][j] += sign;
@@ -183,5 +212,40 @@ impl Setup for Subproblem2Setup {
 
     fn name(&self) -> &'static str {
         "Subproblem 2"
+    }
+}
+
+impl Setup for Subproblem2ExtendedSetup {
+    fn setup(&mut self) {
+        self.p0 = random_vector3();
+        self.p1 = random_vector3();
+
+        self.k1 = random_norm_vector3();
+        self.k2 = random_norm_vector3();
+
+        self.theta1 = random_angle();
+        self.theta2 = random_angle();
+
+        self.p2 = rot(self.k2, -self.theta2) * (self.p0 + rot(self.k1, self.theta1) * self.p1);
+    }
+
+    fn setup_ls(&mut self) {
+        unimplemented!();
+    }
+
+    fn run(&mut self) {
+        (self.theta1, self.theta2) = subproblem2extended(&self.p0, &self.p1, &self.p2, &self.k1, &self.k2);
+    }
+
+    fn error(&self) -> f64 {
+        (self.p0 + rot(self.k1, self.theta1) * self.p1 - rot(self.k2, self.theta2) * self.p2).norm()
+    }
+
+    fn is_at_local_min(&self) -> bool {
+        unimplemented!();
+    }
+
+    fn name(&self) -> &'static str {
+        "Subproblem 2 Ex"
     }
 }
