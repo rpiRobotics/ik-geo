@@ -5,11 +5,10 @@
 // Purpose: Port of the subproblem/sp_1.m file
 //---------------------------------------------------------------//
 
+#include <iostream>
 #include "sp_1.h"
 
 using namespace Eigen;
-
-const double ZERO_THRESH = 1e-8;
 
 // return is_LS
 bool sp_1(Vector3d p1, Vector3d p2, Vector3d k, 
@@ -28,5 +27,37 @@ bool sp_1(Vector3d p1, Vector3d p2, Vector3d k,
 }
 
 int main() {
+  Eigen::Matrix<double, 3, 1> p1;
+  Eigen::Matrix<double, 3, 1> p2; 
+  Eigen::Matrix<double, 3, 1> k;
+  double theta;
+  int ls_input, op_input;
+
+  std::cout << "LS (0) or non-LS (1)?" << std::endl;
+
+  std:: cin >> ls_input;
+
+  std::cout << "# of Operations?" << std::endl;
+
+  std:: cin >> op_input;
+
+  clock_t begin = clock();
+
+  if (ls_input == 1) {
+		for (int i = 0; i < op_input; i++) {
+    	sp1_setup(p1, p2, k, theta);
+		}
+  } else {
+		for (int i = 0; i < op_input; i++) {
+    	sp1_setup_LS(p1, p2, k, theta);
+		}
+  }
+
+  sp1_run(p1, p2, k, theta);
+
+  clock_t end = clock();
+  double timeSec = (end - begin) / static_cast<double>( CLOCKS_PER_SEC );
+
+  std::cout << "===== \n time (seconds): " << timeSec << std::endl;
 	return 0;
 }

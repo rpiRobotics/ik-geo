@@ -4,7 +4,7 @@
 // Purpose: Port of the subproblem_setups/sp_1.m file
 //---------------------------------------------------------------//
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include "../rand_cpp.h"
 
 /*
