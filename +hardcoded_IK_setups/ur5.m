@@ -17,7 +17,7 @@ methods (Static)
     end
 
     function S = run_mex(P)
-        [S.Q, S.is_LS] = IK_ur5_mex(P.R, P.T);
+        [S.Q, S.is_LS] = hardcoded_IK.ur5_mex(P.R, P.T);
     end
 end
 end

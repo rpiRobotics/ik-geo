@@ -1,7 +1,7 @@
 % TODO change path
 
-P = IK_ur5_setup.setup;
-codegen -report IK_ur5.m -args {P.R, P.T}
+P = hardcoded_IK_setups.ur5.setup;
+codegen -report +hardcoded_IK/ur5.m -args {P.R, P.T}
 %%
 P = hardcoded_IK_setups.IRB_6640.setup;
 codegen -report +hardcoded_IK/IRB_6640.m -args {P.R, P.T}
