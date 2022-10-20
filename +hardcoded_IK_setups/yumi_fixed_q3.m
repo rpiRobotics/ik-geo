@@ -87,5 +87,13 @@ methods (Static)
     function S = run_mex(P)
         [S.Q, S.is_LS] = hardcoded_IK.yumi_fixed_q3_mex(P.R, P.T);
     end
+
+    function [e, e_R, e_T] = error(P,S)
+        P.kin = hardcoded_IK_setups.yumi_fixed_q3.get_kin();
+        S.Q = [S.Q(1:2,:)
+               hardcoded_IK_setups.yumi_fixed_q3.q3*ones([1 width(S.Q)])
+               S.Q(3:end,:)];
+        [e, e_R, e_T] = robot_IK_error(P, S);
+    end
 end
 end

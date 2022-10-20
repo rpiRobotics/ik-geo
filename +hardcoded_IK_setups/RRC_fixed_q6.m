@@ -52,5 +52,15 @@ methods (Static)
     function S = run_mex(P)
         [S.Q, S.is_LS] = hardcoded_IK.RRC_fixed_q6_mex(P.R, P.T);
     end
+
+    function [e, e_R, e_T] = error(P,S)
+        P.kin = hardcoded_IK_setups.RRC_fixed_q6.get_kin();
+        if height(S.Q) == 6 % Partial Q
+        S.Q = [S.Q(1:5,:)
+               hardcoded_IK_setups.RRC_fixed_q6.q6*ones([1 width(S.Q)])
+               S.Q(6:end,:)];
+        end
+        [e, e_R, e_T] = robot_IK_error(P, S);
+    end
 end
 end

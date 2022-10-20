@@ -19,5 +19,10 @@ methods (Static)
     function S = run_mex(P)
         [S.Q, S.is_LS] = hardcoded_IK.IRB_6640_mex(P.R, P.T);
     end
+
+    function [e, e_R, e_T] = error(P,S)
+        P.kin = hardcoded_IK_setups.IRB_6640.get_kin();
+        [e, e_R, e_T] = robot_IK_error(P, S);
+    end
 end
 end
