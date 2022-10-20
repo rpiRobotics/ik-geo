@@ -3,9 +3,25 @@ function [Q, is_LS_vec] = IK_2_intersecting(R_06, p_0T, kin)
 
 p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
-q4_star = fminbnd(@(x)alignment_err_given_q4(x, p_16, R_06, kin),-pi,pi);
+q4_vec = linspace(-pi, pi, 100);
+e_vec = NaN(size(q4_vec));
 
+
+for i = 1:numel(q4_vec)
+    e_vec(i) = alignment_err_given_q4(q4_vec(i), p_16, R_06, kin);
+end
+[~, q4_guess_idx] = min(e_vec(:));
+q4_guess = q4_vec(q4_guess_idx);
+
+plot(q4_vec, e_vec)
+xline(q4_guess);
+
+options = optimset('TolFun',1e-5);
+q4_star = fminsearch(@(x)alignment_err_given_q4(x, p_16, R_06, kin), q4_guess, options);
+%q4_star = fminbnd(@(x)alignment_err_given_q4(x, p_16, R_06, kin),-pi,pi);
 [~, Q, is_LS_vec] = alignment_err_given_q4(q4_star, p_16, R_06, kin);
+
+
 
 end
 
