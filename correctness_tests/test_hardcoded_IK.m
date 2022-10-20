@@ -1,6 +1,10 @@
-%setup = hardcoded_IK_setups.yumi_fixed_q3;
-setup = hardcoded_IK_setups.RRC_fixed_q6;
-%setup = hardcoded_IK_setups.IRB_6640;
+% setup = hardcoded_IK_setups.yumi_fixed_q3;
+% setup = hardcoded_IK_setups.RRC_fixed_q6;
+% setup = hardcoded_IK_setups.IRB_6640;
+% setup = hardcoded_IK_setups.ur5;
+% setup = hardcoded_IK_setups.three_parallel_bot;
+% setup = hardcoded_IK_setups.spherical_bot;
+setup = hardcoded_IK_setups.KUKA_R800_fixed_q3;
 
 
 [P, S_given] = setup.setup();

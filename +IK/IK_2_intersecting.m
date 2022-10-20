@@ -13,8 +13,8 @@ end
 [~, q4_guess_idx] = min(e_vec(:));
 q4_guess = q4_vec(q4_guess_idx);
 
-plot(q4_vec, e_vec)
-xline(q4_guess);
+% plot(q4_vec, e_vec)
+% xline(q4_guess);
 
 options = optimset('TolFun',1e-5);
 q4_star = fminsearch(@(x)alignment_err_given_q4(x, p_16, R_06, kin), q4_guess, options);

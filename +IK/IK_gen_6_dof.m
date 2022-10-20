@@ -17,15 +17,15 @@ end
 
 
 [~, q12_guess_idx] = min(e_mesh(:));
-q1_star = q1_mesh(q12_guess_idx);
-q2_star = q2_mesh(q12_guess_idx);
+q1_guess = q1_mesh(q12_guess_idx);
+q2_guess = q2_mesh(q12_guess_idx);
 
 % mesh(q1_mesh, q2_mesh, e_mesh); hold on
 % plot3([q1_star q1_star], [q2_star q2_star], [0 max(e_mesh(:))], 'r', LineWidth=2); hold off
 
 % optimize further
 options = optimset('TolFun',1e-5);
-q12_star = fminsearch(@(x)alignment_err_given_q12(x(1), x(2), p_16, R_06, kin),[q1_star;q2_star], options);
+q12_star = fminsearch(@(x)alignment_err_given_q12(x(1), x(2), p_16, R_06, kin),[q1_guess;q2_guess], options);
 q1_star = q12_star(1);
 q2_star = q12_star(2);
 

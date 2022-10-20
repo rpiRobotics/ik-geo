@@ -16,9 +16,18 @@ methods (Static)
         S.Q = rand_angle([6,1]);
         [P.R, P.T] = fwdkin(hardcoded_IK_setups.three_parallel_bot.get_kin(), S.Q);
     end
+    
+    function S = run(P)
+        [S.Q, S.is_LS] = hardcoded_IK.three_parallel_bot(P.R, P.T);
+    end
 
     function S = run_mex(P)
         [S.Q, S.is_LS] = hardcoded_IK.three_parallel_bot_mex(P.R, P.T);
+    end
+
+    function [e, e_R, e_T] = error(P,S)
+        P.kin = hardcoded_IK_setups.three_parallel_bot.get_kin();
+        [e, e_R, e_T] = robot_IK_error(P, S);
     end
 end
 end

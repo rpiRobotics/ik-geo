@@ -24,5 +24,10 @@ methods (Static)
     function S = run_mex(P)
         [S.Q, S.is_LS] = hardcoded_IK.spherical_bot_mex(P.R, P.T);
     end
+
+    function [e, e_R, e_T] = error(P,S)
+        P.kin = hardcoded_IK_setups.spherical_bot.get_kin();
+        [e, e_R, e_T] = robot_IK_error(P, S);
+    end
 end
 end
