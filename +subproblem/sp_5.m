@@ -12,6 +12,20 @@ function [theta1, theta2, theta3] = sp_5(p0, p1, p2, p3, k1, k2, k3)
 %   subproblem.sp_3()
 %
 %   The problem is ill-posed if (k1, p1), or (k2, p2) are parallel
+%
+%   Inputs:
+%       p0: 3x1 vector
+%       p1: 3x1 vector
+%       p2: 3x1 vector
+%       p3: 3x1 vector
+%       k1: 3x1 vector with norm(k1) = 1
+%       k2: 3x1 vector with norm(k2) = 1
+%       k3: 3x1 vector with norm(k3) = 1
+%   Outputs:
+%       theta1: 1xN angle (in radians)
+%           (N is the number of solutions)
+%       theta2: 1xN angle (in radians)
+%       theta3: 1xN angle (in radians)
 
 theta1 = NaN([1 8]);
 theta2 = NaN([1 8]);

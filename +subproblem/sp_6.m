@@ -11,6 +11,15 @@ function [theta1, theta2] = sp_6(H, K, P, d1, d2)
 %
 %   If the problem is well-posed, there may be up to 4 solutions
 %   theta1 and theta2 are column vectors of the solutions
+%
+%   Inputs:
+%       H: 3x4 matrix with norm(h_i) = 1
+%       K: 3x4 matrix with norm(k_i) = 1
+%       P: 3x4 matrix
+%   Outputs:
+%       theta1: 1xN angle (in radians)
+%           (N is the number of solutions)
+%       theta2: 1xN angle (in radians)
 
 k1Xp1 = cross(K(:,1),P(:,1)); k2Xp2 = cross(K(:,2),P(:,2));
 k3Xp3 = cross(K(:,3),P(:,3)); k4Xp4 = cross(K(:,4),P(:,4));
