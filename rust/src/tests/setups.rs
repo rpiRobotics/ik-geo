@@ -225,7 +225,7 @@ impl Setup for Subproblem2Setup {
             for j in 0..solutions[i].len() {
                 for sign in [-1.0, 1.0] {
                     let solution_prev = solutions[i][j];
-                    solutions[i][j] += sign;
+                    solutions[i][j] += sign * DELTA;
 
                     if self.calculate_error(&solutions[0], &solutions[1]) < error_check {
                         return false;
@@ -316,7 +316,7 @@ impl Setup for Subproblem3Setup {
         for i in 0..solution.len() {
             for sign in [-1.0, 1.0] {
                 let solution_prev = solution[i];
-                solution[i] += sign;
+                solution[i] += sign * DELTA;
 
                 if self.calculate_error(&solution) < error_check {
                     return false;
