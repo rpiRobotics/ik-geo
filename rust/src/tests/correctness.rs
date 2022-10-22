@@ -1,4 +1,11 @@
-use super::setups::{ Setup, Subproblem1Setup, Subproblem2Setup, Subproblem2ExtendedSetup, Subproblem3Setup };
+use super::setups::{
+    Setup,
+    Subproblem1Setup,
+    Subproblem2Setup,
+    Subproblem2ExtendedSetup,
+    Subproblem3Setup,
+    Subproblem4Setup,
+};
 
 const TEST_ITERATIONS: usize = 1000;
 
@@ -11,6 +18,7 @@ fn run_tests() {
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem2ExtendedSetup::new()),
         Box::new(Subproblem3Setup::new()),
+        Box::new(Subproblem4Setup::new()),
     ];
 
     for mut setup in setups {
@@ -35,6 +43,7 @@ fn run_tests_ls() {
         Box::new(Subproblem1Setup::new()),
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem3Setup::new()),
+        Box::new(Subproblem4Setup::new()),
     ];
 
     for mut setup in setups {
