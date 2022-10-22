@@ -1,4 +1,4 @@
-use super::setups::{ Setup, Subproblem1Setup, Subproblem2Setup, Subproblem2ExtendedSetup };
+use super::setups::{ Setup, Subproblem1Setup, Subproblem2Setup, Subproblem2ExtendedSetup, Subproblem3Setup };
 
 const TEST_ITERATIONS: usize = 1000;
 
@@ -10,6 +10,7 @@ fn run_tests() {
         Box::new(Subproblem1Setup::new()),
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem2ExtendedSetup::new()),
+        Box::new(Subproblem3Setup::new()),
     ];
 
     for mut setup in setups {
@@ -33,6 +34,7 @@ fn run_tests_ls() {
     let setups: Vec<Box<dyn Setup>> = vec![
         Box::new(Subproblem1Setup::new()),
         Box::new(Subproblem2Setup::new()),
+        Box::new(Subproblem3Setup::new()),
     ];
 
     for mut setup in setups {

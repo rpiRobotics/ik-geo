@@ -7,11 +7,13 @@ use {
             random_norm_vector3
         },
 
-        subproblems::{ SolutionSet2, subproblem1, subproblem2, subproblem2extended }
+        subproblems::{ SolutionSet2, subproblem1, subproblem2, subproblem2extended, subproblem3 }
     },
 
     nalgebra::Vector3,
 };
+
+const DELTA: f64 = 1e-12;
 
 /// An interface for setting up subproblem testing. Resposible for generating parameters, running
 /// the function, and calculating data such as the error.
@@ -59,6 +61,15 @@ pub struct Subproblem2ExtendedSetup {
     theta2: f64,
 }
 
+pub struct Subproblem3Setup {
+    p1: Vector3<f64>,
+    p2: Vector3<f64>,
+    k: Vector3<f64>,
+    d: f64,
+
+    theta: SolutionSet2<f64>,
+}
+
 impl Subproblem1Setup {
     pub fn new() -> Self {
         Self {
@@ -88,7 +99,7 @@ impl Subproblem2Setup {
         }
     }
 
-    fn calculate_error(&self, theta1: &Vec<f64>, theta2: &Vec<f64>) -> f64 {
+    fn calculate_error(&self, theta1: &[f64], theta2: &[f64]) -> f64 {
         theta1.iter()
             .zip(theta2.iter())
             .map(|(&t1, &t2)| {
@@ -113,6 +124,28 @@ impl Subproblem2ExtendedSetup {
     }
 }
 
+impl Subproblem3Setup {
+    pub fn new() -> Self {
+        Self {
+            p1: Vector3::zeros(),
+            p2: Vector3::zeros(),
+            k: Vector3::zeros(),
+            d: 0.0,
+
+            theta: SolutionSet2::One(0.0),
+        }
+    }
+
+    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
+        theta
+            .iter()
+            .map(|&t| {
+                ((self.p2 - rot(self.k, t) * self.p1).norm() - self.d).abs()
+            })
+            .sum()
+    }
+}
+
 impl Setup for Subproblem1Setup {
     fn setup(&mut self) {
         self.p1 = random_vector3();
@@ -134,8 +167,6 @@ impl Setup for Subproblem1Setup {
     }
 
     fn is_at_local_min(&self) -> bool {
-        const DELTA: f64 = 1e-12;
-
         let error = self.error();
         let error_check = error - DELTA;
 
@@ -185,8 +216,6 @@ impl Setup for Subproblem2Setup {
     }
 
     fn is_at_local_min(&self) -> bool {
-        const DELTA: f64 = 1e-12;
-
         let error = self.error();
         let error_check = error - DELTA;
 
@@ -196,7 +225,7 @@ impl Setup for Subproblem2Setup {
             for j in 0..solutions[i].len() {
                 for sign in [-1.0, 1.0] {
                     let solution_prev = solutions[i][j];
-                    solutions[i][j] += sign;
+                    solutions[i][j] += sign * DELTA;
 
                     if self.calculate_error(&solutions[0], &solutions[1]) < error_check {
                         return false;
@@ -247,5 +276,60 @@ impl Setup for Subproblem2ExtendedSetup {
 
     fn name(&self) -> &'static str {
         "Subproblem 2 Ex"
+    }
+}
+
+impl Setup for Subproblem3Setup {
+    fn setup(&mut self) {
+        let theta = random_angle();
+
+        self.p1 = random_vector3();
+        self.p2 = random_vector3();
+        self.k = random_norm_vector3();
+        self.theta = SolutionSet2::One(theta);
+
+        self.d = (self.p2 - rot(self.k, theta) * self.p1).norm();
+    }
+
+    fn setup_ls(&mut self) {
+        self.p1 = random_vector3();
+        self.p2 = random_vector3();
+        self.k = random_norm_vector3();
+        self.d = fastrand::f64();
+        self.theta = SolutionSet2::One(random_angle());
+    }
+
+    fn run(&mut self) {
+        (self.theta, _) = subproblem3(&self.p1, &self.p2, &self.k, self.d);
+    }
+
+    fn error(&self) -> f64 {
+        self.calculate_error(&self.theta.get_all())
+    }
+
+    fn is_at_local_min(&self) -> bool {
+        let error = self.error();
+        let error_check = error - DELTA;
+
+        let mut solution = self.theta.get_all();
+
+        for i in 0..solution.len() {
+            for sign in [-1.0, 1.0] {
+                let solution_prev = solution[i];
+                solution[i] += sign * DELTA;
+
+                if self.calculate_error(&solution) < error_check {
+                    return false;
+                }
+
+                solution[i] = solution_prev;
+            }
+        }
+
+        true
+    }
+
+    fn name(&self) -> &'static str {
+        "Subproblem 3"
     }
 }
