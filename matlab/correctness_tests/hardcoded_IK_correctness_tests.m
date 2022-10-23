@@ -1,3 +1,6 @@
+% Check correctness of IK when kinematics parameters are hardcoded
+
+
 % setup = hardcoded_IK_setups.yumi_fixed_q3;
 % setup = hardcoded_IK_setups.RRC_fixed_q6;
 % setup = hardcoded_IK_setups.IRB_6640;
@@ -6,16 +9,12 @@
 % setup = hardcoded_IK_setups.spherical_bot;
 setup = hardcoded_IK_setups.KUKA_R800_fixed_q3;
 
-
 [P, S_given] = setup.setup();
 
 setup.error(P,S_given)
 
  S = setup.run(P);
 % S = setup.run_mex(P);
-
-
-
 
 [e, e_R, e_T] = setup.error(P,S);
 S.is_LS

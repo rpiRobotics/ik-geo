@@ -1,11 +1,12 @@
-plot_1d(subproblem_setups.sp_1())
+% Plot a graph of error vs theta for each least-squeares subproblem
+% Also plot the subproblem solution, which should be at the minimum(s)
 
+%%
+plot_1d(subproblem_setups.sp_1())
 %%
 plot_2d(subproblem_setups.sp_2())
-
 %%
 plot_1d(subproblem_setups.sp_3())
-
 %%
 plot_1d(subproblem_setups.sp_4())
 

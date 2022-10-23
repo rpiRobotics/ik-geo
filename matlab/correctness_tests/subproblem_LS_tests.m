@@ -1,11 +1,12 @@
+% Check correctness of subproblem solutions when exact solution may not exist
+% (i.e. least squares solutions)
+
 setups = {
     subproblem_setups.sp_1
     subproblem_setups.sp_2
     subproblem_setups.sp_3
     subproblem_setups.sp_4
 };
-
-
 
 at_mins = NaN(size(setups));
 
@@ -27,7 +28,6 @@ at_mins
 
 function at_min = is_at_min(P,S,setup)
 DELTA  = 1e-12;
-
 
 e_0 = setup.error(P,S);
 

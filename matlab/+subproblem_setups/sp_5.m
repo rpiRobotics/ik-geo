@@ -33,6 +33,7 @@ classdef sp_5
         end
 
         function e = error(P, S)
+            e = NaN;
             for i = 1:length(S.theta1)
                 e_i = norm(P.p0 + rot(P.k1,S.theta1(i))*P.p1 - rot(P.k2,S.theta2(i))*(P.p2+rot(P.k3,S.theta3(i))*P.p3));
                 if i == 1
