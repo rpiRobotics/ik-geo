@@ -18,7 +18,7 @@ classdef IK_2_intersecting
         end
 
         function S = run_mex(P)
-            [S.Q, S.is_LS] = IK.IK_2_intersecting(P.R, P.T, P.kin);
+            [S.Q, S.is_LS] = IK.IK_2_intersecting_mex(P.R, P.T, P.kin);
         end
 
         function generate_mex()
