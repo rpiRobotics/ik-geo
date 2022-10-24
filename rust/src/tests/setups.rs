@@ -1,15 +1,20 @@
-use crate::subproblems::subproblem4;
-
 use {
     crate::{
         tests::auxiliary::{
             random_vector3,
+            random_norm_vector3,
             random_angle,
             rot,
-            random_norm_vector3
         },
 
-        subproblems::{ SolutionSet2, subproblem1, subproblem2, subproblem2extended, subproblem3 }
+        subproblems::{
+            SolutionSet2,
+            subproblem1,
+            subproblem2,
+            subproblem2extended,
+            subproblem3,
+            subproblem4,
+        },
     },
 
     nalgebra::Vector3,
