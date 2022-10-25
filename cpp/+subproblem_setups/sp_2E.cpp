@@ -1,3 +1,8 @@
+//---------------------------------------------------------------//
+// Name: sp_2E.cpp
+// Author: Runbin Chen
+// Date: 10/25/2022
+//---------------------------------------------------------------//
 #include <iostream>
 #include <eigen3/Eigen/Dense>
 #include "../rand_cpp.h"
