@@ -74,12 +74,13 @@ int main(int argc, char* argv[]) {
 
 	int num = 0;
 
+	// use the command "-n <#>" to determine the number of times
 	for (int arg = 1; arg < argc; arg ++ ) {
 		if (argv[arg] == std::string("-n")) {
 			num = atoi(argv[ ++ arg]);
 		}
 	}
-
+	
 	clock_t begin = clock();
 
 	for (int i = 0; i < num; i ++ ) {
