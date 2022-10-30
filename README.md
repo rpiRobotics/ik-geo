@@ -37,29 +37,12 @@ $$\begin{cases}
 \end{cases}$$
 
 
+
 ## Folder breakdown
-`+IK`: Inverse kinematics solutions for different robot types
+`matlab`: MATLAB implementation
 
-`+IK_setups`: Test classes for IK solutions
+`cpp`: C++ implementation (Work in progress)
 
-`+subproblem`: Subproblem solutions
+`rust`: Rust implementation (Work in progress)
 
-`+subproblem_setups`: Test classes for subproblem solutions
-
-`rand_helpers`: Functions to help generate random test cases
-
-`robot_IK_helpers`: Functions to help with robot IK (and forward kinematics)
-
-`robot_examples`: Inverse kinematics solutions for specific robots
-
-`correctness_tests`: Tests to verify the correctness of subproblem and IK solutions
-
-`timing_tests`: Measures the runtime of subproblem and IK solutions
-
-`unit_tests`: Testing for smaller helper functions
-
-## Dependencies
-
-[general-robotics-toolbox](https://github.com/rpiRobotics/general-robotics-toolbox) for rotation matrix, forward kinematics, Jacobian
-
-[matlab-diagrams](https://github.com/aelias36/matlab-diagrams) for a few visualizations
+`python`: Python implementation (Work in progress)

@@ -80,6 +80,15 @@ pub struct Subproblem4Setup {
     theta: SolutionSet2<f64>,
 }
 
+pub struct Subproblem3Setup {
+    p1: Vector3<f64>,
+    p2: Vector3<f64>,
+    k: Vector3<f64>,
+    d: f64,
+
+    theta: SolutionSet2<f64>,
+}
+
 impl Subproblem1Setup {
     pub fn new() -> Self {
         Self {
