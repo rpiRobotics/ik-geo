@@ -1,6 +1,6 @@
 //---------------------------------------------------------------//
 // Name: sp_1.h
-// Author: Ashton Ropp, Runbin Chen
+// Author: Ashton Ropp, Runbin Chen, Amar Maksumic
 // Date: 10/15/2022
 // Purpose: Port of the subproblem/sp_1.m file
 //---------------------------------------------------------------//
@@ -39,7 +39,7 @@ int main() {
     clock_t end = clock();
     solve_time += (end - begin);
 	}
-  
+
   double timeSec = solve_time / static_cast<double>( CLOCKS_PER_SEC );
 
   std::cout << "===== \n time (seconds): " << timeSec << std::endl;

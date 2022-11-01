@@ -1,8 +1,8 @@
 //---------------------------------------------------------------//
-// Name: sp_1.h
-// Author: Ashton Ropp, Runbin Chen
-// Date: 10/15/2022
-// Purpose: Port of the subproblem/sp_1.m file
+// Name: sp_2.h
+// Author: Amar Maksumic
+// Date: 11/01/2022
+// Purpose: Port of the subproblem/sp_2.m file
 //---------------------------------------------------------------//
 
 #include <iostream>
