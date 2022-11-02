@@ -26,6 +26,7 @@ classdef IK_3_parallel_2_intersecting
 
             P.kin.P = rand_vec(7);
             P.kin.P(:,6) = 0;
+            P.kin.P(:,5) = 0; % Must have a spherical wrist
 
             P.kin.P(:,end) = 0; % Set task frame at the wrist
             % h_2 _|_ p_12+p_23+p_34+p_45

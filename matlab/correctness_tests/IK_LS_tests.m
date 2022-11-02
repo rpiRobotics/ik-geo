@@ -20,7 +20,7 @@ q = S.Q(:,idx_min_error)
 
 %% Check for when rotation and position decoupled
 J = robotjacobian(P.kin, q);
-[R, T] = fwdkin(P.kin, q);
+[R, T] = fwdkin(P.kin, q); 
 err_vec = P.T - T;
 err_vec = err_vec / norm(err_vec);
 J'*[0;0;0; err_vec]
