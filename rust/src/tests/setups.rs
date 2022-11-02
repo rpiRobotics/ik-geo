@@ -1,3 +1,5 @@
+use crate::subproblems::subproblem4;
+
 use {
     crate::{
         tests::auxiliary::{
@@ -59,6 +61,23 @@ pub struct Subproblem2ExtendedSetup {
 
     theta1: f64,
     theta2: f64,
+}
+pub struct Subproblem3Setup {
+    p1: Vector3<f64>,
+    p2: Vector3<f64>,
+    k: Vector3<f64>,
+    d: f64,
+
+    theta: SolutionSet2<f64>,
+}
+
+pub struct Subproblem4Setup {
+    h: Vector3<f64>,
+    p: Vector3<f64>,
+    k: Vector3<f64>,
+    d: f64,
+
+    theta: SolutionSet2<f64>,
 }
 
 pub struct Subproblem3Setup {
@@ -141,6 +160,28 @@ impl Subproblem3Setup {
             .iter()
             .map(|&t| {
                 ((self.p2 - rot(self.k, t) * self.p1).norm() - self.d).abs()
+            })
+            .sum()
+    }
+}
+
+impl Subproblem4Setup {
+    pub fn new() -> Self {
+        Self {
+            h: Vector3::zeros(),
+            p: Vector3::zeros(),
+            k: Vector3::zeros(),
+            d: 0.0,
+
+            theta: SolutionSet2::One(0.0),
+        }
+    }
+
+    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
+        theta
+            .iter()
+            .map(|&t| {
+                ((self.h.transpose() * rot(self.k, t) * self.p)[0] - self.d).abs()
             })
             .sum()
     }
@@ -331,5 +372,60 @@ impl Setup for Subproblem3Setup {
 
     fn name(&self) -> &'static str {
         "Subproblem 3"
+    }
+}
+
+impl Setup for Subproblem4Setup {
+    fn setup(&mut self) {
+        let theta = random_angle();
+
+        self.h = random_norm_vector3();
+        self.p = random_vector3();
+        self.k = random_norm_vector3();
+        self.theta = SolutionSet2::One(theta);
+
+        self.d = (self.h.transpose() * rot(self.k, theta) * self.p)[0];
+    }
+
+    fn setup_ls(&mut self) {
+        self.h = random_norm_vector3();
+        self.p = random_vector3();
+        self.k = random_norm_vector3();
+        self.d = fastrand::f64();
+        self.theta = SolutionSet2::One(random_angle());
+    }
+
+    fn run(&mut self) {
+        (self.theta, _) = subproblem4(&self.h, &self.p, &self.k, self.d);
+    }
+
+    fn error(&self) -> f64 {
+        self.calculate_error(&self.theta.get_all())
+    }
+
+    fn is_at_local_min(&self) -> bool {
+        let error = self.error();
+        let error_check = error - DELTA;
+
+        let mut solution = self.theta.get_all();
+
+        for i in 0..solution.len() {
+            for sign in [-1.0, 1.0] {
+                let solution_prev = solution[i];
+                solution[i] += sign * DELTA;
+
+                if self.calculate_error(&solution) < error_check {
+                    return false;
+                }
+
+                solution[i] = solution_prev;
+            }
+        }
+
+        true
+    }
+
+    fn name(&self) -> &'static str {
+        "Subproblem 4"
     }
 }

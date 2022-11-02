@@ -188,3 +188,39 @@ pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f6
         sc_2[0].atan2(sc_2[1]),
     ), false)
 }
+
+/**
+Solves for theta where h' * rot(k, theta) * p = d if possible.
+If not minimizes | h' * rot(k, theta) * p - d |.
+Also returns a boolean of whether or not theta is a least-squares solution.
+ */
+pub fn subproblem4(h: &Vector3<f64>, p: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
+    let a_11 = k.cross(p);
+    let a_1 = Matrix3x2::from_columns(&[a_11, -k.cross(&a_11)]);
+    let a = h.transpose() * a_1;
+
+    let b = d - (h.transpose() * k * k.transpose() * p)[0];
+
+    let norm_a_2 = a.norm_squared();
+
+    let x_ls = a_1.transpose() * h * b;
+
+    if norm_a_2 > b * b {
+        let xi = (norm_a_2 - b * b).sqrt();
+        let a_perp_tilde = Vector2::new(a[1], -a[0]);
+
+        let sc_1 = x_ls + xi * a_perp_tilde;
+        let sc_2 = x_ls - xi * a_perp_tilde;
+
+        (
+            SolutionSet2::Two(sc_1[0].atan2(sc_1[1]), sc_2[0].atan2(sc_2[1])),
+            false,
+        )
+    }
+    else {
+        (
+            SolutionSet2::One(x_ls[0].atan2(x_ls[1])),
+            true,
+        )
+    }
+}
