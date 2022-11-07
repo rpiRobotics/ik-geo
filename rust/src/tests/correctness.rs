@@ -5,20 +5,22 @@ use super::setups::{
     Subproblem2ExtendedSetup,
     Subproblem3Setup,
     Subproblem4Setup,
+    Subproblem5Setup,
 };
 
 const TEST_ITERATIONS: usize = 1000;
 
 #[test]
 fn run_tests() {
-    const ERROR_THRESHOLD: f64 = 1e-9;
+    const ERROR_THRESHOLD: f64 = 1e-5;
 
     let setups: Vec<Box<dyn Setup>> = vec![
-        Box::new(Subproblem1Setup::new()),
-        Box::new(Subproblem2Setup::new()),
-        Box::new(Subproblem2ExtendedSetup::new()),
-        Box::new(Subproblem3Setup::new()),
+        Box::new(Subproblem5Setup::new()),
         Box::new(Subproblem4Setup::new()),
+        Box::new(Subproblem3Setup::new()),
+        Box::new(Subproblem2ExtendedSetup::new()),
+        Box::new(Subproblem2Setup::new()),
+        Box::new(Subproblem1Setup::new()),
     ];
 
     for mut setup in setups {

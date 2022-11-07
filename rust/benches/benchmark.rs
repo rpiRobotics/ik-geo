@@ -1,3 +1,5 @@
+use linear_subproblem_solutions_rust::subproblems::subproblem5;
+
 use {
     linear_subproblem_solutions_rust::subproblems::{
         subproblem1,
@@ -99,6 +101,26 @@ pub fn subproblem4benchmark(c: &mut Criterion) {
     )));
 }
 
+pub fn subproblem5benchmark(c: &mut Criterion) {
+    let p0 = random_vector3();
+    let p1 = random_vector3();
+    let p2 = random_vector3();
+    let p3 = random_vector3();
+    let k1 = random_norm_vector3();
+    let k2 = random_norm_vector3();
+    let k3 = random_norm_vector3();
+
+    c.bench_function("Subproblem 5 Benchmark", |b| b.iter(|| subproblem5(
+        black_box(&p0),
+        black_box(&p1),
+        black_box(&p2),
+        black_box(&p3),
+        black_box(&k1),
+        black_box(&k2),
+        black_box(&k3),
+    )));
+}
+
 criterion_group!(
     benches,
     subproblem1benchmark,
@@ -106,6 +128,7 @@ criterion_group!(
     subproblem2extended_benchmark,
     subproblem3benchmark,
     subproblem4benchmark,
+    subproblem5benchmark,
 );
 
 criterion_main!(benches);
