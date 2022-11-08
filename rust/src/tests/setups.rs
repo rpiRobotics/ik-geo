@@ -1,3 +1,5 @@
+use crate::subproblems::subproblem4;
+
 use {
     crate::{
         tests::auxiliary::{
@@ -68,6 +70,7 @@ pub struct Subproblem2ExtendedSetup {
     theta1: f64,
     theta2: f64,
 }
+
 pub struct Subproblem3Setup {
     p1: Vector3<f64>,
     p2: Vector3<f64>,
@@ -217,6 +220,28 @@ impl Subproblem5Setup {
             theta2: SolutionSet4::One(0.0),
             theta3: SolutionSet4::One(0.0),
         }
+    }
+}
+
+impl Subproblem4Setup {
+    pub fn new() -> Self {
+        Self {
+            h: Vector3::zeros(),
+            p: Vector3::zeros(),
+            k: Vector3::zeros(),
+            d: 0.0,
+
+            theta: SolutionSet2::One(0.0),
+        }
+    }
+
+    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
+        theta
+            .iter()
+            .map(|&t| {
+                ((self.h.transpose() * rot(self.k, t) * self.p)[0] - self.d).abs()
+            })
+            .sum()
     }
 }
 
