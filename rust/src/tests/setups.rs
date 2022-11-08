@@ -496,6 +496,10 @@ impl Setup for Subproblem5Setup {
         let theta1 = self.theta1.get_all();
         let len = theta1.len();
 
+        if len == 0 {
+            return 0.0;
+        }
+
         theta1
             .into_iter()
             .zip(self.theta2
