@@ -25,15 +25,14 @@ int main() {
 
   std:: cin >> op_input;
 
-  if (ls_input == 1) {
-		sp1_setup(p1, p2, k, theta);
-  } else {
-		sp1_setup_LS(p1, p2, k, theta);
-  }
-
   double solve_time = 0;
 
 	for (int i = 0; i < op_input; i++) {
+    if (ls_input == 1) {
+      sp1_setup(p1, p2, k, theta);
+    } else {
+      sp1_setup_LS(p1, p2, k, theta);
+    }
     clock_t begin = clock();
   	sp1_run(p1, p2, k, theta);
     clock_t end = clock();

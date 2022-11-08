@@ -23,17 +23,18 @@ int main() {
 
   std:: cin >> op_input;
 
-  if (ls_input == 1) {
-		sp2_setup(p1, p2, k1, k2, theta1, theta2);
-  } else {
-		sp2_setup_LS(p1, p2, k1, k2, theta1, theta2);
-  }
-
   double solve_time = 0;
 
-	for (int i = 0; i < op_input; i++) {
+	for (int i = 0; i < (op_input/100); i++) {
+    if (ls_input == 1) {
+      sp2_setup(p1, p2, k1, k2, theta1, theta2);
+    } else {
+      sp2_setup_LS(p1, p2, k1, k2, theta1, theta2);
+    }
     clock_t begin = clock();
-  	sp2_run(p1, p2, k1, k2, theta1, theta2);
+    for (int j = 0; j < 100; j++) {
+  	  sp2_run(p1, p2, k1, k2, theta1, theta2);
+    }
     clock_t end = clock();
     solve_time += (end - begin);
 	}

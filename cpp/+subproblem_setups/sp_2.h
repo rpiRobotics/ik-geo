@@ -62,9 +62,7 @@ bool sp2_run(Eigen::Vector3d& p1, Eigen::Vector3d& p2,
 	Eigen::Matrix<double, 4, 1> A_perp_tilde;
 	Eigen::Matrix<double, 4, 3> temp;
 	temp << pinv_A1, pinv_A2;
-  std::cout << "1" << std::endl;
 	A_perp_tilde = temp * n_sym;
-  std::cout << "2" << std::endl;
 
   if (x_ls.block<2, 1>(0,0).norm() < 1) {
     double xi = sqrt(1 - pow(x_ls.block<2, 1>(0,0).norm(), 2)) / A_perp_tilde.block<2, 1>(0, 0).norm();
