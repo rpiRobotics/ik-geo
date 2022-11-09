@@ -18,8 +18,11 @@
     use subproblems::nalgebra as na;
     ```
 
-## Testing
+### Testing
 
-1. Clone the rust directory
-2. Run `cargo test`\
+Run `cargo test`
 Run `cargo test -- --nocapture` for diagnostic info
+
+### Benchmarking
+
+Run `cargo bench`

@@ -4,12 +4,21 @@ use {
     crate::{
         tests::auxiliary::{
             random_vector3,
+            random_norm_vector3,
             random_angle,
             rot,
-            random_norm_vector3
         },
 
-        subproblems::{ SolutionSet2, subproblem1, subproblem2, subproblem2extended, subproblem3 }
+        subproblems::{
+            subproblem1,
+            subproblem2,
+            subproblem2extended,
+            subproblem3,
+            subproblem4,
+            subproblem5,
+        },
+
+        solutionset::{ SolutionSet2, SolutionSet4 },
     },
 
     nalgebra::Vector3,
@@ -41,7 +50,6 @@ pub struct Subproblem1Setup {
     theta: f64,
 }
 
-#[derive(Clone)]
 pub struct Subproblem2Setup {
     p1: Vector3<f64>,
     p2: Vector3<f64>,
@@ -62,6 +70,7 @@ pub struct Subproblem2ExtendedSetup {
     theta1: f64,
     theta2: f64,
 }
+
 pub struct Subproblem3Setup {
     p1: Vector3<f64>,
     p2: Vector3<f64>,
@@ -80,13 +89,19 @@ pub struct Subproblem4Setup {
     theta: SolutionSet2<f64>,
 }
 
-pub struct Subproblem3Setup {
+pub struct Subproblem5Setup {
+    p0: Vector3<f64>,
     p1: Vector3<f64>,
     p2: Vector3<f64>,
-    k: Vector3<f64>,
-    d: f64,
+    p3: Vector3<f64>,
 
-    theta: SolutionSet2<f64>,
+    k1: Vector3<f64>,
+    k2: Vector3<f64>,
+    k3: Vector3<f64>,
+
+    theta1: SolutionSet4<f64>,
+    theta2: SolutionSet4<f64>,
+    theta3: SolutionSet4<f64>,
 }
 
 impl Subproblem1Setup {
@@ -119,12 +134,14 @@ impl Subproblem2Setup {
     }
 
     fn calculate_error(&self, theta1: &[f64], theta2: &[f64]) -> f64 {
+        assert!(theta1.len() == theta2.len());
+
         theta1.iter()
             .zip(theta2.iter())
             .map(|(&t1, &t2)| {
                 (rot(self.k2, t2) * self.p2 - rot(self.k1,t1) * self.p1).norm()
             })
-            .sum()
+            .sum::<f64>() / theta1.len() as f64
     }
 }
 
@@ -155,13 +172,54 @@ impl Subproblem3Setup {
         }
     }
 
-    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
+    fn calculate_error(&self, theta: &[f64]) -> f64 {
         theta
             .iter()
             .map(|&t| {
                 ((self.p2 - rot(self.k, t) * self.p1).norm() - self.d).abs()
             })
-            .sum()
+            .sum::<f64>() / theta.len() as f64
+    }
+}
+
+impl Subproblem4Setup {
+    pub fn new() -> Self {
+        Self {
+            h: Vector3::zeros(),
+            p: Vector3::zeros(),
+            k: Vector3::zeros(),
+            d: 0.0,
+
+            theta: SolutionSet2::One(0.0),
+        }
+    }
+
+    fn calculate_error(&self, theta: &[f64]) -> f64 {
+        theta
+            .iter()
+            .map(|&t| {
+                ((self.h.transpose() * rot(self.k, t) * self.p)[0] - self.d).abs()
+            })
+            .sum::<f64>() / theta.len() as f64
+    }
+}
+
+impl Subproblem5Setup {
+    pub fn new() -> Self {
+        Self {
+            p0: Vector3::zeros(),
+            p1: Vector3::zeros(),
+            p2: Vector3::zeros(),
+            p3: Vector3::zeros(),
+
+            k1: Vector3::zeros(),
+            k2: Vector3::zeros(),
+            k3: Vector3::zeros(),
+
+            theta1: SolutionSet4::One(0.0),
+            theta2: SolutionSet4::One(0.0),
+            theta3: SolutionSet4::One(0.0),
+        }
     }
 }
 
@@ -427,5 +485,65 @@ impl Setup for Subproblem4Setup {
 
     fn name(&self) -> &'static str {
         "Subproblem 4"
+    }
+}
+
+impl Setup for Subproblem5Setup {
+    fn setup(&mut self) {
+        let theta1 = random_angle();
+        let theta2 = random_angle();
+        let theta3 = random_angle();
+
+        self.p1 = random_vector3();
+        self.p2 = random_vector3();
+        self.p3 = random_vector3();
+
+        self.k1 = random_norm_vector3();
+        self.k2 = random_norm_vector3();
+        self.k3 = random_norm_vector3();
+
+        self.theta1 = SolutionSet4::One(theta1);
+        self.theta2 = SolutionSet4::One(theta2);
+        self.theta3 = SolutionSet4::One(theta3);
+
+        self.p0 = -(rot(self.k1, theta1) * self.p1 - rot(self.k2, theta2) * (self.p2 + rot(self.k3, theta3) * self.p3));
+    }
+
+    fn setup_ls(&mut self) {
+        unimplemented!()
+    }
+
+    fn run(&mut self) {
+        (self.theta1, self.theta2, self.theta3) = subproblem5(&self.p0, &self.p1, &self.p2, &self.p3, &self.k1, &self.k2, &self.k3);
+    }
+
+    fn error(&self) -> f64 {
+        let theta1 = self.theta1.get_all();
+        let len = theta1.len();
+
+        if len == 0 {
+            return 0.0;
+        }
+
+        theta1
+            .into_iter()
+            .zip(self.theta2
+                .get_all()
+                .into_iter())
+            .zip(self.theta3
+                .get_all()
+                .into_iter())
+            .map(|((t1, t2), t3)| {
+                (self.p0 + rot(self.k1, t1) * self.p1 - rot(self.k2, t2) * (self.p2 + rot(self.k3, t3) * self.p3)).norm()
+            })
+            .sum::<f64>() / len as f64
+    }
+
+    fn is_at_local_min(&self) -> bool {
+        unimplemented!()
+    }
+
+    fn name(&self) -> &'static str {
+        "Subproblem 5"
     }
 }
