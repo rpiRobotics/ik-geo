@@ -1,6 +1,6 @@
 use {
     crate::{
-        tests::auxiliary::{
+        auxiliary::{
             random_vector3,
             random_norm_vector3,
             random_angle,
