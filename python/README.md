@@ -10,6 +10,7 @@ In MATLAB:\
    k1=[0.53432959; 0.73260445; 0.42164275]\
    k2=[0.89871158; 0.33336884; 0.2849258 ]\
 \
+Todo:\
 Add timings\
 Add usage guide\
 Check validity of is_LS solutions 
