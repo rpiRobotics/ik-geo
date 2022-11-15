@@ -1,10 +1,11 @@
-import libs.sp1_lib as sp1
+import libs.sp2_lib as sp2
 import time as time
 
 #Helper variables
-p1 = sp1.np.array([0., 0., 0.])
-p2 = sp1.np.array([0., 0., 0.])
-k  = sp1.np.array([0., 0., 0.])
+p1 = sp2.np.array([1., 2., 3.])
+p2 = sp2.np.array([1., 2., 3.])
+k1 = sp2.np.array([1., 2., 3.])
+k2 = sp2.np.array([1., 2., 3.])
 
 #Begin solving
 LS_inp = input("Use a least-squares input? y(yes)/n(no): ")
@@ -21,30 +22,29 @@ time1 = 0    #Start time
 time2 = 0    #End time
 
 #Choose which procedure to run based on input
-if(LS_inp == "0"):
+if(LS_inp == "n"):
    for i in range(numTests):
       #Perform setup
-      theta = sp1.rand.rand_angle()
-      sp1.sp1_setup(p1, p2, k, theta)
+      sp2.sp2_setup(p1, p2, k1, k2)
       time1 = time.perf_counter_ns()
 
       #Perform calculations
-      theta, is_LS =sp1.sp1_run(p1, p2, k)
+      theta1, theta2, is_LS = sp2.sp2_run(p1, p2, k1, k2)
       time2 = time.perf_counter_ns()
       timeSum += time2-time1 #Collect time data
-      errorSum += sp1.sp1_error(p1, p2, k, theta)
+      errorSum += sp2.sp2_error(p1, p2, k1, k2, theta1, theta2)
 
 else:
    for i in range(numTests):
       #Perform setup
-      sp1.sp1_setup_LS(p1, p2, k)
+      sp2.sp2_setup_LS(p1, p2, k1, k2)
       time1 = time.perf_counter_ns()
 
       #Perform calculations
-      theta, is_LS = sp1.sp1_run(p1, p2, k)
+      theta1, theta2, is_LS = sp2.sp2_run(p1, p2, k1, k2)
       time2 = time.perf_counter_ns()
       timeSum += time2-time1 #Collect time data
-      errorSum += sp1.sp1_error(p1, p2, k, theta)
+      errorSum += sp2.sp2_error(p1, p2, k1, k2, theta1, theta2)
 
 #Print results
 print("Results: (LS input: {}, Number of Tests: {})\r\n".format(LS_inp, numTests) + "-"*50)

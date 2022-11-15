@@ -31,3 +31,4 @@ def rand_perp_normal_vec(inp):
 def rot(k, theta):
    k = k/np.linalg.norm(k,2)
    return np.eye(3) + math.sin(theta)*hat(k)+(1-math.cos(theta))*hat(k)@hat(k)
+   

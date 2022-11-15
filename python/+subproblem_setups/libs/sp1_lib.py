@@ -2,8 +2,11 @@
 from math import atan2
 import numpy as np
  
-#Set path and then import
-import libs.rand_py as rand
+#Handle rand_py import
+if __name__ == "__main__":
+   import rand_py as rand
+else:
+   import libs.rand_py as rand
 
 #Inputs: 3x1 numpy arrays p1, p2, k
 #Python does not pass by reference like C++, must manipulate without assignment
@@ -29,9 +32,10 @@ def sp1_run(p1, p2, k):
    A = np.block([[KxP], [-np.cross(k, KxP)]])
    x = np.dot(A, p2)
    
-   theta = atan2(x[0], x[1])
+   #theta = atan2(x[0], x[1])
 
-   return theta, abs(np.linalg.norm(p1, 2) - np.linalg.norm(p2, 2)) > 1e-8 or abs(np.dot(k,p1) - np.dot(k,p2)) > 1e-8
+   return atan2(x[0], x[1]), abs(np.linalg.norm(p1, 2) - np.linalg.norm(p2, 2)) > 1e-8 or abs(np.dot(k,p1) - np.dot(k,p2)) > 1e-8
+
 
 #Inputs: 3x1 numpy arrays p1, p2, k
 #Python does not pass by reference like C++, must manipulate without assignment
@@ -52,6 +56,7 @@ def sp1_error(p1, p2, k, theta):
    return np.linalg.norm(p2 - rand.rot(k, theta)*p1, 2)
 
 
+#Testing
 if __name__ == "__main__":
    print("Starting arrays \r\n")
    p1 = np.array([1., 2., 3.])
