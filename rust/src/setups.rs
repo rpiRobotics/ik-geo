@@ -70,6 +70,7 @@ pub struct Subproblem2ExtendedSetup {
     theta2: f64,
 }
 
+
 pub struct Subproblem3Setup {
     p1: Vector3<f64>,
     p2: Vector3<f64>,
