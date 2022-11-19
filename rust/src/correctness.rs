@@ -6,6 +6,7 @@ use super::setups::{
     Subproblem3Setup,
     Subproblem4Setup,
     Subproblem5Setup,
+    Subproblem6Setup,
 };
 
 const TEST_ITERATIONS: usize = 1000;
@@ -15,6 +16,7 @@ fn run_tests() {
     const ERROR_THRESHOLD: f64 = 1e-5;
 
     let setups: Vec<Box<dyn Setup>> = vec![
+        Box::new(Subproblem6Setup::new()),
         Box::new(Subproblem5Setup::new()),
         Box::new(Subproblem4Setup::new()),
         Box::new(Subproblem3Setup::new()),

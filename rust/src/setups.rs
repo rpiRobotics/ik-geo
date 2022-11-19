@@ -1,8 +1,6 @@
-use crate::subproblems::subproblem4;
-
 use {
     crate::{
-        tests::auxiliary::{
+        auxiliary::{
             random_vector3,
             random_norm_vector3,
             random_angle,
@@ -16,12 +14,13 @@ use {
             subproblem3,
             subproblem4,
             subproblem5,
+            subproblem6,
         },
 
         solutionset::{ SolutionSet2, SolutionSet4 },
     },
 
-    nalgebra::Vector3,
+    nalgebra::{ Vector3, Vector2 },
 };
 
 const DELTA: f64 = 1e-12;
@@ -71,6 +70,7 @@ pub struct Subproblem2ExtendedSetup {
     theta2: f64,
 }
 
+
 pub struct Subproblem3Setup {
     p1: Vector3<f64>,
     p2: Vector3<f64>,
@@ -102,6 +102,18 @@ pub struct Subproblem5Setup {
     theta1: SolutionSet4<f64>,
     theta2: SolutionSet4<f64>,
     theta3: SolutionSet4<f64>,
+}
+
+pub struct Subproblem6Setup {
+    h: [Vector3<f64>; 4],
+    k: [Vector3<f64>; 4],
+    p: [Vector3<f64>; 4],
+
+    d1: f64,
+    d2: f64,
+
+    theta1: SolutionSet4<f64>,
+    theta2: SolutionSet4<f64>,
 }
 
 impl Subproblem1Setup {
@@ -172,13 +184,13 @@ impl Subproblem3Setup {
         }
     }
 
-    fn calculate_error(&self, theta: &[f64]) -> f64 {
+    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
         theta
             .iter()
             .map(|&t| {
                 ((self.p2 - rot(self.k, t) * self.p1).norm() - self.d).abs()
             })
-            .sum::<f64>() / theta.len() as f64
+            .sum()
     }
 }
 
@@ -223,25 +235,19 @@ impl Subproblem5Setup {
     }
 }
 
-impl Subproblem4Setup {
+impl Subproblem6Setup {
     pub fn new() -> Self {
         Self {
-            h: Vector3::zeros(),
-            p: Vector3::zeros(),
-            k: Vector3::zeros(),
-            d: 0.0,
+            h: [Vector3::zeros(); 4],
+            k: [Vector3::zeros(); 4],
+            p: [Vector3::zeros(); 4],
 
-            theta: SolutionSet2::One(0.0),
+            d1: 0.0,
+            d2: 0.0,
+
+            theta1: SolutionSet4::One(0.0),
+            theta2: SolutionSet4::One(0.0),
         }
-    }
-
-    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
-        theta
-            .iter()
-            .map(|&t| {
-                ((self.h.transpose() * rot(self.k, t) * self.p)[0] - self.d).abs()
-            })
-            .sum()
     }
 }
 
@@ -545,5 +551,69 @@ impl Setup for Subproblem5Setup {
 
     fn name(&self) -> &'static str {
         "Subproblem 5"
+    }
+}
+
+impl Setup for Subproblem6Setup {
+    fn setup(&mut self) {
+        let theta1 = random_angle();
+        let theta2 = random_angle();
+
+        self.h = [Vector3::zeros(); 4];
+        self.k = [Vector3::zeros(); 4];
+        self.p = [Vector3::zeros(); 4];
+
+        for (h, (k, p)) in self.h.iter_mut().zip(self.k.iter_mut().zip(self.p.iter_mut())) {
+            *h = random_norm_vector3();
+            *k = random_norm_vector3();
+            *p = random_vector3();
+        }
+
+        self.d1 = (
+            self.h[0].transpose() * rot(self.k[0], theta1) * self.p[0] +
+            self.h[1].transpose() * rot(self.k[1], theta2) * self.p[1]
+        )[0];
+
+        self.d2 = (
+            self.h[2].transpose() * rot(self.k[2], theta1) * self.p[2] +
+            self.h[3].transpose() * rot(self.k[3], theta2) * self.p[3]
+        )[0];
+
+        self.theta1 = SolutionSet4::One(theta1);
+        self.theta2 = SolutionSet4::One(theta2);
+    }
+
+    fn setup_ls(&mut self) {
+        unimplemented!()
+    }
+
+    fn run(&mut self) {
+        (self.theta1, self.theta2) = subproblem6(
+            [&self.h[0], &self.h[1], &self.h[2], &self.h[3]],
+            [&self.k[0], &self.k[1], &self.k[2], &self.k[3]],
+            [&self.p[0], &self.p[1], &self.p[2], &self.p[3]],
+            self.d1,
+            self.d2,
+        );
+    }
+
+    fn error(&self) -> f64 {
+        let theta1 = self.theta1.get_all();
+        let len = theta1.len();
+
+        theta1.into_iter().zip(self.theta2.get_all().iter()).map(|(t1, t2)| {
+            (Vector2::new(
+                (self.h[0].transpose() * rot(self.k[0], t1) * self.p[0] + self.h[1].transpose() * rot(self.k[1], *t2) * self.p[1])[0] - self.d1,
+                (self.h[2].transpose() * rot(self.k[2], t1) * self.p[2] + self.h[3].transpose() * rot(self.k[3], *t2) * self.p[3])[0] - self.d2
+            )).norm()
+        }).sum::<f64>() / len as f64
+    }
+
+    fn is_at_local_min(&self) -> bool {
+        unimplemented!()
+    }
+
+    fn name(&self) -> &'static str {
+        "Subproblem 6"
     }
 }

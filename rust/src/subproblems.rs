@@ -1,12 +1,24 @@
 use {
-    super::solutionset::{ SolutionSet2, SolutionSet4 },
+    super::{
+        solutionset::{ SolutionSet2, SolutionSet4 },
+
+        auxiliary::{
+            vec_self_convolve_2,
+            vec_self_convolve_3,
+            vec_convolve_3,
+            solve_2_ellipse_numeric,
+            null_space_matrix2x4,
+            cone_polynomials,
+            approximate_quartic_roots,
+        },
+    },
 
     nalgebra::{
         Vector2, Vector3, Vector4, Vector5,
-        Matrix, Matrix3, Matrix4, Matrix3x2, Matrix3x4, Matrix4x1, Matrix4x3,
+        Matrix, Matrix3, Matrix2x4, Matrix3x2, Matrix3x4, Matrix4x1, Matrix4x3,
         ArrayStorage, U1, U8,
         Complex, DVector, Matrix2,
-    }
+    },
 };
 
 pub type Vector8<T> = Matrix<T, U8, U1, ArrayStorage<T, 8, 1>>;
@@ -133,9 +145,9 @@ pub fn subproblem2extended(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f6
 }
 
 /**
-Solves for theta where || rot(k, theta) * p1 - p2 || = d if possibble.
-If not, minimizes | || rot(k, theta)*p1 - p2 || - d |.
-Also returns a boolean of whether or not theta is a least-squares solution.
+Solves for `theta` where `|| rot(k, theta) * p1 - p2 || = d` if possibble.
+If not, minimizes `| || rot(k, theta)*p1 - p2 || - d |`.
+Also returns a boolean of whether or not `theta` is a least-squares solution.
 */
 pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
     let kxp = k.cross(p1);
@@ -167,9 +179,9 @@ pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f6
 }
 
 /**
-Solves for theta where h' * rot(k, theta) * p = d if possible.
-If not minimizes | h' * rot(k, theta) * p - d |.
-Also returns a boolean of whether or not theta is a least-squares solution.
+Solves for `theta` where `h' * rot(k, theta) * p = d` if possible.
+If not minimizes `| h' * rot(k, theta) * p - d |`.
+Also returns a boolean of whether or not `theta` is a least-squares solution.
  */
 pub fn subproblem4(h: &Vector3<f64>, p: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
     let a_11 = k.cross(p);
@@ -203,15 +215,13 @@ pub fn subproblem4(h: &Vector3<f64>, p: &Vector3<f64>, k: &Vector3<f64>, d: f64)
 }
 
 /**
-Solves for theta1, theta2, and theta3 where p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * (p2 + rot(k3, theta3) * p3) if possible.
+Solves for `theta1`, `theta2`, and `theta3` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * (p2 + rot(k3, theta3) * p3)` if possible.
 There can be up to 4 solutions.
  */
 pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>, k3: &Vector3<f64>) -> (SolutionSet4<f64>, SolutionSet4<f64>, SolutionSet4<f64>) {
-    let mut theta1 = [0.0; 8];
-    let mut theta2 = [0.0; 8];
-    let mut theta3 = [0.0; 8];
-
-    let mut i_soln = 0;
+    let mut theta1 = Vec::with_capacity(8);
+    let mut theta2 = Vec::with_capacity(8);
+    let mut theta3 = Vec::with_capacity(8);
 
     let p1_s = p0 + k1 * k1.transpose() * p1;
     let p3_s = p2 + k3 * k3.transpose() * p3;
@@ -266,95 +276,73 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
             let v1 = a_1 * sc1 + p1_s;
             let v3 = a_3 * sc3 + p3_s;
 
-            if ((v1 - h * k2).norm() - (v3 - h * k2).norm()).abs() < 1e-5 {
-                theta1[i_soln] = sc1[0].atan2(sc1[1]);
-                (theta2[i_soln], _) = subproblem1(&v3, &v1, &k2);
-                theta3[i_soln] = sc3[0].atan2(sc3[1]);
+            if ((v1 - h * k2).norm() - (v3 - h * k2).norm()).abs() < 1e-6 {
+                let (theta2_value, _) = subproblem1(&v3, &v1, &k2);
 
-                i_soln += 1;
+                theta1.push(sc1[0].atan2(sc1[1]));
+                theta2.push(theta2_value);
+                theta3.push(sc3[0].atan2(sc3[1]));
             }
         }
     }
 
-    match i_soln {
-        1 => (
-            SolutionSet4::One(theta1[0]),
-            SolutionSet4::One(theta2[0]),
-            SolutionSet4::One(theta3[0]),
-        ),
+    (
+        SolutionSet4::from_vec(&theta1),
+        SolutionSet4::from_vec(&theta2),
+        SolutionSet4::from_vec(&theta3),
+    )
+}
 
-        2 => (
-            SolutionSet4::Two(theta1[0], theta1[1]),
-            SolutionSet4::Two(theta2[0], theta2[1]),
-            SolutionSet4::Two(theta3[0], theta3[1]),
-        ),
+/**
+Solves for `theta1` and `theta2` where `h1' * rot(k1, theta1) + h2' * rot(k2, theta2) = d1` and `h3' * rot(k3, theta1) + h4' * rot(k4, theta2) = d2`
+There can be up to 4 solutions
+ */
+pub fn subproblem6(h: [&Vector3<f64>; 4], k: [&Vector3<f64>; 4], p: [&Vector3<f64>; 4], d1: f64, d2: f64) -> (SolutionSet4<f64>, SolutionSet4<f64>) {
+    let k1xp1 = k[0].cross(p[0]);
+    let k2xp2 = k[1].cross(p[1]);
+    let k3xp3 = k[2].cross(p[2]);
+    let k4xp4 = k[3].cross(p[3]);
 
-        3 => (
-            SolutionSet4::Three(theta1[0], theta1[1], theta1[2]),
-            SolutionSet4::Three(theta2[0], theta2[1], theta2[2]),
-            SolutionSet4::Three(theta3[0], theta3[1], theta3[2]),
-        ),
+    let a1 = Matrix3x2::from_columns(&[k1xp1, -k[0].cross(&k1xp1)]);
+    let a2 = Matrix3x2::from_columns(&[k2xp2, -k[1].cross(&k2xp2)]);
+    let a3 = Matrix3x2::from_columns(&[k3xp3, -k[2].cross(&k3xp3)]);
+    let a4 = Matrix3x2::from_columns(&[k4xp4, -k[3].cross(&k4xp4)]);
 
-        4 => (
-            SolutionSet4::Four(theta1[0], theta1[1], theta1[2], theta1[3]),
-            SolutionSet4::Four(theta2[0], theta2[1], theta2[2], theta2[3]),
-            SolutionSet4::Four(theta3[0], theta3[1], theta3[2], theta3[3]),
-        ),
+    let h1_a1 = h[0].transpose() * a1;
+    let h2_a2 = h[1].transpose() * a2;
+    let h3_a3 = h[2].transpose() * a3;
+    let h4_a4 = h[3].transpose() * a4;
 
-        _ => (
-            SolutionSet4::Zero,
-            SolutionSet4::Zero,
-            SolutionSet4::Zero,
-        ),
+    let a = Matrix2x4::from_rows(&[
+        Vector4::new(h1_a1[0], h1_a1[1], h2_a2[0], h2_a2[1]).transpose(),
+        Vector4::new(h3_a3[0], h3_a3[1], h4_a4[0], h4_a4[1]).transpose(),
+    ]);
+
+    let b = Vector2::new(
+        d1 - (h[0].transpose() * k[0] * k[0].transpose() * p[0])[0] - (h[1].transpose() * k[1] * k[1].transpose() * p[1])[0],
+        d2 - (h[2].transpose() * k[2] * k[2].transpose() * p[2])[0] - (h[3].transpose() * k[3] * k[3].transpose() * p[3])[0],
+    );
+
+    let x_min = a.svd(true, true).solve(&b, 1e-9).unwrap();
+
+    let (x_null_1, x_null_2) = null_space_matrix2x4(&a, 1e-9).expect_two();
+
+    let xi_i = solve_2_ellipse_numeric(
+        &x_min.fixed_rows::<2>(0).into(),
+        &Matrix2::new(x_null_1[0], x_null_2[0], x_null_1[1], x_null_2[1]),
+        &x_min.fixed_rows::<2>(2).into(),
+        &Matrix2::new(x_null_1[2], x_null_2[2], x_null_1[3], x_null_2[3]),
+    ).get_all();
+
+    let mut theta1 = vec![0.0; xi_i.len()];
+    let mut theta2 = vec![0.0; xi_i.len()];
+
+    for (i, xi) in xi_i.iter().enumerate() {
+        let x = x_min + x_null_1 * xi.0 + x_null_2 * xi.1;
+
+        theta1[i] = x[0].atan2(x[1]);
+        theta2[i] = x[2].atan2(x[3]);
     }
-}
 
-fn cone_polynomials(p0_i: &Vector3<f64>, k_i: &Vector3<f64>, p_i: &Vector3<f64>, p_i_s: &Vector3<f64>, k2: &Vector3<f64>) -> (Vector2<f64>, Vector3<f64>) {
-    let ki_x_k2 = k_i.cross(k2);
-    let ki_x_ki_x_k2 = k_i.cross(&ki_x_k2);
-    let norm_ki_x_k2_sq = ki_x_k2.dot(&ki_x_k2);
-
-    let ki_x_pi = k_i.cross(p_i);
-    let norm_ki_x_pi_sq = ki_x_pi.dot(&ki_x_pi);
-
-    let alpha = p0_i.transpose() * ki_x_ki_x_k2 / norm_ki_x_k2_sq;
-    let delta = k2.dot(p_i_s);
-    let beta =  p0_i.transpose() *  ki_x_k2  / norm_ki_x_k2_sq;
-
-    let p_const = norm_ki_x_pi_sq + p_i_s.norm_squared() + 2.0 * alpha[0] * delta;
-    let p = Vector2::new(-2.0 * alpha[0], p_const);
-/*
-    R = [-1 2*delta -delta^2]; % -(H-delta_i)^2
-    R(end) = R(end) + norm_kiXpi_sq*norm_kiXk2_sq; % ||A_i' k_2||^2 - (H-delta_i)^2
-    R = (2*beta)^2 * R
-    */
-    let r = Vector3::new(-1.0, 2.0 * delta, -delta * delta + norm_ki_x_pi_sq * norm_ki_x_k2_sq);
-    let r = (2.0 * beta[0]).powi(2) * r;
-
-    (p, r)
-}
-
-fn vec_self_convolve_2(v: &Vector2<f64>) -> Vector3<f64> {
-    let (a, b) = (v[0], v[1]);
-    Vector3::new(a * a, 2.0 * a * b, b * b)
-}
-
-fn vec_self_convolve_3(v: &Vector3<f64>) -> Vector5<f64> {
-    let (a, b, c) = (v[0], v[1], v[2]);
-    Vector5::new(a * a, 2.0 * a * b, 2.0 * a * c + b * b, 2.0 * b * c, c * c)
-}
-
-fn vec_convolve_3(v1: &Vector3<f64>, v2: &Vector3<f64>) -> Vector5<f64> {
-    let (a, b, c) = (v1[0], v1[1], v1[2]);
-    let (x, y, z) = (v2[0], v2[1], v2[2]);
-    Vector5::new(a * x, b * x + a * y, a * z + b * y + c * x, b * z + c * y, c * z)
-}
-
-fn approximate_quartic_roots(p: Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
-    Matrix4::from_columns(&[
-        p.fixed_rows::<4>(1) / -p[0],
-        Vector4::new(Complex::new(1.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0)),
-        Vector4::new(Complex::new(0.0, 0.0), Complex::new(1.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0)),
-        Vector4::new(Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(1.0, 0.0), Complex::new(0.0, 0.0)),
-    ]).transpose().eigenvalues().unwrap()
+    (SolutionSet4::from_vec(&theta1), SolutionSet4::from_vec(&theta2))
 }

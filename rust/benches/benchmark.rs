@@ -1,124 +1,76 @@
-use linear_subproblem_solutions_rust::subproblems::subproblem5;
-
 use {
-    linear_subproblem_solutions_rust::subproblems::{
-        subproblem1,
-        subproblem2,
-        subproblem2extended,
-        subproblem3,
-        subproblem4,
+    linear_subproblem_solutions_rust::setups::{
+        Setup,
+        Subproblem1Setup,
+        Subproblem2Setup,
+        Subproblem2ExtendedSetup,
+        Subproblem3Setup,
+        Subproblem4Setup,
+        Subproblem5Setup,
+        Subproblem6Setup,
     },
-
-    nalgebra::Vector3,
 
     criterion::{
         Criterion,
-        black_box,
         criterion_group,
         criterion_main,
     },
 };
 
-fn random_vector3() -> Vector3<f64> {
-    Vector3::new(random(), random(), random())
-}
-
-fn random_norm_vector3() -> Vector3<f64> {
-    Vector3::new(random(), random(), random()).normalize()
-}
-
-fn random() -> f64 {
-    fastrand::f64() * 2.0 - 1.0
-}
-
 pub fn subproblem1benchmark(c: &mut Criterion) {
-    let p1 = random_vector3();
-    let p2 = random_vector3();
-    let k = random_norm_vector3();
+    let mut setup = Subproblem1Setup::new();
 
-    c.bench_function("Subproblem 1 Benchmark", |b| b.iter(|| subproblem1(
-        black_box(&p1),
-        black_box(&p2),
-        black_box(&k),
-    )));
+    setup.setup();
+
+    c.bench_function("Subproblem 1 Benchmark", |b| b.iter(|| setup.run()));
 }
 
 pub fn subproblem2benchmark(c: &mut Criterion) {
-    let p1 = random_vector3();
-    let p2 = random_vector3();
-    let k1 = random_norm_vector3();
-    let k2 = random_norm_vector3();
+    let mut setup = Subproblem2Setup::new();
 
-    c.bench_function("Subproblem 2 Benchmark", |b| b.iter(|| subproblem2(
-        black_box(&p1),
-        black_box(&p2),
-        black_box(&k1),
-        black_box(&k2),
-    )));
+    setup.setup();
+
+    c.bench_function("Subproblem 2 Benchmark", |b| b.iter(|| setup.run()));
 }
 
 pub fn subproblem2extended_benchmark(c: &mut Criterion) {
-    let p0 = random_vector3();
-    let p1 = random_vector3();
-    let p2 = random_vector3();
-    let k1 = random_norm_vector3();
-    let k2 = random_norm_vector3();
+    let mut setup = Subproblem2ExtendedSetup::new();
 
-    c.bench_function("Subproblem 2 Ex Benchmark", |b| b.iter(|| subproblem2extended(
-        black_box(&p0),
-        black_box(&p1),
-        black_box(&p2),
-        black_box(&k1),
-        black_box(&k2),
-    )));
+    setup.setup();
+
+    c.bench_function("Subproblem 2 Ex Benchmark", |b| b.iter(|| setup.run()));
 }
 
 pub fn subproblem3benchmark(c: &mut Criterion) {
-    let p1 = random_vector3();
-    let p2 = random_vector3();
-    let k = random_norm_vector3();
-    let d = random();
+    let mut setup = Subproblem3Setup::new();
 
-    c.bench_function("Subproblem 3 Benchmark", |b| b.iter(|| subproblem3(
-        black_box(&p1),
-        black_box(&p2),
-        black_box(&k),
-        black_box(d),
-    )));
+    setup.setup();
+
+    c.bench_function("Subproblem 3 Benchmark", |b| b.iter(|| setup.run()));
 }
 
 pub fn subproblem4benchmark(c: &mut Criterion) {
-    let h = random_norm_vector3();
-    let p = random_vector3();
-    let k = random_norm_vector3();
-    let d = random();
+    let mut setup = Subproblem4Setup::new();
 
-    c.bench_function("Subproblem 4 Benchmark", |b| b.iter(|| subproblem4(
-        black_box(&h),
-        black_box(&p),
-        black_box(&k),
-        black_box(d),
-    )));
+    setup.setup();
+
+    c.bench_function("Subproblem 4 Benchmark", |b| b.iter(|| setup.run()));
 }
 
 pub fn subproblem5benchmark(c: &mut Criterion) {
-    let p0 = random_vector3();
-    let p1 = random_vector3();
-    let p2 = random_vector3();
-    let p3 = random_vector3();
-    let k1 = random_norm_vector3();
-    let k2 = random_norm_vector3();
-    let k3 = random_norm_vector3();
+    let mut setup = Subproblem5Setup::new();
 
-    c.bench_function("Subproblem 5 Benchmark", |b| b.iter(|| subproblem5(
-        black_box(&p0),
-        black_box(&p1),
-        black_box(&p2),
-        black_box(&p3),
-        black_box(&k1),
-        black_box(&k2),
-        black_box(&k3),
-    )));
+    setup.setup();
+
+    c.bench_function("Subproblem 5 Benchmark", |b| b.iter(|| setup.run()));
+}
+
+pub fn subproblem6benchmark(c: &mut Criterion) {
+    let mut setup = Subproblem6Setup::new();
+
+    setup.setup();
+
+    c.bench_function("Subproblem 6 Benchmark", |b| b.iter(|| setup.run()));
 }
 
 criterion_group!(
@@ -129,6 +81,7 @@ criterion_group!(
     subproblem3benchmark,
     subproblem4benchmark,
     subproblem5benchmark,
+    subproblem6benchmark,
 );
 
 criterion_main!(benches);
