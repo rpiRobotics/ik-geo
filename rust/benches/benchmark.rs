@@ -1,3 +1,5 @@
+use linear_subproblem_solutions_rust::setups::Subproblem6Setup;
+
 use {
     linear_subproblem_solutions_rust::{
         setups::{
@@ -66,6 +68,14 @@ pub fn subproblem5benchmark(c: &mut Criterion) {
     c.bench_function("Subproblem 5 Benchmark", |b| b.iter(|| setup.run()));
 }
 
+pub fn subproblem6benchmark(c: &mut Criterion) {
+    let mut setup = Subproblem6Setup::new();
+
+    setup.setup();
+
+    c.bench_function("Subproblem 6 Benchmark", |b| b.iter(|| setup.run()));
+}
+
 criterion_group!(
     benches,
     subproblem1benchmark,
@@ -74,6 +84,7 @@ criterion_group!(
     subproblem3benchmark,
     subproblem4benchmark,
     subproblem5benchmark,
+    subproblem6benchmark,
 );
 
 criterion_main!(benches);
