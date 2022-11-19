@@ -1,15 +1,11 @@
 # Linear Subproblem Solutions
-Implementation of subproblem solutions from "Canonical Subproblems for Robot Inverse Kinematics"
+Implementation of subproblem solutions using a linear algebra approach from "Canonical Subproblems for Robot Inverse Kinematics"
 
 ### Subproblem 1: Cone and point
-
-[Interactive figure](https://www.geogebra.org/calculator/stydabbr)
 
 $$\min_\theta \lVert R(k,\theta)p_1 - p_2\rVert$$
 
 ### Subproblem 2: Two cones
-
-[Interactive figure](https://www.geogebra.org/calculator/prj5wqsu)
 
 $$\min_{\theta_1,\theta_2} \lVert R(k_1,\theta_1)p_1 - R(k_2,\theta_2)p_2\rVert$$
 
@@ -36,8 +32,6 @@ $$\begin{cases}
     h_3^\top R(k_3, \theta_1)p_3 + h_3^\top R(k_4, \theta_2)p_4 = d_2
 \end{cases}$$
 
-
-
 ## Folder breakdown
 `matlab`: MATLAB implementation
 
@@ -46,3 +40,6 @@ $$\begin{cases}
 `rust`: Rust implementation (Work in progress)
 
 `python`: Python implementation (Work in progress)
+
+## Contributing
+If you have any improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue.

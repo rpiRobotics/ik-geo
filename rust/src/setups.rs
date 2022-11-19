@@ -184,13 +184,13 @@ impl Subproblem3Setup {
         }
     }
 
-    fn calculate_error(&self, theta: &[f64]) -> f64 {
+    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
         theta
             .iter()
             .map(|&t| {
                 ((self.p2 - rot(self.k, t) * self.p1).norm() - self.d).abs()
             })
-            .sum::<f64>() / theta.len() as f64
+            .sum()
     }
 }
 
