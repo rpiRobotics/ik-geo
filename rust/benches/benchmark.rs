@@ -1,16 +1,13 @@
-use linear_subproblem_solutions_rust::setups::Subproblem6Setup;
-
 use {
-    linear_subproblem_solutions_rust::{
-        setups::{
-            Setup,
-            Subproblem1Setup,
-            Subproblem2Setup,
-            Subproblem2ExtendedSetup,
-            Subproblem3Setup,
-            Subproblem4Setup,
-            Subproblem5Setup,
-        },
+    linear_subproblem_solutions_rust::setups::{
+        Setup,
+        Subproblem1Setup,
+        Subproblem2Setup,
+        Subproblem2ExtendedSetup,
+        Subproblem3Setup,
+        Subproblem4Setup,
+        Subproblem5Setup,
+        Subproblem6Setup,
     },
 
     criterion::{
