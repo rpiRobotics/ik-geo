@@ -53,7 +53,7 @@ def sp1_setup_LS(p1, p2, k):
 
 
 def sp1_error(p1, p2, k, theta):
-   return np.linalg.norm(p2 - rand.rot(k, theta)*p1, 2)
+   return np.linalg.norm(p2 - rand.rot(k, theta)@p1, 2)
 
 
 #Testing
