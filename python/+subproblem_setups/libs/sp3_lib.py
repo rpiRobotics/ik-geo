@@ -7,7 +7,6 @@ if __name__ == "__main__":
 else:
    import libs.rand_py as rand
 
-
 """
 Inputs:
    p1, p2: 3x1 vector
