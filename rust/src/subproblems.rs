@@ -244,7 +244,7 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
         complex.re = *real;
     }
 
-    let all_roots = approximate_quartic_roots(eqn).transpose();
+    let all_roots = approximate_quartic_roots(&eqn).transpose();
     let h_vec = DVector::from_vec(all_roots.into_iter().filter(|c| c.im == 0.0).map(|c| c.re).collect());
 
     let kxp1 = k1.cross(p1);

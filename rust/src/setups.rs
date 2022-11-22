@@ -128,7 +128,7 @@ impl Subproblem1Setup {
     }
 
     fn calculate_error(&self, theta: f64) -> f64 {
-        (self.p2 - rot(self.k, theta) * self.p1).norm()
+        (self.p2 - rot(&self.k, theta) * self.p1).norm()
     }
 }
 
@@ -151,7 +151,7 @@ impl Subproblem2Setup {
         theta1.iter()
             .zip(theta2.iter())
             .map(|(&t1, &t2)| {
-                (rot(self.k2, t2) * self.p2 - rot(self.k1,t1) * self.p1).norm()
+                (rot(&self.k2, t2) * self.p2 - rot(&self.k1,t1) * self.p1).norm()
             })
             .sum::<f64>() / theta1.len() as f64
     }
@@ -188,7 +188,7 @@ impl Subproblem3Setup {
         theta
             .iter()
             .map(|&t| {
-                ((self.p2 - rot(self.k, t) * self.p1).norm() - self.d).abs()
+                ((self.p2 - rot(&self.k, t) * self.p1).norm() - self.d).abs()
             })
             .sum()
     }
@@ -210,7 +210,7 @@ impl Subproblem4Setup {
         theta
             .iter()
             .map(|&t| {
-                ((self.h.transpose() * rot(self.k, t) * self.p)[0] - self.d).abs()
+                ((self.h.transpose() * rot(&self.k, t) * self.p)[0] - self.d).abs()
             })
             .sum::<f64>() / theta.len() as f64
     }
@@ -257,7 +257,7 @@ impl Setup for Subproblem1Setup {
         self.k = random_norm_vector3();
         self.theta = random_angle();
 
-        self.p2 = rot(self.k, self.theta) * self.p1;
+        self.p2 = rot(&self.k, self.theta) * self.p1;
     }
 
     fn error(&self) -> f64 {
@@ -299,7 +299,7 @@ impl Setup for Subproblem2Setup {
         self.theta1 = SolutionSet2::One(theta1);
         self.theta2 = SolutionSet2::One(theta2);
 
-        self.p2 = rot(self.k2, -theta2) * rot(self.k1, theta1) * self.p1;
+        self.p2 = rot(&self.k2, -theta2) * rot(&self.k1, theta1) * self.p1;
     }
 
     fn setup_ls(&mut self) {
@@ -360,7 +360,7 @@ impl Setup for Subproblem2ExtendedSetup {
         self.theta1 = random_angle();
         self.theta2 = random_angle();
 
-        self.p2 = rot(self.k2, -self.theta2) * (self.p0 + rot(self.k1, self.theta1) * self.p1);
+        self.p2 = rot(&self.k2, -self.theta2) * (self.p0 + rot(&self.k1, self.theta1) * self.p1);
     }
 
     fn setup_ls(&mut self) {
@@ -372,7 +372,7 @@ impl Setup for Subproblem2ExtendedSetup {
     }
 
     fn error(&self) -> f64 {
-        (self.p0 + rot(self.k1, self.theta1) * self.p1 - rot(self.k2, self.theta2) * self.p2).norm()
+        (self.p0 + rot(&self.k1, self.theta1) * self.p1 - rot(&self.k2, self.theta2) * self.p2).norm()
     }
 
     fn is_at_local_min(&self) -> bool {
@@ -393,7 +393,7 @@ impl Setup for Subproblem3Setup {
         self.k = random_norm_vector3();
         self.theta = SolutionSet2::One(theta);
 
-        self.d = (self.p2 - rot(self.k, theta) * self.p1).norm();
+        self.d = (self.p2 - rot(&self.k, theta) * self.p1).norm();
     }
 
     fn setup_ls(&mut self) {
@@ -448,7 +448,7 @@ impl Setup for Subproblem4Setup {
         self.k = random_norm_vector3();
         self.theta = SolutionSet2::One(theta);
 
-        self.d = (self.h.transpose() * rot(self.k, theta) * self.p)[0];
+        self.d = (self.h.transpose() * rot(&self.k, theta) * self.p)[0];
     }
 
     fn setup_ls(&mut self) {
@@ -512,7 +512,7 @@ impl Setup for Subproblem5Setup {
         self.theta2 = SolutionSet4::One(theta2);
         self.theta3 = SolutionSet4::One(theta3);
 
-        self.p0 = -(rot(self.k1, theta1) * self.p1 - rot(self.k2, theta2) * (self.p2 + rot(self.k3, theta3) * self.p3));
+        self.p0 = -(rot(&self.k1, theta1) * self.p1 - rot(&self.k2, theta2) * (self.p2 + rot(&self.k3, theta3) * self.p3));
     }
 
     fn setup_ls(&mut self) {
@@ -540,7 +540,7 @@ impl Setup for Subproblem5Setup {
                 .get_all()
                 .into_iter())
             .map(|((t1, t2), t3)| {
-                (self.p0 + rot(self.k1, t1) * self.p1 - rot(self.k2, t2) * (self.p2 + rot(self.k3, t3) * self.p3)).norm()
+                (self.p0 + rot(&self.k1, t1) * self.p1 - rot(&self.k2, t2) * (self.p2 + rot(&self.k3, t3) * self.p3)).norm()
             })
             .sum::<f64>() / len as f64
     }
@@ -570,13 +570,13 @@ impl Setup for Subproblem6Setup {
         }
 
         self.d1 = (
-            self.h[0].transpose() * rot(self.k[0], theta1) * self.p[0] +
-            self.h[1].transpose() * rot(self.k[1], theta2) * self.p[1]
+            self.h[0].transpose() * rot(&self.k[0], theta1) * self.p[0] +
+            self.h[1].transpose() * rot(&self.k[1], theta2) * self.p[1]
         )[0];
 
         self.d2 = (
-            self.h[2].transpose() * rot(self.k[2], theta1) * self.p[2] +
-            self.h[3].transpose() * rot(self.k[3], theta2) * self.p[3]
+            self.h[2].transpose() * rot(&self.k[2], theta1) * self.p[2] +
+            self.h[3].transpose() * rot(&self.k[3], theta2) * self.p[3]
         )[0];
 
         self.theta1 = SolutionSet4::One(theta1);
@@ -603,8 +603,8 @@ impl Setup for Subproblem6Setup {
 
         theta1.into_iter().zip(self.theta2.get_all().iter()).map(|(t1, t2)| {
             (Vector2::new(
-                (self.h[0].transpose() * rot(self.k[0], t1) * self.p[0] + self.h[1].transpose() * rot(self.k[1], *t2) * self.p[1])[0] - self.d1,
-                (self.h[2].transpose() * rot(self.k[2], t1) * self.p[2] + self.h[3].transpose() * rot(self.k[3], *t2) * self.p[3])[0] - self.d2
+                (self.h[0].transpose() * rot(&self.k[0], t1) * self.p[0] + self.h[1].transpose() * rot(&self.k[1], *t2) * self.p[1])[0] - self.d1,
+                (self.h[2].transpose() * rot(&self.k[2], t1) * self.p[2] + self.h[3].transpose() * rot(&self.k[3], *t2) * self.p[3])[0] - self.d2
             )).norm()
         }).sum::<f64>() / len as f64
     }

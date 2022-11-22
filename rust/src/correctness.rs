@@ -1,3 +1,5 @@
+use crate::ik_setups::SphericalToParallelSetup;
+
 use super::setups::{
     Setup,
     Subproblem1Setup,
@@ -23,6 +25,8 @@ fn run_tests() {
         Box::new(Subproblem2ExtendedSetup::new()),
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem1Setup::new()),
+
+        Box::new(SphericalToParallelSetup::new()),
     ];
 
     for mut setup in setups {

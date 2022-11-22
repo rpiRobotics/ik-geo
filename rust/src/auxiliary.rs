@@ -17,9 +17,9 @@ use {
 };
 
 /// Creates a 3x3 rotation matrix
-pub fn rot(k: Vector3<f64>, theta: f64) -> Matrix3<f64> {
+pub fn rot(k: &Vector3<f64>, theta: f64) -> Matrix3<f64> {
     let k = k.normalize();
-    Matrix3::identity() + hat(k) * theta.sin() + hat(k) * hat(k) * (1.0 - theta.cos())
+    Matrix3::identity() + hat(&k) * theta.sin() + hat(&k) * hat(&k) * (1.0 - theta.cos())
 }
 
 pub fn random_vector3() -> Vector3<f64> {
@@ -71,7 +71,7 @@ pub fn vec_convolve_3(v1: &Vector3<f64>, v2: &Vector3<f64>) -> Vector5<f64> {
     Vector5::new(a * x, b * x + a * y, a * z + b * y + c * x, b * z + c * y, c * z)
 }
 
-pub fn approximate_quartic_roots(p: Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
+pub fn approximate_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
     Matrix4::from_columns(&[
         p.fixed_rows::<4>(1) / -p[0],
         Vector4::new(Complex::new(1.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0)),
@@ -145,7 +145,7 @@ pub fn solve_2_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vec
     let z4 = (a * a) * (c1 * c1) - 2.0 * a * c1 * a1 * c + (a1 * a1) * (c * c) - b * a * b1
         * c1 - b * b1 * a1 * c + (b * b) * a1 * c1 + c * a * (b1 * b1);
 
-    let y = approximate_quartic_roots(Vector5::new(
+    let y = approximate_quartic_roots(&Vector5::new(
         Complex::from_real(z4),
         Complex::from_real(z3),
         Complex::from_real(z2),
@@ -169,7 +169,7 @@ fn random() -> f64 {
 }
 
 // Matrix cross-product for a 3 x 3 vector
-fn hat(k: Vector3<f64>) -> Matrix3<f64> {
+fn hat(k: &Vector3<f64>) -> Matrix3<f64> {
     Matrix3::new(
         0.0, -k.z, k.y,
         k.z, 0.0, -k.x,
