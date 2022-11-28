@@ -1,6 +1,6 @@
-use crate::ik_setups::SphericalToParallelSetup;
+use crate::inverse_kinematics::setups::SphericalToParallelSetup;
 
-use super::setups::{
+use super::subproblems::setups::{
     Setup,
     Subproblem1Setup,
     Subproblem2Setup,
@@ -15,7 +15,7 @@ const TEST_ITERATIONS: usize = 1000;
 
 #[test]
 fn run_tests() {
-    const ERROR_THRESHOLD: f64 = 1e-5;
+    // const ERROR_THRESHOLD: f64 = 1e-5;
 
     let setups: Vec<Box<dyn Setup>> = vec![
         Box::new(Subproblem6Setup::new()),

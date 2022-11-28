@@ -1,5 +1,5 @@
 use {
-    linear_subproblem_solutions_rust::setups::{
+    linear_subproblem_solutions_rust::subproblems::setups::{
         Setup,
         Subproblem1Setup,
         Subproblem2Setup,

@@ -1,16 +1,17 @@
-use {
-    super::{
-        solutionset::{ SolutionSet2, SolutionSet4 },
+pub mod auxiliary;
+pub mod setups;
 
-        auxiliary::{
-            vec_self_convolve_2,
-            vec_self_convolve_3,
-            vec_convolve_3,
-            solve_2_ellipse_numeric,
-            null_space_matrix2x4,
-            cone_polynomials,
-            approximate_quartic_roots,
-        },
+use {
+    super::solutionset::{ SolutionSet2, SolutionSet4 },
+
+    auxiliary::{
+        vec_self_convolve_2,
+        vec_self_convolve_3,
+        vec_convolve_3,
+        solve_2_ellipse_numeric,
+        null_space_matrix2x4,
+        cone_polynomials,
+        approximate_quartic_roots,
     },
 
     nalgebra::{

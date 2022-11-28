@@ -1,6 +1,8 @@
 use nalgebra::{Matrix3, Vector3, Vector6};
 
-use crate::{ik_aux::{Kinematics, Matrix3x8, forward_kinematics}, setups::Setup, auxiliary::{random_norm_vector3, random_vector3, random_angle}, inverse_kinematics};
+use crate::subproblems::{setups::Setup, auxiliary::{random_norm_vector3, random_angle, random_vector3}};
+
+use super::{auxiliary::{Kinematics, Matrix3x8, forward_kinematics}, spherical_to_parallel};
 
 pub struct SphericalToParallelSetup {
     kin: Kinematics,
@@ -54,7 +56,7 @@ impl Setup for SphericalToParallelSetup {
     }
 
     fn run(&mut self) {
-        (self.q, self.is_ls) = inverse_kinematics::spherical_to_parallel(&self.r, &self.t, &self.kin);
+        (self.q, self.is_ls) = spherical_to_parallel(&self.r, &self.t, &self.kin);
     }
 
     fn error(&self) -> f64 {

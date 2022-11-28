@@ -1,12 +1,5 @@
 use {
     crate::{
-        auxiliary::{
-            random_vector3,
-            random_norm_vector3,
-            random_angle,
-            rot,
-        },
-
         subproblems::{
             subproblem1,
             subproblem2,
@@ -18,6 +11,13 @@ use {
         },
 
         solutionset::{ SolutionSet2, SolutionSet4 },
+    },
+
+    super::auxiliary::{
+        random_vector3,
+        random_norm_vector3,
+        random_angle,
+        rot,
     },
 
     nalgebra::{ Vector3, Vector2 },
