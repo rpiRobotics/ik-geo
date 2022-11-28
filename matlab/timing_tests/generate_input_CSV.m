@@ -1,5 +1,5 @@
-% N = 100e3;
-N = 10;
+N = 100e3;
+% N = 10;
 
 setups = {
     subproblem_setups.sp_1
@@ -14,23 +14,28 @@ setups = {
 for i = 1:length(setups)
     setup = setups{i};
     rng default
-    T = get_table(setup, N);
+    [T, P_list, S_list] = get_table(setup, N);
     
     
     class_name = string(class(setup)).split(".");
     file_name = class_name(end) + ".csv";
     
     writetable(T, file_name);
+    save(class_name(end)+".mat", "P_list", "S_list");
 end
 %%
-function T = get_table(setup, N)
+function [T, P_list, S_list] = get_table(setup, N)
     [P, S] = setup.setup;
     names = [get_col_names(P) get_col_names(S)];
+    P_list = repmat(P,N,0);
+    S_list = repmat(S,N,0);
     
     M = nan(N, length(names));
     for i = 1:N
         [P, S] = setup.setup;
         M(i,:) = [get_table_row(P) get_table_row(S)];
+        P_list(i) = P;
+        S_list(i) = S;
     
     end
     
