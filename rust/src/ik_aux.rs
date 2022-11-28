@@ -1,3 +1,5 @@
+use std::fmt::{Display, Formatter};
+
 use nalgebra::{Vector6, U7, U3, U8, Matrix3, Vector3, Matrix, ArrayStorage};
 
 use crate::auxiliary::rot;
@@ -5,6 +7,7 @@ use crate::auxiliary::rot;
 pub type Matrix3x7<T> = Matrix<T, U3, U7, ArrayStorage<T, 3, 7>>;
 pub type Matrix3x8<T> = Matrix<T, U3, U8, ArrayStorage<T, 3, 8>>;
 
+#[derive(Debug)]
 pub struct Kinematics {
     pub joint_type: Vector6<u8>,
     pub h: Matrix3x7<f64>,
@@ -18,6 +21,12 @@ impl Kinematics {
             h: Matrix3x7::zeros(),
             p: Matrix3x8::zeros(),
         }
+    }
+}
+
+impl Display for Kinematics {
+    fn fmt(&self, f: &mut Formatter) -> std::fmt::Result {
+        write!(f, "\njoint type:{}h:{}p:{}", self.joint_type, self.h, self.p)
     }
 }
 

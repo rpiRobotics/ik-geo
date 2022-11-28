@@ -34,12 +34,12 @@ pub fn subproblem1(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>) -> (f
     let x = a.transpose() * p2;
 
     let theta = x[0].atan2(x[1]);
-    let is_ls = (p1.norm() - p2.norm()).abs() > 1e-8 || (k.dot(p1) - k.dot(p2)).abs() > 1e-8;
+    let is_ls = (p1.norm() - p2.norm()).abs() > 1e-6 || (k.dot(p1) - k.dot(p2)).abs() > 1e-6;
 
     (theta, is_ls)
 }
 
-// NOTE: Maybe we should be using types like SolutionSet2<(f64, f64)> rather than (SolutionSet2<f64>, SolutionSet2<f64>)
+// TODO: Transition to using types like SolutionSet2<(f64, f64)> rather than (SolutionSet2<f64>, SolutionSet2<f64>)
 
 /**
 Solves for `theta1` and `theta2` where `rot(k1, theta1) * p1 = rot(k2, theta2) * p2` if possible.
