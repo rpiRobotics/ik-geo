@@ -28,9 +28,7 @@ Run `cargo test correctness -- --nocapture` for diagnostic info
 
 #### Timing Tests
 
-Run `cargo test timing --release`
-
-Run `cargo test timing --release -- --nocapture` for diagnostic info
+Run `cargo test timing --release -- --nocapture`
 
 ### Benchmarking
 
