@@ -1,8 +1,15 @@
-use std::fmt::{Display, Formatter};
+use {
+    std::fmt::{ Display, Formatter },
 
-use nalgebra::{Vector6, U7, U3, U8, Matrix3, Vector3, Matrix, ArrayStorage};
+    nalgebra::{
+        U3, U7, U8,
+        Vector3, Vector6,
+        Matrix, Matrix3,
+        ArrayStorage,
+    },
 
-use crate::subproblems::auxiliary::rot;
+    crate::subproblems::auxiliary::rot,
+};
 
 pub type Matrix3x7<T> = Matrix<T, U3, U7, ArrayStorage<T, 3, 7>>;
 pub type Matrix3x8<T> = Matrix<T, U3, U8, ArrayStorage<T, 3, 8>>;

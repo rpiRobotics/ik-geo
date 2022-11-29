@@ -3,3 +3,6 @@ target
 
 # Dependancy info
 Cargo.lock
+
+# Timing inputs
+data

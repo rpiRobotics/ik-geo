@@ -1,6 +1,7 @@
 use {
     linear_subproblem_solutions_rust::subproblems::setups::{
-        Setup,
+        SetupDynamic,
+        SetupStatic,
         Subproblem1Setup,
         Subproblem2Setup,
         Subproblem2ExtendedSetup,

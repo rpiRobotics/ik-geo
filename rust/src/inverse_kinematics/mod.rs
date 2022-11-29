@@ -1,11 +1,19 @@
 pub mod auxiliary;
 pub mod setups;
 
-use nalgebra::{Matrix3, Vector3, Vector6};
+use {
+    nalgebra::{ Vector3, Vector6, Matrix3 },
 
-use crate::subproblems::{subproblem3, subproblem4, subproblem1, auxiliary::rot};
+    crate::subproblems::{
+        subproblem1,
+        subproblem3,
+        subproblem4,
 
-use self::auxiliary::Kinematics;
+        auxiliary::rot
+    },
+
+    auxiliary::Kinematics,
+};
 
 pub fn spherical_to_parallel(r_0t: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> (Vec<Vector6<f64>>, Vec<bool>) {
     let mut q = Vec::with_capacity(6);

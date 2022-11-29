@@ -27,18 +27,25 @@ const DELTA: f64 = 1e-12;
 
 /// An interface for setting up subproblem testing. Resposible for generating parameters, running
 /// the function, and calculating data such as the error.
-pub trait Setup {
+pub trait SetupDynamic {
     /// Initialize parameters to test the case where theta is solved for exactly
     fn setup(&mut self);
 
     /// Initialize parameters to test the case where theta is minimized using least squares
     fn setup_ls(&mut self);
 
+    fn setup_from_str(&mut self, raw: &str);
+
     fn run(&mut self);
 
     fn error(&self) -> f64;
     fn is_at_local_min(&self) -> bool;
     fn name(&self) -> &'static str;
+}
+
+pub trait SetupStatic {
+    fn new() -> Self;
+    fn name() -> &'static str;
 }
 
 pub struct Subproblem1Setup {
@@ -116,8 +123,8 @@ pub struct Subproblem6Setup {
     theta2: SolutionSet4<f64>,
 }
 
-impl Subproblem1Setup {
-    pub fn new() -> Self {
+impl SetupStatic for Subproblem1Setup {
+    fn new() -> Self {
         Self {
             p1: Vector3::zeros(),
             p2: Vector3::zeros(),
@@ -127,13 +134,19 @@ impl Subproblem1Setup {
         }
     }
 
+    fn name() -> &'static str {
+        "Subproblem 1"
+    }
+}
+
+impl Subproblem1Setup {
     fn calculate_error(&self, theta: f64) -> f64 {
         (self.p2 - rot(&self.k, theta) * self.p1).norm()
     }
 }
 
-impl Subproblem2Setup {
-    pub fn new() -> Self {
+impl SetupStatic for Subproblem2Setup {
+    fn new() -> Self {
         Self {
             p1: Vector3::zeros(),
             p2: Vector3::zeros(),
@@ -145,6 +158,12 @@ impl Subproblem2Setup {
         }
     }
 
+    fn name() -> &'static str {
+        "Subproblem 2"
+    }
+}
+
+impl Subproblem2Setup {
     fn calculate_error(&self, theta1: &[f64], theta2: &[f64]) -> f64 {
         assert!(theta1.len() == theta2.len());
 
@@ -157,8 +176,8 @@ impl Subproblem2Setup {
     }
 }
 
-impl Subproblem2ExtendedSetup {
-    pub fn new() -> Self {
+impl SetupStatic for Subproblem2ExtendedSetup {
+    fn new() -> Self {
         Self {
             p0: Vector3::zeros(),
             p1: Vector3::zeros(),
@@ -170,10 +189,14 @@ impl Subproblem2ExtendedSetup {
             theta2: 0.0,
         }
     }
+
+    fn name() -> &'static str {
+        "Subproblem 2 Ex"
+    }
 }
 
-impl Subproblem3Setup {
-    pub fn new() -> Self {
+impl SetupStatic for Subproblem3Setup {
+    fn new() -> Self {
         Self {
             p1: Vector3::zeros(),
             p2: Vector3::zeros(),
@@ -184,7 +207,13 @@ impl Subproblem3Setup {
         }
     }
 
-    pub fn calculate_error(&self, theta: &[f64]) -> f64 {
+    fn name() -> &'static str {
+        "Subproblem 3"
+    }
+}
+
+impl Subproblem3Setup {
+    fn calculate_error(&self, theta: &[f64]) -> f64 {
         theta
             .iter()
             .map(|&t| {
@@ -194,8 +223,8 @@ impl Subproblem3Setup {
     }
 }
 
-impl Subproblem4Setup {
-    pub fn new() -> Self {
+impl SetupStatic for Subproblem4Setup {
+    fn new() -> Self {
         Self {
             h: Vector3::zeros(),
             p: Vector3::zeros(),
@@ -206,6 +235,12 @@ impl Subproblem4Setup {
         }
     }
 
+    fn name() -> &'static str {
+        "Subproblem 4"
+    }
+}
+
+impl Subproblem4Setup {
     fn calculate_error(&self, theta: &[f64]) -> f64 {
         theta
             .iter()
@@ -216,8 +251,8 @@ impl Subproblem4Setup {
     }
 }
 
-impl Subproblem5Setup {
-    pub fn new() -> Self {
+impl SetupStatic for Subproblem5Setup {
+    fn new() -> Self {
         Self {
             p0: Vector3::zeros(),
             p1: Vector3::zeros(),
@@ -233,10 +268,14 @@ impl Subproblem5Setup {
             theta3: SolutionSet4::One(0.0),
         }
     }
+
+    fn name() -> &'static str {
+        "Subproblem 5"
+    }
 }
 
-impl Subproblem6Setup {
-    pub fn new() -> Self {
+impl SetupStatic for Subproblem6Setup {
+    fn new() -> Self {
         Self {
             h: [Vector3::zeros(); 4],
             k: [Vector3::zeros(); 4],
@@ -249,9 +288,13 @@ impl Subproblem6Setup {
             theta2: SolutionSet4::One(0.0),
         }
     }
+
+    fn name() -> &'static str {
+        "Subproblem 6"
+    }
 }
 
-impl Setup for Subproblem1Setup {
+impl SetupDynamic for Subproblem1Setup {
     fn setup(&mut self) {
         self.p1 = random_vector3();
         self.k = random_norm_vector3();
@@ -260,15 +303,27 @@ impl Setup for Subproblem1Setup {
         self.p2 = rot(&self.k, self.theta) * self.p1;
     }
 
-    fn error(&self) -> f64 {
-        self.calculate_error(self.theta)
-    }
-
     fn setup_ls(&mut self) {
         self.p1 = random_vector3();
         self.p2 = random_vector3();
         self.k = random_norm_vector3();
         self.theta = random_angle();
+    }
+
+    fn setup_from_str(&mut self, raw: &str) {
+        let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+        self.p1 = Vector3::new(data[0], data[1], data[2]);
+        self.p2 = Vector3::new(data[6], data[7], data[8]);
+        self.k = Vector3::new(data[3], data[4], data[5]);
+    }
+
+    fn run(&mut self) {
+        (self.theta, _) = subproblem1(&self.p1, &self.p2, &self.k);
+    }
+
+    fn error(&self) -> f64 {
+        self.calculate_error(self.theta)
     }
 
     fn is_at_local_min(&self) -> bool {
@@ -279,16 +334,12 @@ impl Setup for Subproblem1Setup {
         self.calculate_error(self.theta - DELTA) >= error_check
     }
 
-    fn run(&mut self) {
-        (self.theta, _) = subproblem1(&self.p1, &self.p2, &self.k);
-    }
-
     fn name(&self) -> &'static str {
-        "Subproblem 1"
+        <Self as SetupStatic>::name()
     }
 }
 
-impl Setup for Subproblem2Setup {
+impl SetupDynamic for Subproblem2Setup {
     fn setup(&mut self) {
         let theta1 = random_angle();
         let theta2 = random_angle();
@@ -310,6 +361,15 @@ impl Setup for Subproblem2Setup {
         self.k2 = random_norm_vector3();
         self.theta1 = SolutionSet2::One(random_angle());
         self.theta2 = SolutionSet2::One(random_angle());
+    }
+
+    fn setup_from_str(&mut self, raw: &str) {
+        let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+        self.p1 = Vector3::new(data[0], data[1], data[2]);
+        self.k1 = Vector3::new(data[3], data[4], data[5]);
+        self.k2 = Vector3::new(data[6], data[7], data[8]);
+        self.p2 = Vector3::new(data[9], data[10], data[11]);
     }
 
     fn run(&mut self) {
@@ -345,11 +405,11 @@ impl Setup for Subproblem2Setup {
     }
 
     fn name(&self) -> &'static str {
-        "Subproblem 2"
+        <Self as SetupStatic>::name()
     }
 }
 
-impl Setup for Subproblem2ExtendedSetup {
+impl SetupDynamic for Subproblem2ExtendedSetup {
     fn setup(&mut self) {
         self.p0 = random_vector3();
         self.p1 = random_vector3();
@@ -367,6 +427,16 @@ impl Setup for Subproblem2ExtendedSetup {
         unimplemented!();
     }
 
+    fn setup_from_str(&mut self, raw: &str) {
+        let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+        self.p0 = Vector3::new(data[0], data[1], data[2]);
+        self.p1 = Vector3::new(data[3], data[4], data[5]);
+        self.k1 = Vector3::new(data[6], data[7], data[8]);
+        self.k2 = Vector3::new(data[9], data[10], data[11]);
+        self.p2 = Vector3::new(data[12], data[13], data[14]);
+    }
+
     fn run(&mut self) {
         (self.theta1, self.theta2) = subproblem2extended(&self.p0, &self.p1, &self.p2, &self.k1, &self.k2);
     }
@@ -380,11 +450,11 @@ impl Setup for Subproblem2ExtendedSetup {
     }
 
     fn name(&self) -> &'static str {
-        "Subproblem 2 Ex"
+        <Self as SetupStatic>::name()
     }
 }
 
-impl Setup for Subproblem3Setup {
+impl SetupDynamic for Subproblem3Setup {
     fn setup(&mut self) {
         let theta = random_angle();
 
@@ -402,6 +472,15 @@ impl Setup for Subproblem3Setup {
         self.k = random_norm_vector3();
         self.d = fastrand::f64();
         self.theta = SolutionSet2::One(random_angle());
+    }
+
+    fn setup_from_str(&mut self, raw: &str) {
+        let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+        self.p1 = Vector3::new(data[0], data[1], data[2]);
+        self.p2 = Vector3::new(data[3], data[4], data[5]);
+        self.k = Vector3::new(data[6], data[7], data[8]);
+        self.d = data[9];
     }
 
     fn run(&mut self) {
@@ -435,11 +514,11 @@ impl Setup for Subproblem3Setup {
     }
 
     fn name(&self) -> &'static str {
-        "Subproblem 3"
+        <Self as SetupStatic>::name()
     }
 }
 
-impl Setup for Subproblem4Setup {
+impl SetupDynamic for Subproblem4Setup {
     fn setup(&mut self) {
         let theta = random_angle();
 
@@ -457,6 +536,15 @@ impl Setup for Subproblem4Setup {
         self.k = random_norm_vector3();
         self.d = fastrand::f64();
         self.theta = SolutionSet2::One(random_angle());
+    }
+
+    fn setup_from_str(&mut self, raw: &str) {
+        let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+        self.p = Vector3::new(data[0], data[1], data[2]);
+        self.k = Vector3::new(data[3], data[4], data[5]);
+        self.h = Vector3::new(data[6], data[7], data[8]);
+        self.d = data[9];
     }
 
     fn run(&mut self) {
@@ -490,11 +578,11 @@ impl Setup for Subproblem4Setup {
     }
 
     fn name(&self) -> &'static str {
-        "Subproblem 4"
+        <Self as SetupStatic>::name()
     }
 }
 
-impl Setup for Subproblem5Setup {
+impl SetupDynamic for Subproblem5Setup {
     fn setup(&mut self) {
         let theta1 = random_angle();
         let theta2 = random_angle();
@@ -517,6 +605,18 @@ impl Setup for Subproblem5Setup {
 
     fn setup_ls(&mut self) {
         unimplemented!()
+    }
+
+    fn setup_from_str(&mut self, raw: &str) {
+        let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+        self.p1 = Vector3::new(data[0], data[1], data[2]);
+        self.p2 = Vector3::new(data[3], data[4], data[5]);
+        self.p3 = Vector3::new(data[6], data[7], data[8]);
+        self.k1 = Vector3::new(data[9], data[10], data[11]);
+        self.k2 = Vector3::new(data[12], data[13], data[14]);
+        self.k3 = Vector3::new(data[15], data[16], data[17]);
+        self.p0 = Vector3::new(data[18], data[19], data[20]);
     }
 
     fn run(&mut self) {
@@ -550,11 +650,11 @@ impl Setup for Subproblem5Setup {
     }
 
     fn name(&self) -> &'static str {
-        "Subproblem 5"
+        <Self as SetupStatic>::name()
     }
 }
 
-impl Setup for Subproblem6Setup {
+impl SetupDynamic for Subproblem6Setup {
     fn setup(&mut self) {
         let theta1 = random_angle();
         let theta2 = random_angle();
@@ -587,6 +687,29 @@ impl Setup for Subproblem6Setup {
         unimplemented!()
     }
 
+    fn setup_from_str(&mut self, raw: &str) {
+        let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+        let mut i = 0;
+
+        for v in self.h.iter_mut() {
+            *v = Vector3::new(data[i], data[i + 1], data[i + 2]);
+            i += 3;
+        }
+
+        for v in self.k.iter_mut() {
+            *v = Vector3::new(data[i], data[i + 1], data[i + 2]);
+            i += 3;
+        }
+
+        for v in self.p.iter_mut() {
+            *v = Vector3::new(data[i], data[i + 1], data[i + 2]);
+            i += 3;
+        }
+
+        self.d1 = data[i];
+        self.d2 = data[i + 1];
+    }
+
     fn run(&mut self) {
         (self.theta1, self.theta2) = subproblem6(
             [&self.h[0], &self.h[1], &self.h[2], &self.h[3]],
@@ -614,6 +737,6 @@ impl Setup for Subproblem6Setup {
     }
 
     fn name(&self) -> &'static str {
-        "Subproblem 6"
+        <Self as SetupStatic>::name()
     }
 }

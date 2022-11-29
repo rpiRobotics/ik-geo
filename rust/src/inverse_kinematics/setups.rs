@@ -1,8 +1,25 @@
-use nalgebra::{Matrix3, Vector3, Vector6};
+use {
+    nalgebra::{ Vector3, Vector6, Matrix3 },
+    crate::subproblems::{
+        setups::SetupDynamic,
 
-use crate::subproblems::{setups::Setup, auxiliary::{random_norm_vector3, random_angle, random_vector3}};
+        auxiliary::{
+            random_vector3,
+            random_norm_vector3,
+            random_angle,
+        }
+    },
 
-use super::{auxiliary::{Kinematics, Matrix3x8, forward_kinematics}, spherical_to_parallel};
+    super::{
+        auxiliary::{
+            Kinematics,
+            Matrix3x8,
+            forward_kinematics,
+        },
+
+        spherical_to_parallel,
+    },
+};
 
 pub struct SphericalToParallelSetup {
     kin: Kinematics,
@@ -26,7 +43,7 @@ impl SphericalToParallelSetup {
     }
 }
 
-impl Setup for SphericalToParallelSetup {
+impl SetupDynamic for SphericalToParallelSetup {
     fn setup(&mut self) {
         for i in 0..6 {
             self.kin.h.set_column(i, &random_norm_vector3())
@@ -53,6 +70,10 @@ impl Setup for SphericalToParallelSetup {
 
     fn setup_ls(&mut self) {
         todo!()
+    }
+
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!();
     }
 
     fn run(&mut self) {

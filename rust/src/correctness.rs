@@ -1,14 +1,17 @@
-use crate::inverse_kinematics::setups::SphericalToParallelSetup;
+use crate::{
+    subproblems::setups::{
+        SetupDynamic,
+        SetupStatic,
+        Subproblem1Setup,
+        Subproblem2Setup,
+        Subproblem2ExtendedSetup,
+        Subproblem3Setup,
+        Subproblem4Setup,
+        Subproblem5Setup,
+        Subproblem6Setup,
+    },
 
-use super::subproblems::setups::{
-    Setup,
-    Subproblem1Setup,
-    Subproblem2Setup,
-    Subproblem2ExtendedSetup,
-    Subproblem3Setup,
-    Subproblem4Setup,
-    Subproblem5Setup,
-    Subproblem6Setup,
+    inverse_kinematics::setups::SphericalToParallelSetup,
 };
 
 const TEST_ITERATIONS: usize = 1000;
@@ -17,7 +20,7 @@ const TEST_ITERATIONS: usize = 1000;
 fn run_tests() {
     // const ERROR_THRESHOLD: f64 = 1e-5;
 
-    let setups: Vec<Box<dyn Setup>> = vec![
+    let setups: Vec<Box<dyn SetupDynamic>> = vec![
         Box::new(Subproblem6Setup::new()),
         Box::new(Subproblem5Setup::new()),
         Box::new(Subproblem4Setup::new()),
@@ -47,7 +50,7 @@ fn run_tests() {
 
 #[test]
 fn run_tests_ls() {
-    let setups: Vec<Box<dyn Setup>> = vec![
+    let setups: Vec<Box<dyn SetupDynamic>> = vec![
         Box::new(Subproblem1Setup::new()),
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem3Setup::new()),
