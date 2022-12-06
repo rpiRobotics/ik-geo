@@ -17,11 +17,11 @@ use {
             forward_kinematics,
         },
 
-        spherical_to_parallel,
+        spherical_two_parallel,
     },
 };
 
-pub struct SphericalToParallelSetup {
+pub struct SphericalTwoParallelSetup {
     kin: Kinematics,
     r: Matrix3<f64>,
     t: Vector3<f64>,
@@ -30,7 +30,7 @@ pub struct SphericalToParallelSetup {
     is_ls: Vec<bool>,
 }
 
-impl SphericalToParallelSetup {
+impl SphericalTwoParallelSetup {
     pub fn new() -> Self {
         Self {
             kin: Kinematics::new(),
@@ -43,7 +43,7 @@ impl SphericalToParallelSetup {
     }
 }
 
-impl SetupDynamic for SphericalToParallelSetup {
+impl SetupDynamic for SphericalTwoParallelSetup {
     fn setup(&mut self) {
         for i in 0..6 {
             self.kin.h.set_column(i, &random_norm_vector3())
@@ -76,8 +76,12 @@ impl SetupDynamic for SphericalToParallelSetup {
         unimplemented!();
     }
 
+    fn write_output(&self) -> String {
+        unimplemented!()
+    }
+
     fn run(&mut self) {
-        (self.q, self.is_ls) = spherical_to_parallel(&self.r, &self.t, &self.kin);
+        (self.q, self.is_ls) = spherical_two_parallel(&self.r, &self.t, &self.kin);
     }
 
     fn error(&self) -> f64 {

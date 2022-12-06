@@ -59,6 +59,14 @@ impl<T: Copy> SolutionSet2<T> {
     }
 }
 
+impl<T: Copy + ToString> SolutionSet2<T> {
+    pub fn as_csv(&self) -> String {
+        let mut results = self.get_all().into_iter().map(|v| v.to_string()).collect::<Vec<String>>();
+        results.append(&mut vec![String::new(); 2 - results.len()]);
+        results.join(",")
+    }
+}
+
 impl<T: Copy> SolutionSet4<T> {
     pub fn from_vec(vec: &Vec<T>) -> Self {
         match vec.len() {
@@ -139,5 +147,13 @@ impl<T: Display> Display for SolutionSet4<T> {
             Self::Three(s1, s2, s3) => write!(f, "{{ {} {} {} }}", s1, s2, s3),
             Self::Four(s1, s2, s3, s4) => write!(f, "{{ {} {} {} {} }}", s1, s2, s3, s4),
         }
+    }
+}
+
+impl<T: Copy + ToString> SolutionSet4<T> {
+    pub fn as_csv(&self) -> String {
+        let mut results = self.get_all().into_iter().map(|v| v.to_string()).collect::<Vec<String>>();
+        results.append(&mut vec![String::new(); 4 - results.len()]);
+        results.join(",")
     }
 }

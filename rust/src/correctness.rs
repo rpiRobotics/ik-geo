@@ -11,7 +11,7 @@ use crate::{
         Subproblem6Setup,
     },
 
-    inverse_kinematics::setups::SphericalToParallelSetup,
+    inverse_kinematics::setups::SphericalTwoParallelSetup,
 };
 
 const TEST_ITERATIONS: usize = 1000;
@@ -29,7 +29,7 @@ fn run_tests() {
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem1Setup::new()),
 
-        Box::new(SphericalToParallelSetup::new()),
+        Box::new(SphericalTwoParallelSetup::new()),
     ];
 
     for mut setup in setups {

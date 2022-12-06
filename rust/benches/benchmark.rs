@@ -1,3 +1,5 @@
+use linear_subproblem_solutions_rust::inverse_kinematics::setups::SphericalTwoParallelSetup;
+
 use {
     linear_subproblem_solutions_rust::subproblems::setups::{
         SetupDynamic,
@@ -74,6 +76,14 @@ pub fn subproblem6benchmark(c: &mut Criterion) {
     c.bench_function("Subproblem 6 Benchmark", |b| b.iter(|| setup.run()));
 }
 
+pub fn spherical_two_parallel_benchmark(c: &mut Criterion) {
+    let mut setup = SphericalTwoParallelSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Spherical 2 Parallel", |b| b.iter(|| setup.run()));
+}
+
 criterion_group!(
     benches,
     subproblem1benchmark,
@@ -83,6 +93,7 @@ criterion_group!(
     subproblem4benchmark,
     subproblem5benchmark,
     subproblem6benchmark,
+    spherical_two_parallel_benchmark,
 );
 
 criterion_main!(benches);

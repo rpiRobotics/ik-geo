@@ -11,7 +11,7 @@
         path = ".../linear-subproblem-solutions/rust"
     ```
 
-3. Add to your source files where needed (Optional)
+3. Add to your source files where needed
 
     ```
     use linear_subproblem_solutions_rust as subproblems;
@@ -28,7 +28,7 @@ Run `cargo test correctness -- --nocapture` for diagnostic info
 
 #### Timing Tests
 
-Run `cargo test timing --release -- --nocapture`
+Run `cargo test timing --release -- --nocapture --test-threads 1`
 
 ### Benchmarking
 

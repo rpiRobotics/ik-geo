@@ -35,6 +35,7 @@ pub trait SetupDynamic {
     fn setup_ls(&mut self);
 
     fn setup_from_str(&mut self, raw: &str);
+    fn write_output(&self) -> String;
 
     fn run(&mut self);
 
@@ -318,6 +319,10 @@ impl SetupDynamic for Subproblem1Setup {
         self.k = Vector3::new(data[3], data[4], data[5]);
     }
 
+    fn write_output(&self) -> String {
+        format!("{}", self.theta)
+    }
+
     fn run(&mut self) {
         (self.theta, _) = subproblem1(&self.p1, &self.p2, &self.k);
     }
@@ -370,6 +375,10 @@ impl SetupDynamic for Subproblem2Setup {
         self.k1 = Vector3::new(data[3], data[4], data[5]);
         self.k2 = Vector3::new(data[6], data[7], data[8]);
         self.p2 = Vector3::new(data[9], data[10], data[11]);
+    }
+
+    fn write_output(&self) -> String {
+        format!("{},{}", self.theta1.as_csv(), self.theta2.as_csv())
     }
 
     fn run(&mut self) {
@@ -437,6 +446,10 @@ impl SetupDynamic for Subproblem2ExtendedSetup {
         self.p2 = Vector3::new(data[12], data[13], data[14]);
     }
 
+    fn write_output(&self) -> String {
+        format!("{},{}", self.theta1, self.theta2)
+    }
+
     fn run(&mut self) {
         (self.theta1, self.theta2) = subproblem2extended(&self.p0, &self.p1, &self.p2, &self.k1, &self.k2);
     }
@@ -481,6 +494,10 @@ impl SetupDynamic for Subproblem3Setup {
         self.p2 = Vector3::new(data[3], data[4], data[5]);
         self.k = Vector3::new(data[6], data[7], data[8]);
         self.d = data[9];
+    }
+
+    fn write_output(&self) -> String {
+        format!("{}", self.theta.as_csv())
     }
 
     fn run(&mut self) {
@@ -545,6 +562,10 @@ impl SetupDynamic for Subproblem4Setup {
         self.k = Vector3::new(data[3], data[4], data[5]);
         self.h = Vector3::new(data[6], data[7], data[8]);
         self.d = data[9];
+    }
+
+    fn write_output(&self) -> String {
+        format!("{}", self.theta.as_csv())
     }
 
     fn run(&mut self) {
@@ -617,6 +638,10 @@ impl SetupDynamic for Subproblem5Setup {
         self.k2 = Vector3::new(data[12], data[13], data[14]);
         self.k3 = Vector3::new(data[15], data[16], data[17]);
         self.p0 = Vector3::new(data[18], data[19], data[20]);
+    }
+
+    fn write_output(&self) -> String {
+        format!("{},{},{}", self.theta1.as_csv(), self.theta2.as_csv(), self.theta3.as_csv())
     }
 
     fn run(&mut self) {
@@ -708,6 +733,10 @@ impl SetupDynamic for Subproblem6Setup {
 
         self.d1 = data[i];
         self.d2 = data[i + 1];
+    }
+
+    fn write_output(&self) -> String {
+        format!("{},{}", self.theta1.as_csv(), self.theta2.as_csv())
     }
 
     fn run(&mut self) {

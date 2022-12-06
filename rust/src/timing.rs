@@ -1,3 +1,5 @@
+use std::io::Write;
+
 use {
     std::{
         io::{ self, Lines, BufReader, BufRead },
@@ -20,39 +22,21 @@ use {
 
 #[test]
 fn time_separate() {
-    let setups: Vec<Box<dyn SetupDynamic>> = vec![
-        Box::new(Subproblem1Setup::new()),
-        Box::new(Subproblem2Setup::new()),
-        Box::new(Subproblem2ExtendedSetup::new()),
-        Box::new(Subproblem3Setup::new()),
-        Box::new(Subproblem4Setup::new()),
-        Box::new(Subproblem5Setup::new()),
-        Box::new(Subproblem6Setup::new()),
-    ];
+    println!();
 
-    for mut setup in setups {
-        let name = setup.name();
-        let input_path = "data/".to_owned() + &name.replace(' ', "_") + ".csv";
-
-        let mut total_time = 0;
-        let mut n = 0;
-
-        for line in read_lines(&input_path).unwrap().skip(1) {
-            setup.setup_from_str(&line.unwrap());
-
-            let start = Instant::now();
-
-            setup.run();
-            total_time += start.elapsed().as_nanos();
-            n += 1;
-        }
-
-        println!("Separate\t{}\t{} ns", name, total_time / n);
-    }
+    time_subproblem_separate::<Subproblem1Setup>();
+    time_subproblem_separate::<Subproblem2Setup>();
+    time_subproblem_separate::<Subproblem2ExtendedSetup>();
+    time_subproblem_separate::<Subproblem3Setup>();
+    time_subproblem_separate::<Subproblem4Setup>();
+    time_subproblem_separate::<Subproblem5Setup>();
+    time_subproblem_separate::<Subproblem6Setup>();
 }
 
 #[test]
 fn time_batch() {
+    println!();
+
     time_subproblem_batched::<Subproblem1Setup>();
     time_subproblem_batched::<Subproblem2Setup>();
     time_subproblem_batched::<Subproblem2ExtendedSetup>();
@@ -65,22 +49,63 @@ fn time_batch() {
 fn time_subproblem_batched<S: SetupStatic + SetupDynamic>() {
     let name = <S as SetupStatic>::name();
     let input_path = "data/".to_owned() + &name.replace(' ', "_") + ".csv";
+    let output_path = "data/".to_owned() + &name.replace(' ', "_") + "_out_batched.csv";
 
+    let mut file = File::create(output_path).unwrap();
     let mut setups = Vec::new();
+    let mut results = Vec::new();
 
     for line in read_lines(&input_path).unwrap().skip(1) {
         setups.push(S::new());
         setups.last_mut().unwrap().setup_from_str(&line.unwrap());
     }
 
-    let length = setups.len() as u128;
     let start = Instant::now();
 
-    for mut setup in setups {
+    for setup in setups.iter_mut() {
         setup.run();
     }
 
-    println!("Batched \t{}\t{} ns", name, start.elapsed().as_nanos() / length);
+    let time_per_iteration = start.elapsed().as_nanos() / setups.len() as u128;
+
+    for setup in setups.iter() {
+        results.push(setup.write_output())
+    }
+
+    println!("Batched \t{}\t{} ns", name, time_per_iteration);
+
+    file.write(&results.join("\n").as_bytes()).unwrap();
+}
+
+fn time_subproblem_separate<S: SetupStatic + SetupDynamic>() {
+    let name = <S as SetupStatic>::name();
+    let input_path = "data/".to_owned() + &name.replace(' ', "_") + ".csv";
+    let output_path = "data/".to_owned() + &name.replace(' ', "_") + "_out_separate.csv";
+
+    let mut file = File::create(output_path).unwrap();
+    let mut setups = Vec::new();
+    let mut results = Vec::new();
+
+    for line in read_lines(&input_path).unwrap().skip(1) {
+        setups.push(S::new());
+        setups.last_mut().unwrap().setup_from_str(&line.unwrap());
+    }
+
+    let mut total_time = 0;
+
+    for setup in setups.iter_mut() {
+        let start = Instant::now();
+        setup.run();
+        total_time += start.elapsed().as_nanos();
+    }
+
+    for setup in setups.iter() {
+        results.push(setup.write_output())
+    }
+
+    println!("Separate\t{}\t{} ns", name, total_time / setups.len() as u128);
+
+    file.write(&results.join("\n").as_bytes()).unwrap();
 }
 
 fn read_lines(path: &str) -> io::Result<Lines<BufReader<File>>> {
