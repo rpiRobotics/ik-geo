@@ -11,14 +11,17 @@ use crate::{
         Subproblem6Setup,
     },
 
-    inverse_kinematics::setups::SphericalTwoParallelSetup,
+    inverse_kinematics::{
+        setups::SphericalTwoParallelSetup,
+        hardcoded::setups::Irb6640,
+    },
 };
 
 const TEST_ITERATIONS: usize = 1000;
 
 #[test]
 fn run_tests() {
-    // const ERROR_THRESHOLD: f64 = 1e-5;
+    const ERROR_THRESHOLD: f64 = 1e-5;
 
     let setups: Vec<Box<dyn SetupDynamic>> = vec![
         Box::new(Subproblem6Setup::new()),
@@ -30,6 +33,8 @@ fn run_tests() {
         Box::new(Subproblem1Setup::new()),
 
         Box::new(SphericalTwoParallelSetup::new()),
+
+        Box::new(Irb6640::new()),
     ];
 
     for mut setup in setups {
@@ -40,7 +45,7 @@ fn run_tests() {
             setup.run();
 
             let error = setup.error();
-            // assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
+            assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
             total_error += error;
         }
 
@@ -55,6 +60,8 @@ fn run_tests_ls() {
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem3Setup::new()),
         Box::new(Subproblem4Setup::new()),
+
+        Box::new(SphericalTwoParallelSetup::new()),
     ];
 
     for mut setup in setups {

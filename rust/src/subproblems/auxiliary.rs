@@ -30,6 +30,10 @@ pub fn random_norm_vector3() -> Vector3<f64> {
     Vector3::new(random(), random(), random()).normalize()
 }
 
+pub fn random_norm_perp_vector3(reference: &Vector3<f64>) -> Vector3<f64> {
+    random_vector3().cross(&reference).normalize()
+}
+
 pub fn random_angle() -> f64 {
     random() * std::f64::consts::PI
 }

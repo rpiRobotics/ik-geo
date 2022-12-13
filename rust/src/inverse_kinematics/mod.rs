@@ -1,5 +1,6 @@
 pub mod auxiliary;
 pub mod setups;
+pub mod hardcoded;
 
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },

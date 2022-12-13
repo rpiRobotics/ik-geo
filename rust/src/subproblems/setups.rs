@@ -23,7 +23,7 @@ use {
     nalgebra::{ Vector3, Vector2 },
 };
 
-const DELTA: f64 = 1e-12;
+pub const DELTA: f64 = 1e-12;
 
 /// An interface for setting up subproblem testing. Resposible for generating parameters, running
 /// the function, and calculating data such as the error.
