@@ -34,6 +34,10 @@ A = [H(:,1)'*A_1 H(:,2)'*A_2
 % Minimum norm solution
 % x_min = pinv(A)*[d1-h'*k1*k1'*p1-h'*k2*k2'*p2
 %                  d2-h'*k1*k1'*p3-h'*k2*k2'*p4];
+
+% Minimum norm solution, plus some vector from the null space (so Ax=b)
+% The \ operator is fast but doesn't necessarily give the least-squares solution
+% but we are adding in a vector from the null space anyways later on
 x_min = A\[d1-H(:,1)'*K(:,1)*K(:,1)'*P(:,1)-H(:,2)'*K(:,2)*K(:,2)'*P(:,2)
            d2-H(:,3)'*K(:,3)*K(:,3)'*P(:,3)-H(:,4)'*K(:,4)*K(:,4)'*P(:,4)];
 
