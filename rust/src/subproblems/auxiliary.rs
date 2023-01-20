@@ -84,6 +84,30 @@ pub fn approximate_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f
     ]).transpose().eigenvalues().unwrap()
 }
 
+pub fn solve_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
+    let a = p[0];
+    let b = p[1];
+    let c = p[2];
+    let d = p[3];
+    let e = p[4];
+
+    let p1 = 2.0*c*c*c - 9.0*b*c*d + 27.0*a*d*d + 27.0*b*b*e - 72.0*a*c*e;
+    let q1 = c*c - 3.0*b*d + 12.0*a*e;
+    let p2 = p1 + (-4.0*q1*q1*q1 + p1*p1).sqrt();
+    let q2 = (p2 / 2.0).cbrt();
+    let p3 = q1 / (3.0*a*q2) + q2 / (3.0*a);
+    let p4 = ((b*b) / (4.0*a*a) - (2.0*c) / (3.0*a) + p3).sqrt();
+    let p5 = (b*b) / (2.0*a*a) - (4.0*c) / (3.0*a) - p3;
+    let p6 = (-(b*b*b) / (a*a*a) + (4.0*b*c) / (a*a) - (8.0*d) / a) / (4.0*p4);
+
+    return Vector4::new(
+        -b / (4.0*a) - p4 / 2.0 - (p5 - p6).sqrt() / 2.0,
+        -b / (4.0*a) - p4 / 2.0 + (p5 - p6).sqrt() / 2.0,
+        -b / (4.0*a) + p4 / 2.0 - (p5 + p6).sqrt() / 2.0,
+        -b / (4.0*a) + p4 / 2.0 + (p5 + p6).sqrt() / 2.0,
+    );
+}
+
 pub fn null_space_matrix2x4(a: &Matrix2x4<f64>, epsilon: f64) -> SolutionSet2<Vector4<f64>> {
     let eigen = (a.transpose() * a).symmetric_eigen();
 
