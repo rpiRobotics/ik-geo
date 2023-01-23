@@ -55,6 +55,7 @@
     "thread": "cpp",
     "cinttypes": "cpp",
     "typeinfo": "cpp",
-    "dense": "cpp"
+    "dense": "cpp",
+    "polynomials": "cpp"
   }
 }

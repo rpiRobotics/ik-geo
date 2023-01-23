@@ -9,6 +9,7 @@
 #define __sp_4_h_
 
 #include <eigen3/Eigen/Dense>
+#include <eigen3/unsupported/Eigen/Polynomials>
 #include <iostream>
 #include "../rand_cpp.h"
 

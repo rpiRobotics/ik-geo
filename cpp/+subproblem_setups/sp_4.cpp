@@ -7,8 +7,10 @@
 
 #pragma GCC optimize(3)
 
+#include <chrono>
 #include <iostream>
 #include "sp_4.h"
+#include "../read_csv.h"
 
 using namespace Eigen;
 
@@ -70,4 +72,39 @@ double sp4_error(Eigen::Vector3d& p1, Eigen::Vector3d& p2,
                  Eigen::Vector3d& k1, Eigen::Vector3d& k2, 
                  double& theta1, double& theta2){
    return (rot(k2, theta2) * p2 - rot(k1, theta1) * p1).norm();
+}
+
+int main(int argc, char* argv[]) {
+  std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("sp_4.csv");
+  if (data.size() != 11) {
+    std::cerr << "Invalid data for sp4.\n";
+    return 0;
+  }
+
+  double time_avg = 0;
+
+  for (int i = 0; i < (int)data[0].second.size(); i ++ ) {
+    Eigen::Vector3d p1, k1, h1;
+    Eigen::Vector2d theta;
+    double d;
+    p1 << data[0].second[i], data[1].second[i], data[2].second[i];
+    k1 << data[3].second[i], data[4].second[i], data[5].second[i];
+    h1 << data[6].second[i], data[7].second[i], data[8].second[i];
+    d = data[9].second[i];
+    theta << data[10].second[i], 0;
+
+    auto start = std::chrono::steady_clock::now();
+
+    sp4_run(p1, k1, h1, d, theta);
+
+    auto end = std::chrono::steady_clock::now();
+
+    time_avg += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+  }
+
+  time_avg /= (int)data[0].second.size();
+
+  std::cout << "===== \n time (microseconds): " << time_avg << std::endl;
+
+  return 0;
 }
