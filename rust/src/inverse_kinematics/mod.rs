@@ -7,6 +7,7 @@ use {
 
     crate::subproblems::{
         subproblem1,
+        subproblem2,
         subproblem3,
         subproblem4,
 
@@ -68,6 +69,58 @@ pub fn spherical_two_parallel(r_0t: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Ki
 
                 q.push(Vector6::new(q1, q2, q3, q4, q5, q6));
                 is_ls.push(q1_is_ls || q2_is_ls || q3_is_ls || q4_is_ls || q5_is_ls || q6_is_ls)
+            }
+        }
+    }
+
+    (q, is_ls)
+}
+
+pub fn spherical_two_intersecting(r_0t: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    let mut q = Vec::with_capacity(6);
+    let mut is_ls = Vec::with_capacity(6);
+
+    let p_16 = p_0t - r_0t * kin.p.column(6) - kin.p.column(0);
+
+    let (t3, t3_is_ls) = subproblem3(&kin.p.column(3).into(), &-kin.p.column(2), &kin.h.column(2).into(), p_16.norm());
+
+    for q3 in t3.get_all() {
+        let (t1, t2, t12_is_ls) = subproblem2(
+            &p_16,
+            &(kin.p.column(2) + rot(&kin.h.column(2).into(), q3) * kin.p.column(3)),
+            &-kin.h.column(0),
+            &kin.h.column(1).into()
+        );
+
+        for (q1, q2) in t1.get_all().into_iter().zip(t2.get_all().into_iter()) {
+            let r_36 =
+                rot(&-kin.h.column(2), q3) *
+                rot(&-kin.h.column(1), q2) *
+                rot(&-kin.h.column(0), q1) *
+                r_0t;
+
+            let (t5, q5_is_ls) = subproblem4(
+                &kin.h.column(3).into(),
+                &kin.h.column(5).into(),
+                &kin.h.column(4).into(),
+                (kin.h.column(3).transpose() * r_36 * kin.h.column(5))[0],
+            );
+
+            for q5 in t5.get_all() {
+                let (q4, q4_is_ls) = subproblem1(
+                    &(rot(&kin.h.column(4).into(), q5) * kin.h.column(5)),
+                    &(r_36 * kin.h.column(5)),
+                    &kin.h.column(3).into(),
+                );
+
+                let (q6, q6_is_ls) = subproblem1(
+                    &(rot(&-kin.h.column(4), q5) * kin.h.column(3)),
+                    &(r_36.transpose() * kin.h.column(3)),
+                    &kin.h.column(5).into(),
+                );
+
+                q.push(Vector6::new(q1, q2, q3, q4, q5, q6));
+                is_ls.push(t3_is_ls || t12_is_ls || q5_is_ls || q4_is_ls || q6_is_ls);
             }
         }
     }

@@ -12,7 +12,7 @@ use crate::{
     },
 
     inverse_kinematics::{
-        setups::SphericalTwoParallelSetup,
+        setups::{SphericalTwoParallelSetup, SphericalTwoIntersectingSetup},
         hardcoded::setups::Irb6640,
     },
 };
@@ -33,6 +33,7 @@ fn run_tests() {
         Box::new(Subproblem1Setup::new()),
 
         Box::new(SphericalTwoParallelSetup::new()),
+        Box::new(SphericalTwoIntersectingSetup::new()),
 
         Box::new(Irb6640::new()),
     ];
