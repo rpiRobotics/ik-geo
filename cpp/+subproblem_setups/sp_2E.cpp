@@ -23,7 +23,7 @@ void sp_2E_setup(Vector3d &p0, Vector3d &p1, Vector3d &p2, Vector3d &k1, Vector3
 	theta2 = rand_angle();
 }
 
-void sp_2E(Vector3d &p0, Vector3d &p1, Vector3d &p2, Vector3d &k1, Vector3d &k2, 
+void sp_2E(const Vector3d &p0, const Vector3d &p1, const Vector3d &p2, const Vector3d &k1, const Vector3d &k2, 
 		  double &theta1, double &theta2) {
 	Matrix<double, 3, 1> KxP1 = k1.cross(p1);
 	Matrix<double, 3, 1> KxP2 = k2.cross(p2);
@@ -96,13 +96,10 @@ int main(int argc, char* argv[]) {
 
 	    auto end = std::chrono::steady_clock::now();
 
-	    if (!i) continue;
-
 	    time_avg += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-	    // std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << std::endl;
     }
 
-  	time_avg /= (int)data[0].second.size() - 1;
+  	time_avg /= (int)data[0].second.size();
 
   	std::cout << "===== \n time (microseconds): " << time_avg << std::endl;
 
