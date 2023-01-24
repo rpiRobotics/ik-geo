@@ -1,9 +1,19 @@
 | Subproblem | Time        | CPU info                               | OS info          |
 | ---------- | ----------- | -------------------------------------- | ---------------- |
-| 1          |   1.0314 us |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
-| 2          |   25.301 us |AMD Ryzen 7 4700U APU @ 2.70GHz         |                  |
-| 2 Ex       |   18.014 us |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
-| 3          |   6.1929 us |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
-| 4          |   4.6035 us |AMD Ryzen 7 4700U APU @ 2.70GHz         |                  |
-| 5          |   60.269 us |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
-| 6          |   170.13 us |AMD Ryzen 7 4700U APU @ 2.70GHz         |                  |
+| 1          |   0.0000 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+| 2          |   0.0000 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+| 2 Ex       |   0.0000 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+| 3          |   0.0000 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+| 4          |   0.0000 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+| 5          |   0.0000 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+| 6          |   0.0000 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+
+| Subproblem | Time        | CPU info                               | OS info          |
+| ---------- | ----------- | -------------------------------------- | ---------------- |
+| 1          |   1.3500 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
+| 2          |   3.0200 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
+| 2 Ex       |   8.4000 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
+| 3          |   3.7900 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
+| 4          |   3.0500 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
+| 5          |   1.3698 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
+| 6          |   2.0496 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
