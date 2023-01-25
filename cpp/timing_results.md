@@ -6,7 +6,7 @@
 | 3          |   122.74 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
 | 4          |   105.45 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
 | 5          |   1353.2 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
-| 6          |   xxxxxx ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
+| 6          |   2077.8 ns |Intel(R) Core(TM) i7-9750H CPU @ 2.60GHz|Ubuntu 20.04.1 LTS|
 
 | Subproblem | Time        | CPU info                               | OS info          |
 | ---------- | ----------- | -------------------------------------- | ---------------- |
