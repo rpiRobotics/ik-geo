@@ -1,5 +1,5 @@
 //---------------------------------------------------------------//
-// Name: sp_4.cpp
+// Name: sp_6.cpp
 // Author: Amar Maksumic
 // Date: 11/28/2022
 // Purpose: Port of the subproblem/sp_6.m file
@@ -204,12 +204,12 @@ int main(int argc, char* argv[]) {
 
     auto end = std::chrono::steady_clock::now();
 
-    time_avg += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   }
 
   time_avg /= (int)data[0].second.size();
 
-  std::cout << "===== \n time (microseconds): " << time_avg << std::endl;
+  std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
 
   return 0;
 }

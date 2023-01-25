@@ -5,8 +5,8 @@
 // Purpose: Port of the subproblem_setups/sp_6.m file
 //---------------------------------------------------------------//
 
-#ifndef __sp_4_h_
-#define __sp_4_h_
+#ifndef __sp_6_h_
+#define __sp_6_h_
 
 #include <eigen3/Eigen/Dense>
 #include <eigen3/unsupported/Eigen/Polynomials>
