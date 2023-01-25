@@ -12,11 +12,9 @@
 #include <eigen3/Eigen/Dense>
 #include "../rand_cpp.h"
 
-using namespace Eigen;
+void sp_3_setup(Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &k, double &d);
 
-void sp_3_setup(Vector3d &p1, Vector3d &p2, Vector3d &k, double &d);
-
-bool sp_3(Vector3d &p1, Vector3d &p2, Vector3d &k, double &d, 
+bool sp_3(Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &k, double &d, 
 		  std::vector<double> &theta);
 
 #endif

@@ -10,9 +10,7 @@
 #include "sp_3.h"
 #include "../read_csv.h"
 
-using namespace Eigen;
-
-void sp_3_setup(Vector3d &p1, Vector3d &p2, Vector3d &k, double &d) {
+void sp_3_setup(Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &k, double &d) {
 	p1 = rand_vec();
 	p2 = rand_vec();
 	k = rand_normal_vec();
@@ -20,20 +18,20 @@ void sp_3_setup(Vector3d &p1, Vector3d &p2, Vector3d &k, double &d) {
 }
 
 // return is_LS
-bool sp_3(Vector3d &p1, Vector3d &p2, Vector3d &k, double &d, 
+bool sp_3(Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &k, double &d, 
 		  std::vector<double> &theta) {
-	Matrix<double, 3, 1> KxP = k.cross(p1);
+	Eigen::Matrix<double, 3, 1> KxP = k.cross(p1);
 
-	Matrix<double, 3, 2> A_1;
+	Eigen::Matrix<double, 3, 2> A_1;
 	A_1 << KxP, -k.cross(KxP);
-	Matrix<double, 1, 2> A;
+	Eigen::Matrix<double, 1, 2> A;
 	A = -2 * p2.transpose() * A_1;
 	double norm_A_sq = A.dot(A);
 	double norm_A = sqrt(norm_A_sq);
 
 	double b = pow(d, 2) - pow((p2-k*k.transpose()*p1).norm(), 2) - pow(KxP.norm(), 2);
 
-	Matrix<double, 2, 1> x_ls = A_1.transpose() * (-2*p2*b/norm_A_sq);
+	Eigen::Matrix<double, 2, 1> x_ls = A_1.transpose() * (-2*p2*b/norm_A_sq);
 
 	theta.clear();
 	if (x_ls.dot(x_ls) > 1) {
@@ -43,11 +41,11 @@ bool sp_3(Vector3d &p1, Vector3d &p2, Vector3d &k, double &d,
 
 	double xi = sqrt(1-pow(b, 2)/norm_A_sq);
 
-	Matrix<double, 2, 1> A_perp_tilde, A_perp;
+	Eigen::Matrix<double, 2, 1> A_perp_tilde, A_perp;
 	A_perp_tilde << A(0, 1), -A(0, 0);
 	A_perp = A_perp_tilde / norm_A;
 
-	Matrix<double, 2, 1> sc_1, sc_2;
+	Eigen::Matrix<double, 2, 1> sc_1, sc_2;
 	sc_1 = x_ls + xi*A_perp;
 	sc_2 = x_ls - xi*A_perp;
 
