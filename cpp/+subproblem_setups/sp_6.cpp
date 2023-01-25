@@ -1,5 +1,5 @@
 //---------------------------------------------------------------//
-// Name: sp_4.cpp
+// Name: sp_6.cpp
 // Author: Amar Maksumic
 // Date: 11/28/2022
 // Purpose: Port of the subproblem/sp_6.m file
