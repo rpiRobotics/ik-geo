@@ -213,13 +213,13 @@ int main(int argc, char* argv[]) {
 
 	    if (!i) continue;
 
-	    time_avg += std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 	    // std::cout << std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() << std::endl;
     }
 
   	time_avg /= (int)data[0].second.size() - 1;
 
-  	std::cout << "===== \n time (microseconds): " << time_avg << std::endl;
+  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
 
 	return 0;
 }
