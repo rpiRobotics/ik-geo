@@ -12,8 +12,6 @@
 #include "sp_4.h"
 #include "../read_csv.h"
 
-using namespace Eigen;
-
 void sp4_setup(Eigen::Vector3d& p, Eigen::Vector3d& k, 
                Eigen::Vector3d& h, double& d, Eigen::Vector2d& theta){
   p = rand_vec();
