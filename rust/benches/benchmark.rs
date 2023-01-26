@@ -1,16 +1,18 @@
-use linear_subproblem_solutions_rust::inverse_kinematics::setups::SphericalTwoParallelSetup;
-
 use {
-    linear_subproblem_solutions_rust::subproblems::setups::{
-        SetupDynamic,
-        SetupStatic,
-        Subproblem1Setup,
-        Subproblem2Setup,
-        Subproblem2ExtendedSetup,
-        Subproblem3Setup,
-        Subproblem4Setup,
-        Subproblem5Setup,
-        Subproblem6Setup,
+    linear_subproblem_solutions_rust::{
+        inverse_kinematics::setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup },
+
+        subproblems::setups::{
+            SetupDynamic,
+            SetupStatic,
+            Subproblem1Setup,
+            Subproblem2Setup,
+            Subproblem2ExtendedSetup,
+            Subproblem3Setup,
+            Subproblem4Setup,
+            Subproblem5Setup,
+            Subproblem6Setup,
+        },
     },
 
     criterion::{
@@ -81,7 +83,15 @@ pub fn spherical_two_parallel_benchmark(c: &mut Criterion) {
 
     setup.setup();
 
-    c.bench_function("Spherical 2 Parallel", |b| b.iter(|| setup.run()));
+    c.bench_function("Ik Spherical 2 Parallel", |b| b.iter(|| setup.run()));
+}
+
+pub fn spherical_two_intersecting_benchmark(c: &mut Criterion) {
+    let mut setup = SphericalTwoIntersectingSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Ik Spherical 2 Intersecting", |b| b.iter(|| setup.run()));
 }
 
 criterion_group!(
@@ -94,6 +104,7 @@ criterion_group!(
     subproblem5benchmark,
     subproblem6benchmark,
     spherical_two_parallel_benchmark,
+    spherical_two_intersecting_benchmark,
 );
 
 criterion_main!(benches);

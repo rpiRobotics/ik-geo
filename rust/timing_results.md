@@ -16,9 +16,10 @@
 | 5          |      678.99 |
 | 6          |      3901.3 |
 
-| Inverse Kinematics     | Time (ns)   |
-| :--------------------- | ----------: |
-| Spherical Two Parallel |      2315.9 |
+| Inverse Kinematics         | Time (ns)   |
+| :------------------------- | ----------: |
+| Spherical Two Parallel     |      2315.9 |
+| Spherical Two Intersecting |      2120.6 |
 
 # Manual Timing
 

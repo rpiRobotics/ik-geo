@@ -116,7 +116,7 @@ pub fn spherical_two_intersecting(r_0t: &Matrix3<f64>, p_0t: &Vector3<f64>, kin:
                 let (q6, q6_is_ls) = subproblem1(
                     &(rot(&-kin.h.column(4), q5) * kin.h.column(3)),
                     &(r_36.transpose() * kin.h.column(3)),
-                    &kin.h.column(5).into(),
+                    &-kin.h.column(5),
                 );
 
                 q.push(Vector6::new(q1, q2, q3, q4, q5, q6));

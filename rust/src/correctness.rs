@@ -12,7 +12,7 @@ use crate::{
     },
 
     inverse_kinematics::{
-        setups::{SphericalTwoParallelSetup, SphericalTwoIntersectingSetup},
+        setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup },
         hardcoded::setups::Irb6640,
     },
 };
