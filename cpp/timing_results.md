@@ -10,10 +10,10 @@
 
 | Subproblem | Time        | CPU info                               | OS info          |
 | ---------- | ----------- | -------------------------------------- | ---------------- |
-| 1          |   1.3500 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
-| 2          |   3.0200 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
-| 2 Ex       |   8.4000 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
-| 3          |   3.7900 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
-| 4          |   3.0500 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
-| 5          |   1.3698 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
-| 6          |   2.0496 ns |AMD Ryzen 7 4700U APU @ 2.70GHz (PD-E)  |Ubuntu 20.04.3 LTS|
+| 1          |   108.99 ns |AMD Ryzen 7 4700U APU @ 2.00GHz         |Ubuntu 20.04.3 LTS|
+| 2          |   299.42 ns |AMD Ryzen 7 4700U APU @ 2.00GHz         |Ubuntu 20.04.3 LTS|
+| 2 Ex       |   239.06 ns |AMD Ryzen 7 4700U APU @ 2.00GHz         |Ubuntu 20.04.3 LTS|
+| 3          |   216.57 ns |AMD Ryzen 7 4700U APU @ 2.00GHz         |Ubuntu 20.04.3 LTS|
+| 4          |   181.86 ns |AMD Ryzen 7 4700U APU @ 2.00GHz         |Ubuntu 20.04.3 LTS|
+| 5          |   2124.9 ns |AMD Ryzen 7 4700U APU @ 2.00GHz         |Ubuntu 20.04.3 LTS|
+| 6          |   2593.2 ns |AMD Ryzen 7 4700U APU @ 2.00GHz         |Ubuntu 20.04.3 LTS|
