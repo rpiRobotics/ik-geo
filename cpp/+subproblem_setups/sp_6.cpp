@@ -11,8 +11,6 @@
 #include "sp_6.h"
 #include "../read_csv.h"
 
-using namespace Eigen;
-
 void find_quartic_roots(Eigen::Matrix<double, 5, 1>& coeffs, 
                         Eigen::Matrix<std::complex<double>, 4, 1>& roots) {
   /* Find the roots of a quartic polynomial */

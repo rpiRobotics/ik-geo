@@ -10,8 +10,6 @@
 #include "sp_2E.h"
 #include "../read_csv.h"
 
-using namespace Eigen;
-
 void sp_2E_setup(Eigen::Vector3d &p0, Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &k1, Eigen::Vector3d &k2, 
 		  double &theta1, double &theta2) {
 	p0 = rand_vec();
