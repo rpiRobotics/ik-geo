@@ -3,9 +3,9 @@ from math import atan2
 import numpy as np
  
 #Handle rand_py import
-if __name__ == "__main__":
+try:
    import rand_py as rand
-else:
+except:
    import libs.rand_py as rand
 
 #Inputs: 3x1 numpy arrays p1, p2, k

@@ -10,9 +10,8 @@ else:
 
 """
 Inputs:
-   p: 3x1 vector
-   k, h: 3x1 vector w/ norm = 1
-   d: 1x1 dependent on is_LS
+   p0, p1, p2, p3: 3x1 vector
+   k1, k2, k3: 3x1 vector w/ norm = 1
 Outputs:
    theta1: 1xN angle vec in rad, N = num sols
    is_LS: 1x1 bool
