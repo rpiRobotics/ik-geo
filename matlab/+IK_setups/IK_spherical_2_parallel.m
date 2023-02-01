@@ -12,7 +12,7 @@ classdef IK_spherical_2_parallel
             P.kin.H = rand_normal_vec(7);
             P.kin.H(:,3) = P.kin.H(:,2);
 
-            P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv zv rand_vec];
+            P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv rand_vec];
 
             [P.R, P.T] = fwdkin(P.kin, S.Q);
         end
@@ -27,7 +27,7 @@ classdef IK_spherical_2_parallel
 
             P.kin.H(:,1) = rand_perp_normal_vec(P.kin.H(:,2)); % make cylindrical
             
-            P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv zv rand_vec];
+            P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv rand_vec];
             P.kin.P(:,end) = 0; % Set task frame at the wrist
 
             P.kin.P(:,4) = P.kin.P(:,4) - P.kin.H(:,2) * (P.kin.H(:,2)'*(P.kin.P(:,2)+P.kin.P(:,3)+P.kin.P(:,4)));
