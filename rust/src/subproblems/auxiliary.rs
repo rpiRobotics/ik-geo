@@ -151,27 +151,24 @@ pub fn solve_2_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vec
     let e1 = b_2[1];
     let fq = (xm2.transpose() * xm2)[0] - 1.0;
 
-    let z0 = f * a * (d1 * d1) + (a * a) * (fq * fq) - d * a * d1 * fq + (a1*a1) * (f * f)
-        - 2.0 * a * fq * a1 * f - d * d1 * a1 * f + a1 * (d * d) * fq;
+    let z0 = f*a*d1*d1 + a*a*fq*fq - d*a*d1*fq + a1*a1*f*f - 2.0*a*fq*a1*f - d*d1*a1*f +
+        a1*d*d*fq;
 
-    let z1 = e1 * (d * d) * a1 - fq * d1 * a * b - 2.0 * a * fq * a1 * e - f * a1 * b1 * d
-        + 2.0 * d1 * b1 * a * f + 2.0 * e1 * fq * (a * a) + (d1 * d1) * a * e - e1 * d1 * a * d
-        - 2.0 * a * e1 * a1 * f - f * a1 * d1 * b + 2.0 * f * e * (a1 * a1) - fq * b1 * a * d - e
-        * a1 * d1 * d + 2.0 * fq * b * a1 * d;
+    let z1 = e1*d*d*a1 - fq*d1*a*b - 2.0*a*fq*a1*e - f*a1*b1*d + 2.0*d1*b1*a*f +
+        2.0*e1*fq*a*a + d1*d1*a*e - e1*d1*a*d - 2.0*a*e1*a1*f - f*a1*d1*b + 2.0*f*e*a1*a1 -
+        fq*b1*a*d - e*a1*d1*d + 2.0*fq*b*a1*d;
 
-    let z2 = (e1 * e1) * (a * a) + 2.0 * c1 * fq * (a * a) - e * a1 * d1 * b + fq * a1
-        * (b * b) - e * a1 * b1 * d - fq * b1 * a * b - 2.0 * a * e1 * a1 * e + 2.0 * d1 * b1 * a
-        * e - c1 * d1 * a * d - 2.0 * a * c1 * a1 * f + (b1 * b1) * a * f + 2.0 * e1 * b * a1 * d
-        + (e * e) * (a1 * a1) - c * a1 * d1 * d - e1 * b1 * a * d + 2.0 * f * c * (a1 * a1) - f * a1
-        * b1 * b + c1 * (d * d) * a1 + (d1 * d1) * a * c - e1 * d1 * a * b - 2.0 * a * fq * a1 * c;
+    let z2 = e1*e1*a*a + 2.0*c1*fq*a*a - e*a1*d1*b + fq*a1*b*b - e*a1*b1*d - fq*b1*a*b -
+        2.0*a*e1*a1*e + 2.0*d1*b1*a*e - c1*d1*a*d - 2.0*a*c1*a1*f + b1*b1*a*f + 2.0*e1*b*a1*d +
+        e*e*a1*a1 - c*a1*d1*d - e1*b1*a*d + 2.0*f*c*a1*a1 - f*a1*b1*b + c1*d*d*a1 + d1*d1*a*c -
+        e1*d1*a*b - 2.0*a*fq*a1*c;
 
-    let z3 = -2.0 * a * a1 * c * e1 + e1 * a1 * (b * b) + 2.0 * c1 * b * a1 * d - c * a1 * b1
-        * d + (b1 * b1) * a * e - e1 * b1 * a * b - 2.0 * a * c1 * a1 * e - e * a1 * b1 * b - c1
-        * b1 * a * d + 2.0 * e1 * c1 * (a * a) + 2.0 * e * c * (a1 * a1) - c * a1 * d1 * b + 2.0
-        * d1 * b1 * a * c - c1 * d1 * a * b;
+    let z3 = -2.0*a*a1*c*e1 + e1*a1*b*b + 2.0*c1*b*a1*d - c*a1*b1*d + b1*b1*a*e - e1*b1*a*b -
+        2.0*a*c1*a1*e - e*a1*b1*b - c1*b1*a*d + 2.0*e1*c1*a*a + 2.0*e*c*a1*a1 - c*a1*d1*b +
+        2.0*d1*b1*a*c - c1*d1*a*b;
 
-    let z4 = (a * a) * (c1 * c1) - 2.0 * a * c1 * a1 * c + (a1 * a1) * (c * c) - b * a * b1
-        * c1 - b * b1 * a1 * c + (b * b) * a1 * c1 + c * a * (b1 * b1);
+    let z4 = a*a*c1*c1 - 2.0*a*c1*a1*c + a1*a1*c*c - b*a*b1*c1 - b*b1*a1*c + b*b*a1*c1 +
+        c*a*b1*b1;
 
     let y = approximate_quartic_roots(&Vector5::new(
         Complex::from_real(z4),

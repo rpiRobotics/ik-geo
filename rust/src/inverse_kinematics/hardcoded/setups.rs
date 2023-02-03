@@ -1,4 +1,8 @@
+use crate::inverse_kinematics::auxiliary::forward_kinematics_partial;
+
 use {
+    std::f64::consts::PI,
+
     nalgebra::{ Vector3, Vector6, Matrix3 },
 
     crate::{
@@ -24,9 +28,50 @@ pub struct Irb6640 {
     is_ls: Vec<bool>,
 }
 
+pub struct KukaR8000FixedQ3 {
+    kin: Kinematics,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+    is_ls: Vec<bool>,
+}
+
+impl KukaR8000FixedQ3 {
+    const Q3: f64 = PI / 6.0;
+
+    pub fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    pub fn get_kin() -> Kinematics {
+        let mut kin = Kinematics::new();
+
+        let zv = Vector3::new(0.0, 0.0, 0.0);
+        let ey = Vector3::new(0.0, 1.0, 0.0);
+        let ez = Vector3::new(0.0, 0.0, 1.0);
+
+        kin.h = Matrix3x7::from_columns(&[ez, ey, ez, -ey, ez, ey, ez]);
+        kin.p = Matrix3x7::from_columns(&[(0.15 + 0.19) * ez, zv, 0.21 * ez, 0.19 * ez, (0.21 + 0.19) * ez, zv, zv, (0.081 + 0.045) * ez]);
+
+        kin
+    }
+
+    pub fn get_kin_partial() -> (Kinematics, Matrix3<f64>) {
+        let kin = Self::get_kin();
+        forward_kinematics_partial(&kin, Self::Q3, 2, &Matrix3::identity())
+    }
+}
+
 impl Irb6640 {
     pub fn new() -> Self {
-
         Self {
             kin: Self::get_kin(),
             r: Matrix3::zeros(),
