@@ -18,7 +18,7 @@ pub type Matrix3x8<T> = Matrix<T, U3, U8, ArrayStorage<T, 3, 8>>;
 pub struct Kinematics {
     pub joint_type: Vector6<u8>,
     pub h: Matrix3x7<f64>,
-    pub p: Matrix3x8<f64>,
+    pub p: Matrix3x7<f64>,
 }
 
 impl Kinematics {
@@ -26,7 +26,7 @@ impl Kinematics {
         Self {
             joint_type: Vector6::zeros(),
             h: Matrix3x7::zeros(),
-            p: Matrix3x8::zeros(),
+            p: Matrix3x7::zeros(),
         }
     }
 }

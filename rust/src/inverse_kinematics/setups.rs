@@ -1,3 +1,5 @@
+use super::auxiliary::Matrix3x7;
+
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },
     crate::subproblems::{
@@ -15,7 +17,6 @@ use {
     super::{
         auxiliary::{
             Kinematics,
-            Matrix3x8,
             forward_kinematics,
         },
 
@@ -89,12 +90,11 @@ impl SetupDynamic for SphericalTwoParallelSetup {
         let h_column_1: Vector3<f64> = self.kin.h.column(1).into();
         self.kin.h.set_column(2, &h_column_1);
 
-        self.kin.p = Matrix3x8::from_columns(&[
+        self.kin.p = Matrix3x7::from_columns(&[
             random_vector3(),
             random_vector3(),
             random_vector3(),
             random_vector3(),
-            Vector3::zeros(),
             Vector3::zeros(),
             Vector3::zeros(),
             random_vector3(),
@@ -112,15 +112,14 @@ impl SetupDynamic for SphericalTwoParallelSetup {
         self.kin.h.set_column(2, &h_column_1);
         self.kin.h.set_column(0, &random_norm_perp_vector3(&h_column_1));
 
-        self.kin.p = Matrix3x8::from_columns(&[
+        self.kin.p = Matrix3x7::from_columns(&[
             random_vector3(),
             random_vector3(),
             random_vector3(),
             random_vector3(),
             Vector3::zeros(),
             Vector3::zeros(),
-            Vector3::zeros(),
-            Vector3::zeros(),
+            random_vector3(),
         ]);
 
         let p_column_1: Vector3<f64> = self.kin.p.column(3).into();
@@ -196,7 +195,7 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
 
-        self.kin.p = Matrix3x8::from_columns(&[
+        self.kin.p = Matrix3x7::from_columns(&[
             random_vector3(),
             Vector3::zeros(),
             random_vector3(),
@@ -204,7 +203,6 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
             Vector3::zeros(),
             Vector3::zeros(),
             random_vector3(),
-            Vector3::zeros(),
         ]);
 
         (self.r, self.t) = forward_kinematics(&self.kin, &q);
@@ -215,7 +213,7 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
 
-        self.kin.p = Matrix3x8::from_columns(&[
+        self.kin.p = Matrix3x7::from_columns(&[
             random_vector3(),
             Vector3::zeros(),
             random_vector3(),
@@ -223,7 +221,6 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
             Vector3::zeros(),
             Vector3::zeros(),
             random_vector3(),
-            Vector3::zeros(),
         ]);
 
         self.kin.h.set_column(1, &random_norm_perp_vector3(&self.kin.h.column(0).into()));

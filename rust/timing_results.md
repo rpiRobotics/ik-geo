@@ -3,7 +3,6 @@
 | CPU          | AMD Ryzen 9 4900HS @ 3.00 GHz |
 | OS           | Windows 10 Home               |
 
-
 # Criterion
 
 | Subproblem | Time (ns)   |

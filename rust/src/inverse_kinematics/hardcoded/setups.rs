@@ -6,7 +6,6 @@ use {
             auxiliary::{
                 Kinematics,
                 Matrix3x7,
-                Matrix3x8,
                 forward_kinematics
             },
             spherical_two_parallel,
@@ -47,7 +46,7 @@ impl Irb6640 {
         let ez = Vector3::new(0.0, 0.0, 1.0);
 
         kin.h = Matrix3x7::from_columns(&[ez, ey, ey, ex, ey, ex, zv]);
-        kin.p = Matrix3x8::from_columns(&[zv, 0.32 * ex + 0.78 * ez, 1.075 * ez, 1.1425 * ex + 0.2 * ez, zv, zv, 0.2 * ex, zv]);
+        kin.p = Matrix3x7::from_columns(&[zv, 0.32 * ex + 0.78 * ez, 1.075 * ez, 1.1425 * ex + 0.2 * ez, zv, zv, 0.2 * ex]);
 
         kin
     }
