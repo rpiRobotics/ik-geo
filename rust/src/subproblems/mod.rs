@@ -1,3 +1,5 @@
+use nalgebra::U7;
+
 pub mod auxiliary;
 pub mod setups;
 
@@ -22,6 +24,7 @@ use {
     },
 };
 
+pub type Vector7<T> = Matrix<T, U7, U1, ArrayStorage<T, 7, 1>>;
 pub type Vector8<T> = Matrix<T, U8, U1, ArrayStorage<T, 8, 1>>;
 
 /**

@@ -1,5 +1,3 @@
-use nalgebra::Vector;
-
 use {
     std::fmt::{ Display, Formatter },
 
@@ -57,6 +55,17 @@ pub fn forward_kinematics(kin: &Kinematics, theta: &Vector6<f64>) -> (Matrix3<f6
     (r, p)
 }
 
+pub fn forward_kinematics_general(kin: &Kinematics, theta: &[f64]) -> (Matrix3<f64>, Vector3<f64>) {
+    let mut p: Vector3<f64> = kin.p.column(0).into();
+    let mut r = Matrix3::identity();
+
+    for (i, t) in theta.iter().enumerate() {
+        r = r * rot(&kin.h.column(i).into(), *t);
+        p = p + r * kin.p.column(i + 1);
+    }
+
+    (r, p)
+}
 
 pub fn forward_kinematics_partial(kin: &Kinematics, q_n: f64, n: usize, r_6t: &Matrix3<f64>) -> (Kinematics, Matrix3<f64>) {
     let mut kin_new = kin.clone();
