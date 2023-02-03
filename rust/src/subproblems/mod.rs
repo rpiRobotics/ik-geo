@@ -51,7 +51,7 @@ If not, minimizes `|| rot(k1, theta1) * p1 - rot(k2, theta2) * p2 ||`.
 Also returns a boolean of whether or not `{ theta1, theta2 }` is a least-squares solution.
 There may be 1 or 2 solutions for `theta1` and `theta2`.
 */
-pub fn subproblem2(p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>) -> (SolutionSet2<f64>, SolutionSet2<f64>, bool) {
+pub fn subproblem2(p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>) -> (SolutionSet2<(f64, f64)>, bool) {
     let is_ls = (p1.norm() - p2.norm()).abs() >= 1e-8;
 
     let p1 = p1.normalize();
@@ -88,23 +88,18 @@ pub fn subproblem2(p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: 
         let sc_1 = x_ls + xi * a_perp_tilde;
         let sc_2 = x_ls - xi * a_perp_tilde;
 
-        let theta1 = SolutionSet2::Two(
-            sc_1[0].atan2(sc_1[1]),
-            sc_2[0].atan2(sc_2[1]),
+        let theta = SolutionSet2::Two(
+            (sc_1[0].atan2(sc_1[1]), sc_1[2].atan2(sc_1[3])),
+            (sc_2[0].atan2(sc_2[1]), sc_2[2].atan2(sc_2[3])),
         );
 
-        let theta2 = SolutionSet2::Two(
-            sc_1[2].atan2(sc_1[3]),
-            sc_2[2].atan2(sc_2[3]),
-        );
-
-        (theta1, theta2, is_ls)
+        (theta, is_ls)
     }
     else {
         let theta1 = x_ls[0].atan2(x_ls[1]);
         let theta2 = x_ls[2].atan2(x_ls[3]);
 
-        (SolutionSet2::One(theta1), SolutionSet2::One(theta2), true)
+        (SolutionSet2::One((theta1, theta2)), true)
     }
 }
 
@@ -222,10 +217,8 @@ pub fn subproblem4(h: &Vector3<f64>, p: &Vector3<f64>, k: &Vector3<f64>, d: f64)
 Solves for `theta1`, `theta2`, and `theta3` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * (p2 + rot(k3, theta3) * p3)` if possible.
 There can be up to 4 solutions.
  */
-pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>, k3: &Vector3<f64>) -> (SolutionSet4<f64>, SolutionSet4<f64>, SolutionSet4<f64>) {
-    let mut theta1 = Vec::with_capacity(8);
-    let mut theta2 = Vec::with_capacity(8);
-    let mut theta3 = Vec::with_capacity(8);
+pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>, k3: &Vector3<f64>) -> SolutionSet4<(f64, f64, f64)> {
+    let mut theta = Vec::with_capacity(8);
 
     let p1_s = p0 + k1 * k1.transpose() * p1;
     let p3_s = p2 + k3 * k3.transpose() * p3;
@@ -283,25 +276,23 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
             if ((v1 - h * k2).norm() - (v3 - h * k2).norm()).abs() < 1e-6 {
                 let (theta2_value, _) = subproblem1(&v3, &v1, &k2);
 
-                theta1.push(sc1[0].atan2(sc1[1]));
-                theta2.push(theta2_value);
-                theta3.push(sc3[0].atan2(sc3[1]));
+                theta.push((
+                    sc1[0].atan2(sc1[1]),
+                    theta2_value,
+                    sc3[0].atan2(sc3[1]),
+                ));
             }
         }
     }
 
-    (
-        SolutionSet4::from_vec(&theta1),
-        SolutionSet4::from_vec(&theta2),
-        SolutionSet4::from_vec(&theta3),
-    )
+    SolutionSet4::from_vec(&theta)
 }
 
 /**
 Solves for `theta1` and `theta2` where `h1' * rot(k1, theta1) + h2' * rot(k2, theta2) = d1` and `h3' * rot(k3, theta1) + h4' * rot(k4, theta2) = d2`
 There can be up to 4 solutions
  */
-pub fn subproblem6(h: [&Vector3<f64>; 4], k: [&Vector3<f64>; 4], p: [&Vector3<f64>; 4], d1: f64, d2: f64) -> (SolutionSet4<f64>, SolutionSet4<f64>) {
+pub fn subproblem6(h: [&Vector3<f64>; 4], k: [&Vector3<f64>; 4], p: [&Vector3<f64>; 4], d1: f64, d2: f64) -> SolutionSet4<(f64, f64)> {
     let k1xp1 = k[0].cross(p[0]);
     let k2xp2 = k[1].cross(p[1]);
     let k3xp3 = k[2].cross(p[2]);
@@ -338,15 +329,13 @@ pub fn subproblem6(h: [&Vector3<f64>; 4], k: [&Vector3<f64>; 4], p: [&Vector3<f6
         &Matrix2::new(x_null_1[2], x_null_2[2], x_null_1[3], x_null_2[3]),
     ).get_all();
 
-    let mut theta1 = vec![0.0; xi_i.len()];
-    let mut theta2 = vec![0.0; xi_i.len()];
+    let mut theta = vec![(0.0, 0.0); xi_i.len()];
 
     for (i, xi) in xi_i.iter().enumerate() {
         let x = x_min + x_null_1 * xi.0 + x_null_2 * xi.1;
 
-        theta1[i] = x[0].atan2(x[1]);
-        theta2[i] = x[2].atan2(x[3]);
+        theta[i] = (x[0].atan2(x[1]), x[2].atan2(x[3]));
     }
 
-    (SolutionSet4::from_vec(&theta1), SolutionSet4::from_vec(&theta2))
+    SolutionSet4::from_vec(&theta)
 }

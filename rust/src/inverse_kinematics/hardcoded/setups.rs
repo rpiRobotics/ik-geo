@@ -108,7 +108,7 @@ impl KukaR800FixedQ3 {
 impl SetupDynamic for Irb6640 {
     fn setup(&mut self) {
         let q = Vector6::zeros().map(|_: f64| random_angle());
-        (self.r, self.t) = forward_kinematics(&self.kin, &q);
+        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
     fn setup_ls(&mut self) {
@@ -133,7 +133,7 @@ impl SetupDynamic for Irb6640 {
                 0.0
             }
             else {
-                let (r_t, t_t) = forward_kinematics(&self.kin, q);
+                let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
                 (r_t - self.r).norm() + (t_t - self.t).norm()
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
@@ -152,7 +152,7 @@ impl SetupDynamic for KukaR800FixedQ3 {
     fn setup(&mut self) {
         let mut q = Vector6::zeros().map(|_: f64| random_angle());
         q[2] = Self::Q3;
-        (self.r, self.t) = forward_kinematics(&self.kin, &q);
+        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
     fn setup_ls(&mut self) {

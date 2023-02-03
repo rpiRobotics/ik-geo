@@ -87,14 +87,14 @@ pub fn spherical_two_intersecting(r_0t: &Matrix3<f64>, p_0t: &Vector3<f64>, kin:
     let (t3, t3_is_ls) = subproblem3(&kin.p.column(3).into(), &-kin.p.column(2), &kin.h.column(2).into(), p_16.norm());
 
     for q3 in t3.get_all() {
-        let (t1, t2, t12_is_ls) = subproblem2(
+        let (t12, t12_is_ls) = subproblem2(
             &p_16,
             &(kin.p.column(2) + rot(&kin.h.column(2).into(), q3) * kin.p.column(3)),
             &-kin.h.column(0),
             &kin.h.column(1).into()
         );
 
-        for (q1, q2) in t1.get_all().into_iter().zip(t2.get_all().into_iter()) {
+        for (q1, q2) in t12.get_all() {
             let r_36 =
                 rot(&-kin.h.column(2), q3) *
                 rot(&-kin.h.column(1), q2) *
@@ -136,7 +136,7 @@ pub fn spherical(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> 
 
     let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
 
-    let (t1, t2, t3) = subproblem5(
+    let t123 = subproblem5(
         &-kin.p.column(1),
         &p_16,
         &kin.p.column(2).into(),
@@ -146,9 +146,7 @@ pub fn spherical(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> 
         &kin.h.column(2).into(),
     );
 
-    println!("{} {} {}", t1.get_all().len(), t2.get_all().len(), t3.get_all().len());
-
-    for ((q1, q2), q3) in t1.get_all().into_iter().zip(t2.get_all().into_iter()).zip(t3.get_all().into_iter()) {
+    for (q1, q2, q3) in t123.get_all() {
         let r_36 = rot(&-kin.h.column(2), q3) *
             rot(&-kin.h.column(1), q2) *
             rot(&-kin.h.column(0), q1) * r_06;
@@ -159,8 +157,6 @@ pub fn spherical(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> 
             &kin.h.column(4).into(),
             (kin.h.column(3).transpose() * r_36 * kin.h.column(5))[0],
         );
-
-        println!("{}", t5.get_all().len());
 
         for q5 in t5.get_all() {
             let (q4, q4_is_ls) = subproblem1(

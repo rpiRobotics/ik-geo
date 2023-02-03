@@ -1,4 +1,6 @@
-use std::fmt::{ Display, Formatter, Result };
+use std::fmt::{ Display, Formatter, Result, Debug };
+
+use crate::subproblems::setups::DELTA;
 
 #[derive(Debug, Clone)]
 pub enum SolutionSet2<T> {
@@ -15,6 +17,9 @@ pub enum SolutionSet4<T> {
     Three(T, T, T),
     Four(T, T, T, T),
 }
+
+const DELTAS_SIZE_2: usize = 4;
+const DELTAS_SIZE_4: usize = 8;
 
 impl<T: Copy> SolutionSet2<T> {
     pub fn from_vec(vec: &Vec<T>) -> Self {
@@ -57,11 +62,20 @@ impl<T: Copy> SolutionSet2<T> {
             Self::Two(s1, s2) => vec![*s1, *s2],
         }
     }
+
+    pub fn deltas() -> [(f64, f64); DELTAS_SIZE_2] {
+        [
+            (-DELTA, 0.0),
+            (DELTA, 0.0),
+            (0.0, -DELTA),
+            (0.0, DELTA),
+        ]
+    }
 }
 
-impl<T: Copy + ToString> SolutionSet2<T> {
+impl<T: Copy + Debug> SolutionSet2<T> {
     pub fn as_csv(&self) -> String {
-        let mut results = self.get_all().into_iter().map(|v| v.to_string()).collect::<Vec<String>>();
+        let mut results = self.get_all().into_iter().map(|v| format!("{v:?}")).collect::<Vec<String>>();
         results.append(&mut vec![String::new(); 2 - results.len()]);
         results.join(",")
     }
@@ -126,6 +140,19 @@ impl<T: Copy> SolutionSet4<T> {
             Self::Four(s1, s2, s3, s4) => vec![*s1, *s2, *s3, *s4],
         }
     }
+
+    pub fn deltas() -> [(f64, f64, f64, f64); DELTAS_SIZE_4] {
+        [
+            (-DELTA, 0.0, 0.0, 0.0),
+            (DELTA, 0.0, 0.0, 0.0),
+            (0.0, -DELTA, 0.0, 0.0),
+            (0.0, DELTA, 0.0, 0.0),
+            (0.0, 0.0, -DELTA, 0.0),
+            (0.0, 0.0, DELTA, 0.0),
+            (0.0, 0.0, 0.0, -DELTA),
+            (0.0, 0.0, 0.0, DELTA),
+        ]
+    }
 }
 
 impl<T: Display> Display for SolutionSet2<T> {
@@ -150,9 +177,9 @@ impl<T: Display> Display for SolutionSet4<T> {
     }
 }
 
-impl<T: Copy + ToString> SolutionSet4<T> {
+impl<T: Copy + Debug> SolutionSet4<T> {
     pub fn as_csv(&self) -> String {
-        let mut results = self.get_all().into_iter().map(|v| v.to_string()).collect::<Vec<String>>();
+        let mut results = self.get_all().into_iter().map(|v| format!("{v:?}")).collect::<Vec<String>>();
         results.append(&mut vec![String::new(); 4 - results.len()]);
         results.join(",")
     }

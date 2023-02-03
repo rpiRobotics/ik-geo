@@ -65,7 +65,7 @@ impl SphericalTwoParallelSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q);
+        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -83,7 +83,7 @@ impl SphericalTwoIntersectingSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q);
+        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -101,7 +101,7 @@ impl SphericalSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q);
+        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -127,7 +127,7 @@ impl SetupDynamic for SphericalTwoParallelSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, &q);
+        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
     fn setup_ls(&mut self) {
@@ -232,7 +232,7 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, &q);
+        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
     fn setup_ls(&mut self) {
@@ -329,7 +329,7 @@ impl SetupDynamic for SphericalSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, &q);
+        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
     fn setup_ls(&mut self) {
