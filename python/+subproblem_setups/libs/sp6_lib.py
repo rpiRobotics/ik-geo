@@ -119,6 +119,7 @@ def sp6_error(H, K, P, theta1, theta2, d1, d2):
    return e
 
 
+
 #Test Code
 if __name__ == "__main__":
    print("Starting arrays \r\n")
@@ -131,11 +132,10 @@ if __name__ == "__main__":
    d1, d2 = sp6_setup(H, K, P)
    print("d1 =", d1, "\r\nd2 =", d2, "\r\n")
 
-   #Matlab friendly output is below
+   #MATLAB friendly output is below
    print(" ".join(("H=" + str(H.T) + "K=" + str(K.T) + "P=" + str(P.T)).split()).replace("] ", "];").replace("]]", "]]\n"))
    theta1, theta2 = sp6_run(H, K, P, d1, d2)
 
    #Printing out results
    print("Results:\r\ntheta1: {}\r\ntheta2: {}\r".format(theta1, theta2))
    print("Error:", sp6_error(H, K, P, theta1, theta2, d1, d2), "\r\n")
-   
