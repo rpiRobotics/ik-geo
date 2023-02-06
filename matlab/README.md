@@ -25,6 +25,4 @@
 
 ## Dependencies
 
-[general-robotics-toolbox](https://github.com/rpiRobotics/general-robotics-toolbox) for rotation matrix, forward kinematics, Jacobian
-
 [matlab-diagrams](https://github.com/aelias36/matlab-diagrams) for a few visualizations
