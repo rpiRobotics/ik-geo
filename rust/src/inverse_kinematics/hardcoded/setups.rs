@@ -1,4 +1,4 @@
-use crate::{inverse_kinematics::{auxiliary::{forward_kinematics_partial, forward_kinematics_general}, spherical_two_intersecting}};
+use crate::{inverse_kinematics::{auxiliary::{forward_kinematics_partial, Matrix3x8, Kinematics3x8, forward_kinematics3x8, forward_kinematics_general3x8}, spherical_two_intersecting}};
 
 use {
     std::f64::consts::PI,
@@ -29,7 +29,7 @@ pub struct Irb6640 {
 }
 
 pub struct KukaR800FixedQ3 {
-    kin: Kinematics,
+    kin: Kinematics3x8,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
@@ -75,6 +75,7 @@ impl KukaR800FixedQ3 {
 
         Self {
             kin: Self::get_kin(),
+
             r: Matrix3::zeros(),
             t: Vector3::zeros(),
 
@@ -86,15 +87,15 @@ impl KukaR800FixedQ3 {
         }
     }
 
-    pub fn get_kin() -> Kinematics {
-        let mut kin = Kinematics::new();
+    pub fn get_kin() -> Kinematics3x8 {
+        let mut kin = Kinematics3x8::new();
 
         let zv = Vector3::new(0.0, 0.0, 0.0);
         let ey = Vector3::new(0.0, 1.0, 0.0);
         let ez = Vector3::new(0.0, 0.0, 1.0);
 
         kin.h = Matrix3x7::from_columns(&[ez, ey, ez, -ey, ez, ey, ez]);
-        kin.p = Matrix3x7::from_columns(&[(0.15 + 0.19) * ez, zv, 0.21 * ez, 0.19 * ez, (0.21 + 0.19) * ez, zv, (0.081 + 0.045) * ez]);
+        kin.p = Matrix3x8::from_columns(&[(0.15 + 0.19) * ez, zv, 0.21 * ez, 0.19 * ez, (0.21 + 0.19) * ez, zv, zv, (0.081 + 0.045) * ez]);
 
         kin
     }
@@ -152,7 +153,7 @@ impl SetupDynamic for KukaR800FixedQ3 {
     fn setup(&mut self) {
         let mut q = Vector6::zeros().map(|_: f64| random_angle());
         q[2] = Self::Q3;
-        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
+        (self.r, self.t) = forward_kinematics3x8(&self.kin, q.as_slice());
     }
 
     fn setup_ls(&mut self) {
@@ -180,14 +181,14 @@ impl SetupDynamic for KukaR800FixedQ3 {
                 let q_e = vec![
                     q[0],
                     q[1],
+                    Self::Q3,
                     q[2],
-                    1.0,
                     q[3],
                     q[4],
                     q[5],
                 ];
 
-                let (r_t, t_t) = forward_kinematics_general(&self.kin, &q_e);
+                let (r_t, t_t) = forward_kinematics_general3x8(&self.kin, &q_e);
                 (r_t - self.r).norm() + (t_t - self.t).norm()
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
