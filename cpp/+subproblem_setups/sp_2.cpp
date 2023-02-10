@@ -34,15 +34,15 @@ void sp2_setup_LS(Eigen::Vector3d& p1, Eigen::Vector3d& p2,
   p2 = rand_vec();
 }
 
-bool sp2_run(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
-             Eigen::Vector3d& k1, Eigen::Vector3d& k2, 
-             double& theta1, double& theta2){
+bool sp2_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
+             const Eigen::Vector3d& k1, const Eigen::Vector3d& k2, 
+             std::vector<double>& theta1, std::vector<double>& theta2){
 
-  p1 = p1/p1.norm();
-  p2 = p2/p2.norm();
+  Eigen::Vector3d p_1 = p1/p1.norm();
+  Eigen::Vector3d p_2 = p2/p2.norm();
 
-  Eigen::Matrix<double, 3, 1> KxP1 = k1.cross(p1);
-  Eigen::Matrix<double, 3, 1> KxP2 = k2.cross(p2);
+  Eigen::Matrix<double, 3, 1> KxP1 = k1.cross(p_1);
+  Eigen::Matrix<double, 3, 1> KxP2 = k2.cross(p_2);
 
   Eigen::Matrix<double, 3, 2> A_1, A_2; 
   A_1 << KxP1, -k1.cross(KxP1);
@@ -51,8 +51,8 @@ bool sp2_run(Eigen::Vector3d& p1, Eigen::Vector3d& p2,
   double radius_1_sq = KxP1.dot(KxP1);
   double radius_2_sq = KxP2.dot(KxP2);
 
-  double k1_d_p1 = k1.dot(p1);
-  double k2_d_p2 = k2.dot(p2);
+  double k1_d_p1 = k1.dot(p_1);
+  double k2_d_p2 = k2.dot(p_2);
   double k1_d_k2 = k1.dot(k2);
   
   double ls_frac = 1/(1-(k1_d_k2*k1_d_k2));
@@ -79,20 +79,22 @@ bool sp2_run(Eigen::Vector3d& p1, Eigen::Vector3d& p2,
     Eigen::Matrix<double, 4, 1> sc_1 = x_ls + xi*A_perp_tilde;
     Eigen::Matrix<double, 4, 1> sc_2 = x_ls - xi*A_perp_tilde;
 
-    theta1 = atan2(sc_1(0, 0), sc_1(1, 0)) + atan2(sc_2(0, 0), sc_2(1, 0));
-    theta2 = atan2(sc_1(0, 0), sc_1(1, 0)) + atan2(sc_2(0, 0), sc_2(1, 0));
+    theta1[0] = (atan2(sc_1(0, 0), sc_1(1, 0)));
+    theta1[0] = (atan2(sc_2(0, 0), sc_2(1, 0)));
+    theta2.push_back(atan2(sc_1(0, 0), sc_1(1, 0)));
+    theta2.push_back(atan2(sc_2(0, 0), sc_2(1, 0)));
     return false;
   } else {
-    theta1 = atan2(x_ls(0, 0), x_ls(1, 0));
-    theta2 = atan2(x_ls(2, 0), x_ls(3, 0));
+    theta1[0] = (atan2(x_ls(0, 0), x_ls(1, 0)));
+    theta2[0] = (atan2(x_ls(2, 0), x_ls(3, 0)));
     return true;
   }
 }
 
 double sp2_error(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
                  Eigen::Vector3d& k1, Eigen::Vector3d& k2, 
-                 double& theta1, double& theta2){
-  return (rot(k2, theta2) * p2 - rot(k1, theta1) * p1).norm();
+                 std::vector<double>& theta1, std::vector<double>& theta2){
+  return (rot(k2, theta2[0]) * p2 - rot(k1, theta1[0]) * p1).norm();
 }
 
 int main(int argc, char* argv[]) {
@@ -106,13 +108,13 @@ int main(int argc, char* argv[]) {
 
   for (int i = 0; i < (int)data[0].second.size(); i ++ ) {
     Eigen::Vector3d p1, p2, k1, k2;
-    double theta1, theta2;
+    std::vector<double> theta1, theta2;
     p1 << data[0].second[i], data[1].second[i], data[2].second[i];
     k1 << data[3].second[i], data[4].second[i], data[5].second[i];
     k2 << data[6].second[i], data[7].second[i], data[8].second[i];
     p2 << data[9].second[i], data[10].second[i], data[11].second[i];
-    theta1 = data[12].second[i];
-    theta2 = data[13].second[i];
+    theta1.push_back(data[12].second[i]);
+    theta2.push_back(data[13].second[i]);
 
     auto start = std::chrono::steady_clock::now();
 

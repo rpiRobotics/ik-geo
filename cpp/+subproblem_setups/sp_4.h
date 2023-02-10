@@ -19,8 +19,8 @@ void sp4_setup_LS(Eigen::Vector3d& p, Eigen::Vector3d& k,
                   Eigen::Vector3d& h, double& d, Eigen::Vector2d& theta);
 
 // return is_LS
-bool sp4_run(Eigen::Vector3d& p, Eigen::Vector3d& k, 
-             Eigen::Vector3d& h, double& d, Eigen::Vector2d& theta);
+bool sp4_run(const Eigen::Vector3d& p, const Eigen::Vector3d& k, 
+             const Eigen::Vector3d& h, const double& d, std::vector<double>& theta);
 
 double sp4_error(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
                  Eigen::Vector3d& k1, Eigen::Vector3d& k2, 

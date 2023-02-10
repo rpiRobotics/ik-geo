@@ -2,6 +2,7 @@
 #include <math.h>
 #include <random>
 #include <eigen3/Eigen/Core>
+#include <vector>
 
 #ifndef __rand_cpp__
 #define __rand_cpp__
@@ -24,12 +25,25 @@ Eigen::Matrix<double, 3, 3> hat(const Eigen::Matrix<double, 3, Eigen::Dynamic>& 
 }
 
 //Create a random angle
-double rand_angle(int N = 1){
+double rand_angle(){
+  std::random_device rd;
+  std::default_random_engine eng(rd());
+  std::uniform_real_distribution<double> distr(0, 1);
+
+  double theta = distr(eng)*2*M_PI-M_PI;
+
+  return theta;
+}
+
+Eigen::Matrix<double, Eigen::Dynamic, 1> rand_angle(int N){
   std::random_device rd;
   std::default_random_engine eng(rd());
   std::uniform_real_distribution<double> distr(0, N);
+  Eigen::Matrix<double, Eigen::Dynamic, 1> theta;
 
-  double theta = distr(eng)*2*M_PI-M_PI;
+  for (int i = 0; i < N; i++) {
+    theta(i, 0) = distr(eng)*2*M_PI-M_PI;
+  }
 
   return theta;
 }
@@ -55,12 +69,12 @@ Eigen::Matrix<double, 3, Eigen::Dynamic> rand_normal_vec(int size = 1){
   return v;
 }
 
-//Only works with input vectors of size 1.  Same as MATLAB implementation
-// Eigen::VectorXd rand_perp_normal_vec(const Eigen::VectorXd& vec){
-//    Eigen::VectorXd randCross = rand_vec();
-//    randCross = randCross.cross(vec);
-//    return randCross/randCross.norm();
-// }
+// Only works with input vectors of size 1.  Same as MATLAB implementation
+Eigen::VectorXd rand_perp_normal_vec(const Eigen::VectorXd& vec){
+   Eigen::VectorXd randCross = rand_vec();
+   randCross = randCross.cross(vec);
+   return randCross/randCross.norm();
+}
 
 //Create 3x3 rotation matrix using the Euler Rodrigues formula
 //TODO: Compare notes

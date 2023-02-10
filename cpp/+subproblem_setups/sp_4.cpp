@@ -32,8 +32,8 @@ void sp4_setup_LS(Eigen::Vector3d& p, Eigen::Vector3d& k,
   d = ((double)rand() / (double)(RAND_MAX));
 }
 
-bool sp4_run(Eigen::Vector3d& p, Eigen::Vector3d& k, 
-             Eigen::Vector3d& h, double& d, Eigen::Vector2d& theta){
+bool sp4_run(const Eigen::Vector3d& p, const Eigen::Vector3d& k, 
+             const Eigen::Vector3d& h, const double& d, std::vector<double>& theta){
   Eigen::Matrix<double, 3, 1> A_11 = k.cross(p);
   Eigen::Matrix<double, 3, 2> A_1;
   A_1 << A_11, -k.cross(A_11);
@@ -58,10 +58,11 @@ bool sp4_run(Eigen::Vector3d& p, Eigen::Vector3d& k,
 
     double theta_1 = atan2(sc_1(0, 0), sc_1(1, 0));
     double theta_2 = atan2(sc_2(0, 0), sc_2(1, 0));
-    theta << theta_1,  theta_2;
+    theta[0] = (theta_1);
+    theta.push_back(theta_2);
     return false;
   } else {
-    theta << atan2(x_ls(0, 0), x_ls(1, 0)), 0;
+    theta[0] = (atan2(x_ls(0, 0), x_ls(1, 0)));
     return true;
   }
 }
@@ -83,13 +84,13 @@ int main(int argc, char* argv[]) {
 
   for (int i = 0; i < (int)data[0].second.size(); i ++ ) {
     Eigen::Vector3d p1, k1, h1;
-    Eigen::Vector2d theta;
+    std::vector<double> theta;
     double d;
     p1 << data[0].second[i], data[1].second[i], data[2].second[i];
     k1 << data[3].second[i], data[4].second[i], data[5].second[i];
     h1 << data[6].second[i], data[7].second[i], data[8].second[i];
     d = data[9].second[i];
-    theta << data[10].second[i], 0;
+    theta.push_back(data[10].second[i]);
 
     auto start = std::chrono::steady_clock::now();
 
