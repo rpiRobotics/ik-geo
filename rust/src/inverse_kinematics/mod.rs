@@ -178,3 +178,13 @@ pub fn spherical(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> 
 
     (q, is_ls)
 }
+
+pub fn three_parallel_two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    let mut q = Vec::with_capacity(6);
+    let mut is_ls = Vec::with_capacity(6);
+
+    let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
+
+
+    (q, is_ls)
+}
