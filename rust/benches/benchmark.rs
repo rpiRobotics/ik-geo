@@ -1,3 +1,5 @@
+use linear_subproblem_solutions_rust::inverse_kinematics::setups::SphericalSetup;
+
 use {
     linear_subproblem_solutions_rust::{
         inverse_kinematics::setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup },
@@ -94,6 +96,14 @@ pub fn spherical_two_intersecting_benchmark(c: &mut Criterion) {
     c.bench_function("Ik Spherical 2 Intersecting", |b| b.iter(|| setup.run()));
 }
 
+pub fn spherical_benchmark(c: &mut Criterion) {
+    let mut setup = SphericalSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Ik Spherical", |b| b.iter(|| setup.run()));
+}
+
 criterion_group!(
     benches,
     subproblem1benchmark,
@@ -105,6 +115,7 @@ criterion_group!(
     subproblem6benchmark,
     spherical_two_parallel_benchmark,
     spherical_two_intersecting_benchmark,
+    spherical_benchmark,
 );
 
 criterion_main!(benches);

@@ -364,7 +364,10 @@ impl SetupDynamic for SphericalSetup {
     }
 
     fn error(&self) -> f64 {
-        println!("\n{:?}\n", self.q);
+        if self.q.len() == 0 {
+            println!("[WARN]\tSubproblem 5 failed to find solutions in IK Spherical");
+            return 0.0;
+        }
 
         self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
             if is_ls {

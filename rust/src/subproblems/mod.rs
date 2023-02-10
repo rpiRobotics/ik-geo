@@ -218,6 +218,8 @@ Solves for `theta1`, `theta2`, and `theta3` where `p0 + rot(k1, theta1) * p1 = r
 There can be up to 4 solutions.
  */
 pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>, k3: &Vector3<f64>) -> SolutionSet4<(f64, f64, f64)> {
+    const EPSILON: f64 = 1e-12;
+
     let mut theta = Vec::with_capacity(8);
 
     let p1_s = p0 + k1 * k1.transpose() * p1;
@@ -242,7 +244,7 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
     }
 
     let all_roots = solve_quartic_roots(&eqn).transpose();
-    let h_vec = DVector::from_vec(all_roots.into_iter().filter(|c| c.im == 0.0).map(|c| c.re).collect());
+    let h_vec = DVector::from_vec(all_roots.into_iter().filter(|c| c.im.abs() < EPSILON).map(|c| c.re).collect());
 
     let kxp1 = k1.cross(p1);
     let kxp3 = k3.cross(p3);

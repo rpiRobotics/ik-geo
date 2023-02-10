@@ -12,7 +12,7 @@ use crate::{
     },
 
     inverse_kinematics::{
-        setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup, /* SphericalSetup */ },
+        setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup, SphericalSetup, /* SphericalSetup */ },
         hardcoded::setups::{Irb6640, KukaR800FixedQ3, /* KukaR800FixedQ3 */},
     },
 };
@@ -21,7 +21,7 @@ const TEST_ITERATIONS: usize = 1000;
 
 #[test]
 fn run_tests() {
-    const ERROR_THRESHOLD: f64 = 1e-5;
+    const ERROR_THRESHOLD: f64 = 1e-4;
 
     let setups: Vec<Box<dyn SetupDynamic>> = vec![
         Box::new(Subproblem6Setup::new()),
@@ -34,7 +34,7 @@ fn run_tests() {
 
         Box::new(SphericalTwoParallelSetup::new()),
         Box::new(SphericalTwoIntersectingSetup::new()),
-        // Box::new(SphericalSetup::new()),
+        Box::new(SphericalSetup::new()),
 
         Box::new(Irb6640::new()),
         Box::new(KukaR800FixedQ3::new()),

@@ -3,6 +3,7 @@
 | CPU          | AMD Ryzen 9 4900HS @ 3.00 GHz |
 | OS           | Windows 10 Home               |
 
+
 # Criterion
 
 | Subproblem | Time (ns)   |
@@ -19,6 +20,8 @@
 | :------------------------- | ----------: |
 | Spherical Two Parallel     |      2315.9 |
 | Spherical Two Intersecting |      2120.6 |
+| Spherical                  |      2993.6 |
+
 
 # Manual Timing
 

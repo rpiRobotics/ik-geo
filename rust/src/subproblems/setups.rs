@@ -627,6 +627,7 @@ impl SetupDynamic for Subproblem5Setup {
         let len = theta.len();
 
         if len == 0 {
+            println!("[WARN]\tSubproblem 5 failed to find solutions");
             return 0.0;
         }
 

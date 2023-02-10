@@ -162,7 +162,7 @@ pub fn spherical(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> 
             let (q4, q4_is_ls) = subproblem1(
                 &(rot(&kin.h.column(4).into(), q5) * kin.h.column(5)),
                 &(r_36 * kin.h.column(5)),
-                &-kin.h.column(3)
+                &kin.h.column(3).into(),
             );
 
             let (q6, q6_is_ls) = subproblem1(
