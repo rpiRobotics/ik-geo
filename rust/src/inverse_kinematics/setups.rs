@@ -1,5 +1,3 @@
-use super::{auxiliary::Matrix3x7, spherical};
-
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },
     crate::subproblems::{
@@ -17,11 +15,13 @@ use {
     super::{
         auxiliary::{
             Kinematics,
+            Matrix3x7,
             forward_kinematics,
         },
 
         spherical_two_parallel,
         spherical_two_intersecting,
+        spherical,
     },
 };
 

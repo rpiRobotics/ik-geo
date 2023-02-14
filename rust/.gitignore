@@ -1,6 +1,9 @@
 # Compilation directory
 target
 
+# Libraries
+lib
+
 # Dependancy info
 Cargo.lock
 

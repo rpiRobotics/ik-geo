@@ -33,3 +33,7 @@ Run `cargo test timing --release -- --nocapture --test-threads 1`
 ### Benchmarking
 
 Run `cargo bench`
+
+### Linking ikfast
+
+Compile `kuka_kr30l16.cpp` into static library and place into `lib`

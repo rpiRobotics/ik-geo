@@ -1,5 +1,3 @@
-use crate::subproblems::subproblem5;
-
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
@@ -12,6 +10,7 @@ use {
         subproblem2,
         subproblem3,
         subproblem4,
+        subproblem5,
 
         auxiliary::rot
     },
@@ -179,6 +178,7 @@ pub fn spherical(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> 
     (q, is_ls)
 }
 
+/*
 pub fn three_parallel_two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> (Vec<Vector6<f64>>, Vec<bool>) {
     let mut q = Vec::with_capacity(6);
     let mut is_ls = Vec::with_capacity(6);
@@ -188,3 +188,4 @@ pub fn three_parallel_two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>,
 
     (q, is_ls)
 }
+*/
