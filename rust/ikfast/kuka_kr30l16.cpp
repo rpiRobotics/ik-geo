@@ -23,7 +23,7 @@ using namespace ikfast;
 
 // check if the included ikfast version matches what this file was compiled with
 #define IKFAST_COMPILE_ASSERT(x) extern int __dummy[(int)x]
-// CODE MODIFIED: 60 is the actual version number of this file but I couldn't find ikfast.h version 60 - Joyal Mathew
+// NOTE: 60 is the actual version number of this file but ikfast.h version 60 was not available
 // IKFAST_COMPILE_ASSERT(IKFAST_VERSION==60);
 IKFAST_COMPILE_ASSERT(IKFAST_VERSION==62);
 
@@ -1483,7 +1483,7 @@ IKFAST_API const char* GetIkFastVersion() { return IKFAST_STRINGIZE(IKFAST_VERSI
 } // end namespace
 #endif
 
-// CODE MODIFIED: the code below is to be called from rust - Joyal Mathew
+// NOTE: the function below is for interoperability with rust
 
 extern "C" size_t kuka_kr30l16_c(const IkReal *rotation, const IkReal *translation, IkReal *q) {
     IkSolutionList<IkReal> solutions;

@@ -133,6 +133,8 @@ pub fn null_space_matrix2x4(a: &Matrix2x4<f64>, epsilon: f64) -> SolutionSet2<Ve
 }
 
 pub fn solve_2_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vector2<f64>, xn2: &Matrix2<f64>) -> SolutionSet4<(f64, f64)> {
+    const EPSILON: f64 = 1e-12;
+
     let a_1 = xn1.transpose() * xn1;
     let a = a_1[0];
     let b = 2.0 * a_1[(1, 0)];
@@ -170,7 +172,7 @@ pub fn solve_2_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vec
     let z4 = a*a*c1*c1 - 2.0*a*c1*a1*c + a1*a1*c*c - b*a*b1*c1 - b*b1*a1*c + b*b*a1*c1 +
         c*a*b1*b1;
 
-    let y = approximate_quartic_roots(&Vector5::new(
+    let y = solve_quartic_roots(&Vector5::new(
         Complex::from_real(z4),
         Complex::from_real(z3),
         Complex::from_real(z2),
@@ -178,8 +180,8 @@ pub fn solve_2_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vec
         Complex::from_real(z0)
     ));
 
-    let y_sq = y.iter().filter(|z| z.im == 0.0).map(|z| z.re * z.re).collect::<Vec<f64>>();
-    let y = y.iter().filter(|z| z.im == 0.0).map(|z| z.re).collect::<Vec<f64>>();
+    let y_sq = y.iter().filter(|z| z.im.abs() < EPSILON).map(|z| z.re * z.re).collect::<Vec<f64>>();
+    let y = y.iter().filter(|z| z.im.abs() < EPSILON).map(|z| z.re).collect::<Vec<f64>>();
     let y_sq = DVector::from_vec(y_sq);
     let y = DVector::from_vec(y);
 
