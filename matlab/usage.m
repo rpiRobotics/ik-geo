@@ -1,5 +1,3 @@
-% Make sure to add path to general-robotics-toolbox
-
 help subproblem
 
 %% Subproblem 1

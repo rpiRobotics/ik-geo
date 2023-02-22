@@ -40,12 +40,16 @@ delta3 = dot(k2,p3_s);
 
 [P_1, R_1] = cone_polynomials(p0, k1, p1, p1_s, k2);
 [P_3, R_3] = cone_polynomials(p2, k3, p3, p3_s, k2);
-% global H_ap
-% global N_ap
-% global x1_ap
-% sign = [1 -1];
-% t1 = -H_ap^2 + polyval(P_1, H_ap) + sign*sqrt(polyval(R_1, H_ap));
-% t3 = -H_ap^2 + polyval(P_3, H_ap) + sign*sqrt(polyval(R_3, H_ap));
+
+% -H^2 + P(H) +- sqrt(R(H))
+% E1_p = poly2sym(P_1) + sqrt(poly2sym(R_1));
+% E1_n = poly2sym(P_1) - sqrt(poly2sym(R_1));
+% E3_p = poly2sym(P_3) + sqrt(poly2sym(R_3));
+% E3_n = poly2sym(P_3) - sqrt(poly2sym(R_3));
+% fplot(E1_p); hold on
+% fplot(E1_n);
+% fplot(E3_p);
+% fplot(E3_n); hold off
 
 % Now solve the quadratic for H
 P_13 = P_1 - P_3;
@@ -55,9 +59,11 @@ RHS = R_3 - R_1 - P_13_sq;
 
 EQN = conv2(RHS,RHS)-4*conv2(P_13_sq,R_1);
 
-all_roots = roots(EQN)';
-H_vec = all_roots(real(all_roots) == all_roots);
-H_vec = real(H_vec); % for coder;
+
+all_roots = subproblem.quartic_roots(EQN)'; %all_roots = roots(EQN)';
+
+H_vec = all_roots( abs(imag(all_roots)) < 1e-6 ); %H_vec = all_roots(real(all_roots) == all_roots);
+H_vec = real(H_vec);
 
 % Find v_1(H_star) and v_3(H_star) for each branch
 % and use subproblem 1
@@ -77,6 +83,13 @@ H = H_vec(i_H);
 
 const_1 = A_1'*k2*(H-delta1);
 const_3 = A_3'*k2*(H-delta3);
+if (norm(A_1'*k2)^2 - (H-delta1)^2) < 0
+    continue
+end
+if(norm(A_3'*k2)^2 - (H-delta3)^2) < 0
+    continue
+end
+
 pm_1 = J*A_1'*k2*sqrt(norm(A_1'*k2)^2 - (H-delta1)^2);
 pm_3 = J*A_3'*k2*sqrt(norm(A_3'*k2)^2 - (H-delta3)^2);
 

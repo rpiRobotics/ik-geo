@@ -42,7 +42,7 @@ x_min = A\[d1-H(:,1)'*K(:,1)*K(:,1)'*P(:,1)-H(:,2)'*K(:,2)*K(:,2)'*P(:,2)
            d2-H(:,3)'*K(:,3)*K(:,3)'*P(:,3)-H(:,4)'*K(:,4)*K(:,4)'*P(:,4)];
 
 % Null space
-x_null = null(A);
+x_null = qr_null(A); % x_null = null(A);
 x_null_1 = x_null(:,1);
 x_null_2 = x_null(:,2);
 
@@ -64,4 +64,11 @@ for i = 1:length(xi_1)
     theta2(i) = atan2(x(3),x(4));
 end
 
+end
+
+function n = qr_null(A)
+    % QR factorization is about 2x faster than null() which uses SVD
+
+    [Q,~] = qr(A');
+    n = Q(:,3:4);
 end
