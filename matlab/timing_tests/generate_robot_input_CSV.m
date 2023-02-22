@@ -2,14 +2,14 @@
 N = 10;
 
 setups = {
-    subproblem_setups.sp_1
-    subproblem_setups.sp_2
-    subproblem_setups.sp_2E
-    subproblem_setups.sp_3
-    subproblem_setups.sp_4
-    subproblem_setups.sp_5
-    subproblem_setups.sp_6
-    };
+    IK_setups.IK_gen_6_dof
+    IK_setups.IK_2_intersecting
+    IK_setups.IK_spherical
+    IK_setups.IK_spherical_2_intersecting
+    IK_setups.IK_spherical_2_parallel
+    IK_setups.IK_3_parallel
+    IK_setups.IK_3_parallel_2_intersecting
+};
 
 for i = 1:length(setups)
     setup = setups{i};
@@ -23,17 +23,22 @@ for i = 1:length(setups)
     writetable(T, file_name);
     save(class_name(end)+".mat", "P_list", "S_list");
 end
+
 %%
 function [T, P_list, S_list] = get_table(setup, N)
     [P, S] = setup.setup;
-    names = [get_col_names(P) get_col_names(S)];
+    P_CSV.H = P.kin.H;
+    P_CSV.P = P.kin.P;
+    P_CSV.R = P.R;
+    P_CSV.T = P.T;
+    names = [get_col_names(P_CSV) get_col_names(S)];
     P_list = repmat(P,N,0);
     S_list = repmat(S,N,0);
     
     M = nan(N, length(names));
     for i = 1:N
         [P, S] = setup.setup;
-        M(i,:) = [get_table_row(P) get_table_row(S)];
+        M(i,:) = [get_table_row(P_CSV) get_table_row(S)];
         P_list(i) = P;
         S_list(i) = S;
     
