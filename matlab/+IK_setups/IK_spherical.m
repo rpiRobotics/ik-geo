@@ -8,7 +8,7 @@ classdef IK_spherical
             S.Q = rand_angle([6 1]);
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv rand_vec];
 
             [P.R, P.T] = fwdkin(P.kin, S.Q);
@@ -19,7 +19,7 @@ classdef IK_spherical
 
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.P = [rand_vec rand_vec rand_vec rand_vec zv zv rand_vec];
 
             P.R = rot(rand_normal_vec, rand_angle);
