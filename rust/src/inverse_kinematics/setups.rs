@@ -160,6 +160,8 @@ impl SetupDynamic for SphericalTwoParallelSetup {
     }
 
     fn setup_ls(&mut self) {
+        unimplemented!();
+        /*
         for i in 0..6 {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
@@ -192,6 +194,7 @@ impl SetupDynamic for SphericalTwoParallelSetup {
 
         self.r = rot(&random_norm_vector3(), random_angle());
         self.t = random_vector3();
+        */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {
@@ -218,24 +221,7 @@ impl SetupDynamic for SphericalTwoParallelSetup {
     }
 
     fn is_at_local_min(&self) -> bool {
-        for q in &self.q {
-            let error = self.calculate_error(q);
-            let mut q_test: Vector6<f64> = q.clone();
-
-            for sign in [-1.0, 1.0] {
-                for i in 0..q.len() {
-                    q_test[i] += sign * DELTA;
-
-                    if self.calculate_error(&q_test) < error {
-                        return false;
-                    }
-
-                    q_test[i] = q[i];
-                }
-            }
-        }
-
-        true
+        unimplemented!();
     }
 
     fn name(&self) -> &'static str {
@@ -265,6 +251,8 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
     }
 
     fn setup_ls(&mut self) {
+        unimplemented!();
+        /*
         for i in 0..6 {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
@@ -289,6 +277,7 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
 
         self.r = rot(&random_norm_vector3(), random_angle());
         self.t = random_vector3();
+        */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {
@@ -315,24 +304,7 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
     }
 
     fn is_at_local_min(&self) -> bool {
-        for q in &self.q {
-            let error = self.calculate_error(q);
-            let mut q_test: Vector6<f64> = q.clone();
-
-            for sign in [-1.0, 1.0] {
-                for i in 0..q.len() {
-                    q_test[i] += sign * DELTA;
-
-                    if self.calculate_error(&q_test) < error {
-                        return false;
-                    }
-
-                    q_test[i] = q[i];
-                }
-            }
-        }
-
-        true
+        unimplemented!();
     }
 
     fn name(&self) -> &'static str {
@@ -362,22 +334,25 @@ impl SetupDynamic for SphericalSetup {
     }
 
     fn setup_ls(&mut self) {
+        unimplemented!();
+        /*
         for i in 0..6 {
             self.kin.h.set_column(i, &random_norm_vector3());
-
-            self.kin.p = Matrix3x7::from_columns(&[
-                random_vector3(),
-                random_vector3(),
-                random_vector3(),
-                random_vector3(),
-                Vector3::zeros(),
-                Vector3::zeros(),
-                random_vector3(),
-            ]);
-
-            self.r = rot(&random_norm_vector3(), random_angle());
-            self.t = random_vector3();
         }
+
+        self.kin.p = Matrix3x7::from_columns(&[
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            Vector3::zeros(),
+            Vector3::zeros(),
+            random_vector3(),
+        ]);
+
+        self.r = rot(&random_norm_vector3(), random_angle());
+        self.t = random_vector3();
+         */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {
@@ -409,24 +384,7 @@ impl SetupDynamic for SphericalSetup {
     }
 
     fn is_at_local_min(&self) -> bool {
-        for q in &self.q {
-            let error = self.calculate_error(q);
-            let mut q_test: Vector6<f64> = q.clone();
-
-            for sign in [-1.0, 1.0] {
-                for i in 0..q.len() {
-                    q_test[i] += sign * DELTA;
-
-                    if self.calculate_error(&q_test) < error {
-                        return false;
-                    }
-
-                    q_test[i] = q[i];
-                }
-            }
-        }
-
-        true
+        unimplemented!();
     }
 
     fn name(&self) -> &'static str {
@@ -460,6 +418,8 @@ impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
     }
 
     fn setup_ls(&mut self) {
+        unimplemented!();
+        /*
         for i in 0..6 {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
@@ -487,6 +447,7 @@ impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
 
         self.r = rot(&random_norm_vector3(), random_angle());
         self.t = random_vector3();
+        */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {
@@ -513,24 +474,7 @@ impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
     }
 
     fn is_at_local_min(&self) -> bool {
-        for q in &self.q {
-            let error = self.calculate_error(q);
-            let mut q_test: Vector6<f64> = q.clone();
-
-            for sign in [-1.0, 1.0] {
-                for i in 0..q.len() {
-                    q_test[i] += sign * DELTA;
-
-                    if self.calculate_error(&q_test) < error {
-                        return false;
-                    }
-
-                    q_test[i] = q[i];
-                }
-            }
-        }
-
-        true
+        unimplemented!();
     }
 
     fn name(&self) -> &'static str {

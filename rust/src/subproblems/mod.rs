@@ -43,8 +43,6 @@ pub fn subproblem1(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>) -> (f
     (theta, is_ls)
 }
 
-// TODO: Transition to using types like SolutionSet2<(f64, f64)> rather than (SolutionSet2<f64>, SolutionSet2<f64>)
-
 /**
 Solves for `theta1` and `theta2` where `rot(k1, theta1) * p1 = rot(k2, theta2) * p2` if possible.
 If not, minimizes `|| rot(k1, theta1) * p1 - rot(k2, theta2) * p2 ||`.
