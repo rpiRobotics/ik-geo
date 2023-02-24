@@ -24,7 +24,7 @@ void sp_5_setup(Eigen::Vector3d &p0, Eigen::Vector3d &p1, Eigen::Vector3d &p2, E
 	k3 = rand_normal_vec();
 }
 
-void cone_polynomials(Eigen::Vector3d &p0_i, Eigen::Vector3d &k_i, Eigen::Vector3d &p_i, Eigen::Vector3d &p_i_s, Eigen::Vector3d &k2, 
+void cone_polynomials(const Eigen::Vector3d &p0_i, const Eigen::Vector3d &k_i, const Eigen::Vector3d &p_i, const Eigen::Vector3d &p_i_s, const Eigen::Vector3d &k2, 
 					  Eigen::Matrix<double, 1, 2>& P, Eigen::Matrix<double, 1, 3>& R) {
 	Eigen::Matrix<double, 3, 1> kiXk2 = k_i.cross(k2);
 	Eigen::Matrix<double, 3, 1> kiXkiXk2 = k_i.cross(kiXk2);
@@ -105,7 +105,8 @@ bool sp1_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2,
    
 }
 
-void sp_5(Eigen::Vector3d &p0, Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &p3, Eigen::Vector3d &k1, Eigen::Vector3d &k2, Eigen::Vector3d &k3, 
+void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3, 
+		  const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, const Eigen::Vector3d &k3, 
 		  std::vector<double> &theta1, std::vector<double> &theta2, std::vector<double> &theta3) {
 	theta1 = std::vector<double>(0);
 	theta2 = std::vector<double>(0);
