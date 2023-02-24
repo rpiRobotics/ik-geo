@@ -41,4 +41,5 @@ Compile `kuka_kr30l16.cpp` into a static library and place it into `lib`
 Example compilation for msvc toolchain:
 
 `cl /O2 /c /EHsc /Folib/kuka_kr30l16.obj /DIKFAST_NO_MAIN ikfast/kuka_kr30l16.cpp`
+
 `lib lib/kuka_kr30l16.obj /out:lib/kuka_kr30l16.lib`

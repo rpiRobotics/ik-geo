@@ -329,7 +329,6 @@ pub fn subproblem6(h: &[Vector3<f64>; 4], k: &[Vector3<f64>; 4], p: &[Vector3<f6
 
     let x_min = a.svd(true, true).solve(&b, 1e-9).unwrap();
 
-    // let (x_null_1, x_null_2) = null_space_matrix2x4(&a, 1e-9).expect_two();
     let (x_null_1, x_null_2) = null_space_matrix2x4_qr(&a);
 
     let xi_i = solve_two_ellipse_numeric(
