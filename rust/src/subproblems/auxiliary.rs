@@ -132,7 +132,16 @@ pub fn null_space_matrix2x4(a: &Matrix2x4<f64>, epsilon: f64) -> SolutionSet2<Ve
     }
 }
 
-pub fn solve_2_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vector2<f64>, xn2: &Matrix2<f64>) -> SolutionSet4<(f64, f64)> {
+pub fn null_space_matrix2x4_qr(a: &Matrix2x4<f64>) -> (Vector4<f64>, Vector4<f64>) {
+    let mut null_space = Matrix4::identity();
+    let qr = a.transpose().qr();
+
+    qr.q_tr_mul(&mut null_space);
+    null_space = null_space.transpose();
+    (null_space.column(2).into(), null_space.column(3).into())
+}
+
+pub fn solve_two_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vector2<f64>, xn2: &Matrix2<f64>) -> SolutionSet4<(f64, f64)> {
     const EPSILON: f64 = 1e-12;
 
     let a_1 = xn1.transpose() * xn1;

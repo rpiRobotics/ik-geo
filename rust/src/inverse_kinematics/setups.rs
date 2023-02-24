@@ -3,14 +3,12 @@ use super::three_parallel_two_intersecting;
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },
     crate::subproblems::{
-        setups::{ SetupDynamic, DELTA },
+        setups::SetupDynamic,
 
         auxiliary::{
             random_vector3,
             random_norm_vector3,
-            random_norm_perp_vector3,
             random_angle,
-            rot,
         }
     },
 

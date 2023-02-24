@@ -709,9 +709,9 @@ impl SetupDynamic for Subproblem6Setup {
 
     fn run(&mut self) {
         self.theta = subproblem6(
-            [&self.h[0], &self.h[1], &self.h[2], &self.h[3]],
-            [&self.k[0], &self.k[1], &self.k[2], &self.k[3]],
-            [&self.p[0], &self.p[1], &self.p[2], &self.p[3]],
+            &self.h, // [&self.h[0], &self.h[1], &self.h[2], &self.h[3]],
+            &self.k, // [&self.k[0], &self.k[1], &self.k[2], &self.k[3]],
+            &self.p, // [&self.p[0], &self.p[1], &self.p[2], &self.p[3]],
             self.d1,
             self.d2,
         );

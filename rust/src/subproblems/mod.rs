@@ -1,4 +1,4 @@
-use nalgebra::U7;
+use self::auxiliary::null_space_matrix2x4_qr;
 
 pub mod auxiliary;
 pub mod setups;
@@ -10,8 +10,7 @@ use {
         vec_self_convolve_2,
         vec_self_convolve_3,
         vec_convolve_3,
-        solve_2_ellipse_numeric,
-        null_space_matrix2x4,
+        solve_two_ellipse_numeric,
         cone_polynomials,
         solve_quartic_roots,
     },
@@ -19,7 +18,7 @@ use {
     nalgebra::{
         Vector2, Vector3, Vector4, Vector5,
         Matrix, Matrix3, Matrix2x4, Matrix3x2, Matrix3x4, Matrix4x1, Matrix4x3,
-        ArrayStorage, U1, U8,
+        ArrayStorage, U1, U7, U8,
         Complex, DVector, Matrix2,
     },
 };
@@ -216,7 +215,7 @@ Solves for `theta1`, `theta2`, and `theta3` where `p0 + rot(k1, theta1) * p1 = r
 There can be up to 4 solutions.
  */
 pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>, k3: &Vector3<f64>) -> SolutionSet4<(f64, f64, f64)> {
-    const EPSILON: f64 = 1e-12;
+    const EPSILON: f64 = 1e-6;
 
     let mut theta = Vec::with_capacity(8);
 
@@ -260,8 +259,18 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
     for &h in h_vec.into_iter() {
         let const_1 = a_1.transpose() * k2 * (h - delta1);
         let const_3 = a_3.transpose() * k2 * (h - delta3);
-        let pm_1 = j * a_1.transpose() * k2 * ((a_1.transpose() * k2).norm_squared() - (h - delta1).powi(2)).sqrt();
-        let pm_3 = j * a_3.transpose() * k2 * ((a_3.transpose() * k2).norm_squared() - (h - delta3).powi(2)).sqrt();
+
+        let hd1 = h - delta1;
+        let hd3 = h - delta3;
+
+        let sq1 = (a_1.transpose() * k2).norm_squared() - hd1 * hd1;
+        if sq1 < 0.0 { continue; }
+
+        let sq3 = (a_3.transpose() * k2).norm_squared() - hd3 * hd3;
+        if sq3 < 0.0 { continue; }
+
+        let pm_1 = j * a_1.transpose() * k2 * sq1.sqrt();
+        let pm_3 = j * a_3.transpose() * k2 * sq3.sqrt();
 
         for (&sign_1, &sign_3) in signs_1.iter().zip(signs_3.iter()) {
             let sc1 = const_1 + sign_1 * pm_1;
@@ -292,11 +301,11 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
 Solves for `theta1` and `theta2` where `h1' * rot(k1, theta1) + h2' * rot(k2, theta2) = d1` and `h3' * rot(k3, theta1) + h4' * rot(k4, theta2) = d2`
 There can be up to 4 solutions
  */
-pub fn subproblem6(h: [&Vector3<f64>; 4], k: [&Vector3<f64>; 4], p: [&Vector3<f64>; 4], d1: f64, d2: f64) -> SolutionSet4<(f64, f64)> {
-    let k1xp1 = k[0].cross(p[0]);
-    let k2xp2 = k[1].cross(p[1]);
-    let k3xp3 = k[2].cross(p[2]);
-    let k4xp4 = k[3].cross(p[3]);
+pub fn subproblem6(h: &[Vector3<f64>; 4], k: &[Vector3<f64>; 4], p: &[Vector3<f64>; 4], d1: f64, d2: f64) -> SolutionSet4<(f64, f64)> {
+    let k1xp1 = k[0].cross(&p[0]);
+    let k2xp2 = k[1].cross(&p[1]);
+    let k3xp3 = k[2].cross(&p[2]);
+    let k4xp4 = k[3].cross(&p[3]);
 
     let a1 = Matrix3x2::from_columns(&[k1xp1, -k[0].cross(&k1xp1)]);
     let a2 = Matrix3x2::from_columns(&[k2xp2, -k[1].cross(&k2xp2)]);
@@ -320,9 +329,10 @@ pub fn subproblem6(h: [&Vector3<f64>; 4], k: [&Vector3<f64>; 4], p: [&Vector3<f6
 
     let x_min = a.svd(true, true).solve(&b, 1e-9).unwrap();
 
-    let (x_null_1, x_null_2) = null_space_matrix2x4(&a, 1e-9).expect_two();
+    // let (x_null_1, x_null_2) = null_space_matrix2x4(&a, 1e-9).expect_two();
+    let (x_null_1, x_null_2) = null_space_matrix2x4_qr(&a);
 
-    let xi_i = solve_2_ellipse_numeric(
+    let xi_i = solve_two_ellipse_numeric(
         &x_min.fixed_rows::<2>(0).into(),
         &Matrix2::new(x_null_1[0], x_null_2[0], x_null_1[1], x_null_2[1]),
         &x_min.fixed_rows::<2>(2).into(),
