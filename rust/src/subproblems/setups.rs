@@ -605,10 +605,10 @@ impl SetupDynamic for Subproblem5Setup {
     fn setup_from_str(&mut self, raw: &str) {
         let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
 
-        self.p1 = Vector3::new(data[0], data[1], data[2]);
-        self.p2 = Vector3::new(data[3], data[4], data[5]);
-        self.p3 = Vector3::new(data[6], data[7], data[8]);
-        self.k1 = Vector3::new(data[9], data[10], data[11]);
+        self.p1 = Vector3::new(data[00], data[01], data[02]);
+        self.p2 = Vector3::new(data[03], data[04], data[05]);
+        self.p3 = Vector3::new(data[06], data[07], data[08]);
+        self.k1 = Vector3::new(data[09], data[10], data[11]);
         self.k2 = Vector3::new(data[12], data[13], data[14]);
         self.k3 = Vector3::new(data[15], data[16], data[17]);
         self.p0 = Vector3::new(data[18], data[19], data[20]);

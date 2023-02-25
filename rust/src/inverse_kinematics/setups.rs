@@ -135,7 +135,7 @@ impl ThreeParallelTwoIntersectingSetup {
 
 impl SetupDynamic for SphericalTwoParallelSetup {
     fn setup(&mut self) {
-        for i in 0..6 {
+        for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
 
@@ -159,40 +159,6 @@ impl SetupDynamic for SphericalTwoParallelSetup {
 
     fn setup_ls(&mut self) {
         unimplemented!();
-        /*
-        for i in 0..6 {
-            self.kin.h.set_column(i, &random_norm_vector3())
-        }
-
-        let h_column_1: Vector3<f64> = self.kin.h.column(1).into();
-        self.kin.h.set_column(2, &h_column_1);
-        self.kin.h.set_column(0, &random_norm_perp_vector3(&h_column_1));
-
-        self.kin.p = Matrix3x7::from_columns(&[
-            random_vector3(),
-            random_vector3(),
-            random_vector3(),
-            random_vector3(),
-            Vector3::zeros(),
-            Vector3::zeros(),
-            random_vector3(),
-        ]);
-
-        let p_column_1: Vector3<f64> = self.kin.p.column(3).into();
-        let p_column_2: Vector3<f64> = self.kin.p.column(3).into();
-        let p_column_3: Vector3<f64> = self.kin.p.column(3).into();
-
-        self.kin.p.set_column(3, &(p_column_3 - h_column_1 * (h_column_1.transpose() * (p_column_1 + p_column_2 + p_column_3))));
-
-        let p_column_3: Vector3<f64> = self.kin.p.column(3).into();
-        self.kin.h.set_column(4, &random_norm_perp_vector3(&p_column_3));
-
-        let p_column_4: Vector3<f64> = self.kin.p.column(4).into();
-        self.kin.h.set_column(5, &random_norm_perp_vector3(&p_column_4));
-
-        self.r = rot(&random_norm_vector3(), random_angle());
-        self.t = random_vector3();
-        */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {
@@ -229,7 +195,7 @@ impl SetupDynamic for SphericalTwoParallelSetup {
 
 impl SetupDynamic for SphericalTwoIntersectingSetup {
     fn setup(&mut self) {
-        for i in 0..6 {
+        for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
 
@@ -250,32 +216,6 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
 
     fn setup_ls(&mut self) {
         unimplemented!();
-        /*
-        for i in 0..6 {
-            self.kin.h.set_column(i, &random_norm_vector3())
-        }
-
-        self.kin.p = Matrix3x7::from_columns(&[
-            random_vector3(),
-            Vector3::zeros(),
-            random_vector3(),
-            random_vector3(),
-            Vector3::zeros(),
-            Vector3::zeros(),
-            random_vector3(),
-        ]);
-
-        self.kin.h.set_column(1, &random_norm_perp_vector3(&self.kin.h.column(0).into()));
-        let h_column_1: Vector3<f64> = self.kin.h.column(1).into();
-        self.kin.h.set_column(2, &h_column_1);
-        self.kin.p.set_column(3, &(self.kin.p.column(3) - self.kin.h.column(2) * self.kin.h.column(2).transpose() * self.kin.p.column(2) + self.kin.p.column(3)));
-
-        self.kin.h.set_column(4, &random_norm_perp_vector3(&self.kin.h.column(3).into()));
-        self.kin.h.set_column(5, &random_norm_perp_vector3(&self.kin.h.column(4).into()));
-
-        self.r = rot(&random_norm_vector3(), random_angle());
-        self.t = random_vector3();
-        */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {
@@ -312,7 +252,7 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
 
 impl SetupDynamic for SphericalSetup {
     fn setup(&mut self) {
-        for i in 0..6 {
+        for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
 
@@ -333,24 +273,6 @@ impl SetupDynamic for SphericalSetup {
 
     fn setup_ls(&mut self) {
         unimplemented!();
-        /*
-        for i in 0..6 {
-            self.kin.h.set_column(i, &random_norm_vector3());
-        }
-
-        self.kin.p = Matrix3x7::from_columns(&[
-            random_vector3(),
-            random_vector3(),
-            random_vector3(),
-            random_vector3(),
-            Vector3::zeros(),
-            Vector3::zeros(),
-            random_vector3(),
-        ]);
-
-        self.r = rot(&random_norm_vector3(), random_angle());
-        self.t = random_vector3();
-         */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {
@@ -392,7 +314,7 @@ impl SetupDynamic for SphericalSetup {
 
 impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
     fn setup(&mut self) {
-        for i in 0..6 {
+        for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
         }
 
@@ -417,35 +339,6 @@ impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
 
     fn setup_ls(&mut self) {
         unimplemented!();
-        /*
-        for i in 0..6 {
-            self.kin.h.set_column(i, &random_norm_vector3())
-        }
-
-        let h_1: Vector3<f64> = self.kin.h.column(1).into();
-        self.kin.h.set_column(2, &h_1);
-        self.kin.h.set_column(3, &h_1);
-
-        self.kin.p = Matrix3x7::from_columns(&[
-            random_vector3(),
-            random_vector3(),
-            random_vector3(),
-            random_vector3(),
-            Vector3::zeros(),
-            Vector3::zeros(),
-            Vector3::zeros(),
-        ]);
-
-        let p_4_new = self.kin.p.column(4) - self.kin.h.column(1) * (self.kin.h.column(1).transpose() * (self.kin.p.column(1) + self.kin.p.column(2) + self.kin.p.column(3) + self.kin.p.column(4)));
-        self.kin.p.set_column(4, &p_4_new);
-
-        self.kin.h.set_column(0, &random_norm_perp_vector3(&self.kin.h.column(1).into()));
-        self.kin.h.set_column(4, &random_norm_perp_vector3(&self.kin.h.column(3).into()));
-        self.kin.h.set_column(5, &random_norm_perp_vector3(&self.kin.h.column(4).into()));
-
-        self.r = rot(&random_norm_vector3(), random_angle());
-        self.t = random_vector3();
-        */
     }
 
     fn setup_from_str(&mut self, _raw: &str) {

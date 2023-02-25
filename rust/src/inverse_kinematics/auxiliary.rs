@@ -1,3 +1,5 @@
+use nalgebra::Matrix3x6;
+
 use {
     std::fmt::{ Display, Formatter },
 
@@ -16,7 +18,7 @@ pub type Matrix3x8<T> = Matrix<T, U3, U8, ArrayStorage<T, 3, 8>>;
 
 #[derive(Debug, Clone)]
 pub struct Kinematics {
-    pub h: Matrix3x7<f64>,
+    pub h: Matrix3x6<f64>,
     pub p: Matrix3x7<f64>,
 }
 
@@ -29,7 +31,7 @@ pub struct Kinematics3x8 {
 impl Kinematics {
     pub fn new() -> Self {
         Self {
-            h: Matrix3x7::zeros(),
+            h: Matrix3x6::zeros(),
             p: Matrix3x7::zeros(),
         }
     }

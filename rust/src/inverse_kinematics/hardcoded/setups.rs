@@ -1,3 +1,5 @@
+use nalgebra::Matrix3x6;
+
 use crate::{inverse_kinematics::{auxiliary::{forward_kinematics_partial, Matrix3x8, Kinematics3x8, forward_kinematics3x8, forward_kinematics_general3x8}, spherical_two_intersecting}};
 
 use {
@@ -60,7 +62,7 @@ impl Irb6640 {
         let ey = Vector3::new(0.0, 1.0, 0.0);
         let ez = Vector3::new(0.0, 0.0, 1.0);
 
-        kin.h = Matrix3x7::from_columns(&[ez, ey, ey, ex, ey, ex, zv]);
+        kin.h = Matrix3x6::from_columns(&[ez, ey, ey, ex, ey, ex]);
         kin.p = Matrix3x7::from_columns(&[zv, 0.32 * ex + 0.78 * ez, 1.075 * ez, 1.1425 * ex + 0.2 * ez, zv, zv, 0.2 * ex]);
 
         kin
