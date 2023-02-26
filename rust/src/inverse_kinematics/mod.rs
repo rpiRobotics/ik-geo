@@ -251,7 +251,7 @@ pub fn three_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics
     let h_sp: [Vector3<f64>; 4] = [kin.h.column(1).into(), kin.h.column(1).into(), kin.h.column(1).into(), kin.h.column(1).into()];
     let k_sp: [Vector3<f64>; 4] = [-kin.h.column(0), kin.h.column(4).into(), -kin.h.column(0), kin.h.column(4).into()];
     let p_sp: [Vector3<f64>; 4] = [p_16, -kin.p.column(5), r_06 * kin.h.column(5), -kin.h.column(5)];
-    let d1 = (kin.h.column(1).transpose() * (kin.p.column(2) + kin.p.column(1) + kin.p.column(4) + kin.p.column(1)))[0];
+    let d1 = (kin.h.column(1).transpose() * (kin.p.column(2) + kin.p.column(3) + kin.p.column(4) + kin.p.column(1)))[0];
     let d2 = 0.0;
 
     let theta15 = subproblem6(&h_sp, &k_sp, &p_sp, d1, d2);

@@ -1,4 +1,4 @@
-use super::three_parallel_two_intersecting;
+use super::{three_parallel_two_intersecting, three_parallel};
 
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },
@@ -67,6 +67,15 @@ pub struct ThreeParallelTwoIntersectingSetup {
     is_ls: Vec<bool>,
 }
 
+pub struct ThreeParallelSetup {
+    kin: Kinematics,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+    is_ls: Vec<bool>,
+}
+
 impl SphericalTwoParallelSetup {
     pub fn new() -> Self {
         Self {
@@ -122,6 +131,24 @@ impl SphericalSetup {
 }
 
 impl ThreeParallelTwoIntersectingSetup {
+    pub fn new() -> Self {
+        Self {
+            kin: Kinematics::new(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
+        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
+        (r_t - self.r).norm() + (t_t - self.t).norm()
+    }
+}
+
+impl ThreeParallelSetup {
     pub fn new() -> Self {
         Self {
             kin: Kinematics::new(),
@@ -328,7 +355,7 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
                 0.0
             }
             else {
-                dbg!(self.calculate_error(q))
+                self.calculate_error(q)
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
@@ -343,5 +370,59 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
 
     fn name(&self) -> &'static str {
         "Three Parallel Two Intersecting"
+    }
+}
+
+
+impl SetupIk for ThreeParallelSetup {
+    fn setup(&mut self) {
+        for i in 0..self.kin.h.ncols() {
+            self.kin.h.set_column(i, &random_norm_vector3())
+        }
+
+        let q = Vector6::zeros().map(|_: f64| random_angle());
+
+        let h_1: Vector3<f64> = self.kin.h.column(1).into();
+        self.kin.h.set_column(2, &h_1);
+        self.kin.h.set_column(3, &h_1);
+
+        self.kin.p = Matrix3x7::from_columns(&[
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+        ]);
+
+        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
+    }
+
+    fn run(&mut self) {
+        (self.q, self.is_ls) = three_parallel(&self.r, &self.t, &self.kin);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
+            if is_ls {
+                0.0
+            }
+            else {
+                self.calculate_error(q)
+            }
+        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+    }
+
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
+    }
+
+    fn name(&self) -> &'static str {
+        "Three Parallel"
     }
 }

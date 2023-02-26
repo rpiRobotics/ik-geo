@@ -12,7 +12,7 @@ use crate::{
     },
 
     inverse_kinematics::{
-        setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup, SphericalSetup, ThreeParallelTwoIntersectingSetup, SetupIk, },
+        setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup, SphericalSetup, ThreeParallelTwoIntersectingSetup, SetupIk, ThreeParallelSetup, },
         hardcoded::setups::{Irb6640, KukaR800FixedQ3, },
     },
 };
@@ -41,6 +41,7 @@ fn run_tests() {
         Box::new(SphericalTwoIntersectingSetup::new()),
         Box::new(SphericalSetup::new()),
         Box::new(ThreeParallelTwoIntersectingSetup::new()),
+        Box::new(ThreeParallelSetup::new()),
     ];
 
     for mut setup in setups {
