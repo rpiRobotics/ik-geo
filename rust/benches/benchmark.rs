@@ -9,6 +9,7 @@ use linear_subproblem_solutions_rust::{
 use {
     linear_subproblem_solutions_rust::{
         inverse_kinematics::setups::{
+            SetupIk,
             SphericalTwoParallelSetup,
             SphericalTwoIntersectingSetup,
             SphericalSetup,

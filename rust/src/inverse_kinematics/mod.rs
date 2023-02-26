@@ -1,7 +1,3 @@
-use std::f64::consts::{PI, TAU};
-
-use crate::subproblems::subproblem6;
-
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
@@ -9,12 +5,16 @@ pub mod hardcoded;
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },
 
+    std::f64::consts::{ PI, TAU },
+
+
     crate::subproblems::{
         subproblem1,
         subproblem2,
         subproblem3,
         subproblem4,
         subproblem5,
+        subproblem6,
 
         auxiliary::rot
     },
@@ -225,7 +225,7 @@ pub fn three_parallel_two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>,
             for q3 in theta_3.get_all() {
                 let (q2, q2_is_ls) = subproblem1(&(p_23 + rot(&kin.h.column(1).into(), q3) * p_34), &d_inner, &kin.h.column(1).into());
 
-                let q4 = (theta14 - q2 - q3 + PI) % TAU - PI;
+                let q4 = (theta14 - q2 - q3 + PI).rem_euclid(TAU) - PI;
 
                 let (q6, q6_is_ls) = subproblem1(
                     &kin.h.column(4).into(),

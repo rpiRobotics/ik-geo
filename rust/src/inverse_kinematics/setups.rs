@@ -2,14 +2,11 @@ use super::three_parallel_two_intersecting;
 
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },
-    crate::subproblems::{
-        setups::SetupDynamic,
 
-        auxiliary::{
-            random_vector3,
-            random_norm_vector3,
-            random_angle,
-        }
+    crate::subproblems::auxiliary::{
+        random_vector3,
+        random_norm_vector3,
+        random_angle,
     },
 
     super::{
@@ -24,6 +21,15 @@ use {
         spherical,
     },
 };
+
+pub trait SetupIk {
+    fn setup(&mut self);
+    fn run(&mut self);
+    fn error(&self) -> f64;
+    fn ls_count(&self) -> usize;
+    fn solution_count(&self) -> usize;
+    fn name(&self) -> &'static str;
+}
 
 pub struct SphericalTwoParallelSetup {
     kin: Kinematics,
@@ -133,7 +139,7 @@ impl ThreeParallelTwoIntersectingSetup {
     }
 }
 
-impl SetupDynamic for SphericalTwoParallelSetup {
+impl SetupIk for SphericalTwoParallelSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
@@ -157,18 +163,6 @@ impl SetupDynamic for SphericalTwoParallelSetup {
         (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
-    fn setup_ls(&mut self) {
-        unimplemented!();
-    }
-
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!();
-    }
-
-    fn write_output(&self) -> String {
-        unimplemented!()
-    }
-
     fn run(&mut self) {
         (self.q, self.is_ls) = spherical_two_parallel(&self.r, &self.t, &self.kin);
     }
@@ -184,8 +178,12 @@ impl SetupDynamic for SphericalTwoParallelSetup {
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
 
-    fn is_at_local_min(&self) -> bool {
-        unimplemented!();
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
     }
 
     fn name(&self) -> &'static str {
@@ -193,7 +191,7 @@ impl SetupDynamic for SphericalTwoParallelSetup {
     }
 }
 
-impl SetupDynamic for SphericalTwoIntersectingSetup {
+impl SetupIk for SphericalTwoIntersectingSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
@@ -212,18 +210,6 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
         ]);
 
         (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
-    }
-
-    fn setup_ls(&mut self) {
-        unimplemented!();
-    }
-
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
-    }
-
-    fn write_output(&self) -> String {
-        unimplemented!()
     }
 
     fn run(&mut self) {
@@ -241,8 +227,12 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
 
-    fn is_at_local_min(&self) -> bool {
-        unimplemented!();
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
     }
 
     fn name(&self) -> &'static str {
@@ -250,7 +240,7 @@ impl SetupDynamic for SphericalTwoIntersectingSetup {
     }
 }
 
-impl SetupDynamic for SphericalSetup {
+impl SetupIk for SphericalSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
@@ -271,25 +261,12 @@ impl SetupDynamic for SphericalSetup {
         (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
-    fn setup_ls(&mut self) {
-        unimplemented!();
-    }
-
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
-    }
-
-    fn write_output(&self) -> String {
-        unimplemented!()
-    }
-
     fn run(&mut self) {
         (self.q, self.is_ls) = spherical(&self.r, &self.t, &self.kin);
     }
 
     fn error(&self) -> f64 {
         if self.q.len() == 0 {
-            println!("[WARN]\tSubproblem 5 failed to find solutions in IK Spherical");
             return 0.0;
         }
 
@@ -303,8 +280,12 @@ impl SetupDynamic for SphericalSetup {
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
 
-    fn is_at_local_min(&self) -> bool {
-        unimplemented!();
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
     }
 
     fn name(&self) -> &'static str {
@@ -312,7 +293,7 @@ impl SetupDynamic for SphericalSetup {
     }
 }
 
-impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
+impl SetupIk for ThreeParallelTwoIntersectingSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
             self.kin.h.set_column(i, &random_norm_vector3())
@@ -337,18 +318,6 @@ impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
         (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
     }
 
-    fn setup_ls(&mut self) {
-        unimplemented!();
-    }
-
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
-    }
-
-    fn write_output(&self) -> String {
-        unimplemented!()
-    }
-
     fn run(&mut self) {
         (self.q, self.is_ls) = three_parallel_two_intersecting(&self.r, &self.t, &self.kin);
     }
@@ -359,13 +328,17 @@ impl SetupDynamic for ThreeParallelTwoIntersectingSetup {
                 0.0
             }
             else {
-                self.calculate_error(q)
+                dbg!(self.calculate_error(q))
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
 
-    fn is_at_local_min(&self) -> bool {
-        unimplemented!();
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
     }
 
     fn name(&self) -> &'static str {
