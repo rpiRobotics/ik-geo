@@ -1,5 +1,3 @@
-use self::auxiliary::null_space_matrix2x4_qr;
-
 pub mod auxiliary;
 pub mod setups;
 
@@ -13,11 +11,12 @@ use {
         solve_two_ellipse_numeric,
         cone_polynomials,
         solve_quartic_roots,
+        solve_lower_triangular_system_2x2,
     },
 
     nalgebra::{
         Vector2, Vector3, Vector4, Vector5,
-        Matrix, Matrix3, Matrix2x4, Matrix3x2, Matrix3x4, Matrix4x1, Matrix4x3,
+        Matrix, Matrix3, Matrix4, Matrix2x4, Matrix3x2, Matrix3x4, Matrix4x1, Matrix4x3,
         ArrayStorage, U1, U7, U8,
         Complex, DVector, Matrix2,
     },
@@ -327,9 +326,16 @@ pub fn subproblem6(h: &[Vector3<f64>; 4], k: &[Vector3<f64>; 4], p: &[Vector3<f6
         d2 - (h[2].transpose() * k[2] * k[2].transpose() * p[2])[0] - (h[3].transpose() * k[3] * k[3].transpose() * p[3])[0],
     );
 
-    let x_min = a.svd(true, true).solve(&b, 1e-9).unwrap();
+    let mut q = Matrix4::identity();
+    let qr = a.transpose().qr();
 
-    let (x_null_1, x_null_2) = null_space_matrix2x4_qr(&a);
+    qr.q_tr_mul(&mut q); // small hack to get entire q matrix
+    q = q.transpose();
+
+    let (x_null_1, x_null_2): (Vector4<f64>, Vector4<f64>) = (q.column(2).into(), q.column(3).into());
+    let q = q.fixed_columns::<2>(0);
+    let r = qr.r().transpose();
+    let x_min = q * solve_lower_triangular_system_2x2(&r, &b);
 
     let xi_i = solve_two_ellipse_numeric(
         &x_min.fixed_rows::<2>(0).into(),

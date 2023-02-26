@@ -136,9 +136,20 @@ pub fn null_space_matrix2x4_qr(a: &Matrix2x4<f64>) -> (Vector4<f64>, Vector4<f64
     let mut null_space = Matrix4::identity();
     let qr = a.transpose().qr();
 
-    qr.q_tr_mul(&mut null_space);
+    qr.q_tr_mul(&mut null_space); // small hack to get entire q matrix
     null_space = null_space.transpose();
     (null_space.column(2).into(), null_space.column(3).into())
+}
+
+pub fn solve_lower_triangular_system_2x2(l: &Matrix2<f64>, b_v: &Vector2<f64>) -> Vector2<f64> {
+    let a = l[(0, 0)];
+    let b = l[(1, 0)];
+    let c = l[(1, 1)];
+    let p = b_v[0];
+    let q = b_v[1];
+
+    let x = p / a;
+    Vector2::new(x, (q - x * b) / c)
 }
 
 pub fn solve_two_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vector2<f64>, xn2: &Matrix2<f64>) -> SolutionSet4<(f64, f64)> {

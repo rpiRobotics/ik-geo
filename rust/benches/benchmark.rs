@@ -1,3 +1,4 @@
+use linear_subproblem_solutions_rust::inverse_kinematics::setups::ThreeParallelTwoIntersectingSetup;
 #[cfg(link_ikfast)]
 use linear_subproblem_solutions_rust::{
     ikfast,
@@ -115,6 +116,14 @@ pub fn spherical_benchmark(c: &mut Criterion) {
     c.bench_function("Ik Spherical", |b| b.iter(|| setup.run()));
 }
 
+pub fn three_parallel_two_intersecting_benchmark(c: &mut Criterion) {
+    let mut setup = ThreeParallelTwoIntersectingSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Ik 3 Parallel 2 Intersecting", |b| b.iter(|| setup.run()));
+}
+
 #[cfg(link_ikfast)]
 pub fn ikfast_kuka_kr30l16_benchmark(c: &mut Criterion) {
     let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -136,6 +145,7 @@ criterion_group!(
     spherical_two_parallel_benchmark,
     spherical_two_intersecting_benchmark,
     spherical_benchmark,
+    three_parallel_two_intersecting_benchmark,
     ikfast_kuka_kr30l16_benchmark,
 );
 
@@ -151,6 +161,7 @@ criterion_group!(
     subproblem6benchmark,
     spherical_two_parallel_benchmark,
     spherical_two_intersecting_benchmark,
+    three_parallel_two_intersecting_benchmark,
     spherical_benchmark,
 );
 
