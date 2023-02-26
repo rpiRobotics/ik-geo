@@ -1,3 +1,5 @@
+use std::f64::consts::{PI, TAU};
+
 use nalgebra::Matrix3x6;
 
 use {
@@ -131,4 +133,8 @@ pub fn forward_kinematics_partial(kin: &Kinematics3x8, q_n: f64, n: usize, r_6t:
     }
 
     (kin_new, r_n * r_6t)
+}
+
+pub fn wrap_to_pi(theta: f64) -> f64 {
+    (theta + PI).rem_euclid(TAU) - PI
 }

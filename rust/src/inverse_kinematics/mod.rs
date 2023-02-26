@@ -5,9 +5,6 @@ pub mod hardcoded;
 use {
     nalgebra::{ Vector3, Vector6, Matrix3 },
 
-    std::f64::consts::{ PI, TAU },
-
-
     crate::subproblems::{
         subproblem1,
         subproblem2,
@@ -19,7 +16,10 @@ use {
         auxiliary::rot
     },
 
-    auxiliary::Kinematics,
+    auxiliary::{
+        Kinematics,
+        wrap_to_pi,
+    },
 };
 
 pub fn spherical_two_parallel(r_0t: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics) -> (Vec<Vector6<f64>>, Vec<bool>) {
@@ -225,7 +225,7 @@ pub fn three_parallel_two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>,
             for q3 in theta_3.get_all() {
                 let (q2, q2_is_ls) = subproblem1(&(p_23 + rot(&kin.h.column(1).into(), q3) * p_34), &d_inner, &kin.h.column(1).into());
 
-                let q4 = (theta14 - q2 - q3 + PI).rem_euclid(TAU) - PI;
+                let q4 = wrap_to_pi(theta14 - q2 - q3);
 
                 let (q6, q6_is_ls) = subproblem1(
                     &kin.h.column(4).into(),
@@ -273,7 +273,7 @@ pub fn three_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics
 
         for q3 in theta3.get_all() {
             let (q2, q2_is_ls) = subproblem1(&(p_23 + rot(&kin.h.column(1).into(), q3) * p_34), &d_inner, &kin.h.column(1).into());
-            let q4 = (theta14 - q2 - q3 + PI) % TAU - PI;
+            let q4 = wrap_to_pi(theta14 - q2 - q3);
 
             let (q6, q6_is_ls) = subproblem1(&kin.h.column(4).into(), &(r_45.transpose() * r_14.transpose() * r_01.transpose() * r_06 * kin.h.column(4)), &kin.h.column(5).into());
 
