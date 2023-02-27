@@ -1,12 +1,8 @@
-use self::setups::KukaR800FixedQ3;
-
-use super::spherical_two_intersecting;
-
 pub mod setups;
 
 use {
-    self::setups::Irb6640,
-    super::spherical_two_parallel,
+    self::setups::{ Irb6640, KukaR800FixedQ3 },
+    super::{ spherical_two_parallel, spherical_two_intersecting },
     nalgebra::{Matrix3, Vector3, Vector6},
 };
 

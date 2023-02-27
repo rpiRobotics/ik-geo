@@ -31,9 +31,6 @@ fn run_tests() {
         Box::new(Subproblem2ExtendedSetup::new()),
         Box::new(Subproblem2Setup::new()),
         Box::new(Subproblem1Setup::new()),
-
-        Box::new(Irb6640::new()),
-        Box::new(KukaR800FixedQ3::new()),
     ];
 
     let ik_setups: Vec<Box<dyn SetupIk>> = vec![
@@ -42,6 +39,9 @@ fn run_tests() {
         Box::new(SphericalSetup::new()),
         Box::new(ThreeParallelTwoIntersectingSetup::new()),
         Box::new(ThreeParallelSetup::new()),
+
+        Box::new(Irb6640::new()),
+        Box::new(KukaR800FixedQ3::new()),
     ];
 
     for mut setup in setups {

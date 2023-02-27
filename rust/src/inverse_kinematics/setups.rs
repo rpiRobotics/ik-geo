@@ -13,7 +13,6 @@ use {
         auxiliary::{
             Kinematics,
             Matrix3x7,
-            forward_kinematics,
         },
 
         spherical_two_parallel,
@@ -32,7 +31,7 @@ pub trait SetupIk {
 }
 
 pub struct SphericalTwoParallelSetup {
-    kin: Kinematics,
+    kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
@@ -41,7 +40,7 @@ pub struct SphericalTwoParallelSetup {
 }
 
 pub struct SphericalTwoIntersectingSetup {
-    kin: Kinematics,
+    kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
@@ -50,7 +49,7 @@ pub struct SphericalTwoIntersectingSetup {
 }
 
 pub struct SphericalSetup {
-    kin: Kinematics,
+    kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
@@ -59,7 +58,7 @@ pub struct SphericalSetup {
 }
 
 pub struct ThreeParallelTwoIntersectingSetup {
-    kin: Kinematics,
+    kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
@@ -68,7 +67,7 @@ pub struct ThreeParallelTwoIntersectingSetup {
 }
 
 pub struct ThreeParallelSetup {
-    kin: Kinematics,
+    kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
@@ -89,7 +88,7 @@ impl SphericalTwoParallelSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
+        let (r_t, t_t) = self.kin.forward_kinematics(&q);
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -107,7 +106,7 @@ impl SphericalTwoIntersectingSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
+        let (r_t, t_t) = self.kin.forward_kinematics(&q);
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -125,7 +124,7 @@ impl SphericalSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
+        let (r_t, t_t) = self.kin.forward_kinematics(&q);
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -143,7 +142,7 @@ impl ThreeParallelTwoIntersectingSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
+        let (r_t, t_t) = self.kin.forward_kinematics(&q);
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -161,7 +160,7 @@ impl ThreeParallelSetup {
     }
 
     fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
+        let (r_t, t_t) = self.kin.forward_kinematics(&q);
         (r_t - self.r).norm() + (t_t - self.t).norm()
     }
 }
@@ -187,7 +186,7 @@ impl SetupIk for SphericalTwoParallelSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
     fn run(&mut self) {
@@ -236,7 +235,7 @@ impl SetupIk for SphericalTwoIntersectingSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
     fn run(&mut self) {
@@ -285,7 +284,7 @@ impl SetupIk for SphericalSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
     fn run(&mut self) {
@@ -342,7 +341,7 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
     fn run(&mut self) {
@@ -396,7 +395,7 @@ impl SetupIk for ThreeParallelSetup {
             random_vector3(),
         ]);
 
-        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
     fn run(&mut self) {

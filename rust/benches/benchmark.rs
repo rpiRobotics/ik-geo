@@ -1,9 +1,9 @@
-use linear_subproblem_solutions_rust::inverse_kinematics::setups::ThreeParallelTwoIntersectingSetup;
+use linear_subproblem_solutions_rust::inverse_kinematics::setups::{ThreeParallelTwoIntersectingSetup, ThreeParallelSetup};
 #[cfg(link_ikfast)]
 use linear_subproblem_solutions_rust::{
     ikfast,
     nalgebra::Vector6,
-    inverse_kinematics::{ hardcoded::setups::Irb6640, auxiliary::forward_kinematics },
+    inverse_kinematics::{ hardcoded::setups::Irb6640 },
     subproblems::auxiliary::random_angle,
 };
 
@@ -124,10 +124,18 @@ pub fn three_parallel_two_intersecting_benchmark(c: &mut Criterion) {
     c.bench_function("Ik 3 Parallel 2 Intersecting", |b| b.iter(|| setup.run()));
 }
 
+pub fn three_parallel_benchmark(c: &mut Criterion) {
+    let mut setup = ThreeParallelSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Ik 3 Parallel", |b| b.iter(|| setup.run()));
+}
+
 #[cfg(link_ikfast)]
 pub fn ikfast_kuka_kr30l16_benchmark(c: &mut Criterion) {
     let q = Vector6::zeros().map(|_: f64| random_angle());
-    let (r, t) = forward_kinematics(&Irb6640::get_kin(), q.as_slice());
+    let (r, t) = Irb6640::get_kin().forward_kinematics(&q);
 
     c.bench_function("IkFast KUKA KR 30 L16", |b| b.iter(|| ikfast::kuka_kr30l16(&r, &t)));
 }
@@ -146,6 +154,7 @@ criterion_group!(
     spherical_two_intersecting_benchmark,
     spherical_benchmark,
     three_parallel_two_intersecting_benchmark,
+    three_parallel_benchmark,
     ikfast_kuka_kr30l16_benchmark,
 );
 
@@ -162,6 +171,7 @@ criterion_group!(
     spherical_two_parallel_benchmark,
     spherical_two_intersecting_benchmark,
     three_parallel_two_intersecting_benchmark,
+    three_parallel_benchmark,
     spherical_benchmark,
 );
 

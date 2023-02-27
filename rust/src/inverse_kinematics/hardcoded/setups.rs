@@ -1,28 +1,28 @@
-use nalgebra::Matrix3x6;
-
-use crate::{inverse_kinematics::{auxiliary::{forward_kinematics_partial, Matrix3x8, Kinematics3x8, forward_kinematics3x8, forward_kinematics_general3x8}, spherical_two_intersecting}};
-
 use {
     std::f64::consts::PI,
 
-    nalgebra::{ Vector3, Vector6, Matrix3 },
+    nalgebra::{ Vector3, Vector6, Matrix3, Matrix3x6 },
 
     crate::{
         inverse_kinematics::{
             auxiliary::{
                 Kinematics,
                 Matrix3x7,
-                forward_kinematics
+                Matrix3x8,
             },
+
+            setups::SetupIk,
+
             spherical_two_parallel,
+            spherical_two_intersecting,
         },
 
-        subproblems::{ auxiliary::random_angle, setups::SetupDynamic },
+        subproblems::{ Vector7, auxiliary::random_angle },
     },
 };
 
 pub struct Irb6640 {
-    kin: Kinematics,
+    kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
@@ -31,11 +31,11 @@ pub struct Irb6640 {
 }
 
 pub struct KukaR800FixedQ3 {
-    kin: Kinematics3x8,
+    kin: Kinematics<7, 8>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
-    kin_partial: Kinematics,
+    kin_partial: Kinematics<6, 7>,
     r_6t: Matrix3<f64>,
 
     q: Vec<Vector6<f64>>,
@@ -54,7 +54,7 @@ impl Irb6640 {
         }
     }
 
-    pub fn get_kin() -> Kinematics {
+    pub fn get_kin() -> Kinematics<6, 7> {
         let mut kin = Kinematics::new();
 
         let zv = Vector3::new(0.0, 0.0, 0.0);
@@ -89,8 +89,8 @@ impl KukaR800FixedQ3 {
         }
     }
 
-    pub fn get_kin() -> Kinematics3x8 {
-        let mut kin = Kinematics3x8::new();
+    pub fn get_kin() -> Kinematics<7, 8> {
+        let mut kin = Kinematics::new();
 
         let zv = Vector3::new(0.0, 0.0, 0.0);
         let ey = Vector3::new(0.0, 1.0, 0.0);
@@ -102,28 +102,16 @@ impl KukaR800FixedQ3 {
         kin
     }
 
-    pub fn get_kin_partial() -> (Kinematics, Matrix3<f64>) {
+    pub fn get_kin_partial() -> (Kinematics<6, 7>, Matrix3<f64>) {
         let kin = Self::get_kin();
-        forward_kinematics_partial(&kin, Self::Q3, 2, &Matrix3::identity())
+        kin.forward_kinematics_partial(Self::Q3, 2, &Matrix3::identity())
     }
 }
 
-impl SetupDynamic for Irb6640 {
+impl SetupIk for Irb6640 {
     fn setup(&mut self) {
         let q = Vector6::zeros().map(|_: f64| random_angle());
-        (self.r, self.t) = forward_kinematics(&self.kin, q.as_slice());
-    }
-
-    fn setup_ls(&mut self) {
-        unimplemented!()
-    }
-
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
-    }
-
-    fn write_output(&self) -> String {
-        unimplemented!()
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
     fn run(&mut self) {
@@ -136,38 +124,29 @@ impl SetupDynamic for Irb6640 {
                 0.0
             }
             else {
-                let (r_t, t_t) = forward_kinematics(&self.kin, q.as_slice());
+                let (r_t, t_t) = self.kin.forward_kinematics(q);
                 (r_t - self.r).norm() + (t_t - self.t).norm()
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
 
-    fn is_at_local_min(&self) -> bool {
-        unimplemented!()
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
     }
 
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
+    }
     fn name(&self) -> &'static str {
         "IRB 6640"
     }
 }
 
-impl SetupDynamic for KukaR800FixedQ3 {
+impl SetupIk for KukaR800FixedQ3 {
     fn setup(&mut self) {
-        let mut q = Vector6::zeros().map(|_: f64| random_angle());
+        let mut q = Vector7::zeros().map(|_: f64| random_angle());
         q[2] = Self::Q3;
-        (self.r, self.t) = forward_kinematics3x8(&self.kin, q.as_slice());
-    }
-
-    fn setup_ls(&mut self) {
-        unimplemented!()
-    }
-
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
-    }
-
-    fn write_output(&self) -> String {
-        unimplemented!()
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
     fn run(&mut self) {
@@ -180,7 +159,7 @@ impl SetupDynamic for KukaR800FixedQ3 {
                 0.0
             }
             else {
-                let q_e = vec![
+                let q_e = Vector7::from_column_slice(&[
                     q[0],
                     q[1],
                     Self::Q3,
@@ -188,16 +167,20 @@ impl SetupDynamic for KukaR800FixedQ3 {
                     q[3],
                     q[4],
                     q[5],
-                ];
+                ]);
 
-                let (r_t, t_t) = forward_kinematics_general3x8(&self.kin, &q_e);
+                let (r_t, t_t) = self.kin.forward_kinematics(&q_e);
                 (r_t - self.r).norm() + (t_t - self.t).norm()
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
 
-    fn is_at_local_min(&self) -> bool {
-        unimplemented!()
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
     }
 
     fn name(&self) -> &'static str {
