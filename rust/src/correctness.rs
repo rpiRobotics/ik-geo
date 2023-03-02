@@ -14,15 +14,39 @@ use crate::{
     inverse_kinematics::{
         setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup, SphericalSetup, ThreeParallelTwoIntersectingSetup, SetupIk, ThreeParallelSetup, },
         hardcoded::setups::{Irb6640, KukaR800FixedQ3, },
-    },
+    }, ikfast::KukaKr30Setup,
 };
 
 const TEST_ITERATIONS: usize = 1000;
+const ERROR_THRESHOLD: f64 = 1e-4;
+
+#[cfg(link_ikfast)]
+#[test]
+fn ikfast_tests() {
+    let setups: Vec<Box<dyn SetupIk>> = vec![
+        Box::new(KukaKr30Setup::new()),
+    ];
+
+    for mut setup in setups {
+        let mut total_error = 0.0;
+
+        for _ in 0..TEST_ITERATIONS {
+            setup.setup();
+            setup.run();
+
+            let error = setup.error();
+            assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
+            total_error += error;
+        }
+
+        let avg_err = total_error / (TEST_ITERATIONS) as f64;
+
+        println!("{}\n\tAvg Error:\t{avg_err}", setup.name());
+    }
+}
 
 #[test]
 fn run_tests() {
-    const ERROR_THRESHOLD: f64 = 1e-4;
-
     let setups: Vec<Box<dyn SetupDynamic>> = vec![
         Box::new(Subproblem6Setup::new()),
         Box::new(Subproblem5Setup::new()),
@@ -56,7 +80,9 @@ fn run_tests() {
             total_error += error;
         }
 
-        println!("{}\n\tAvg Error:\t{}\n", setup.name(), total_error / TEST_ITERATIONS as f64);
+        let avg_err = total_error / TEST_ITERATIONS as f64;
+
+        println!("{}\n\tAvg Error:\t{avg_err}\n", setup.name());
     }
 
     for mut setup in ik_setups {
@@ -85,10 +111,7 @@ fn run_tests() {
         let ls_percent = num_q_ls as f64 / total_q_count as f64 * 100.0;
         let all_ls_percent = num_all_ls as f64 / TEST_ITERATIONS as f64 * 100.0;
 
-        println!("{}", setup.name());
-        println!("\tAvg Error:\t{}", avg_err);
-        println!("\tPercent LS:\t{}", ls_percent);
-        println!("\tPercent all LS:\t{}", all_ls_percent);
+        println!("{}\n\tAvg Error:\t{avg_err}\n\tPercent LS:\t{ls_percent}\n\tPercent all LS:\t{all_ls_percent}", setup.name());
     }
 }
 

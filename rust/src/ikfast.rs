@@ -1,4 +1,121 @@
-use nalgebra::{ Matrix3, Vector3, Vector6 };
+use nalgebra::{ Matrix3, Vector3, Vector6, Matrix3x6 };
+
+use crate::{inverse_kinematics::{auxiliary::{Kinematics, Matrix3x7}, setups::SetupIk, self}, subproblems::auxiliary::random_angle};
+
+pub struct KukaKr30Setup {
+    kin: Kinematics<6, 7>,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+}
+
+pub struct Irb6640 {
+    kin: Kinematics<6, 7>,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+}
+
+impl KukaKr30Setup {
+    pub fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+        }
+    }
+
+    fn get_kin() -> Kinematics<6, 7> {
+        let mut kin = Kinematics::new();
+
+        let zv = Vector3::zeros();
+        let ex = Vector3::x();
+        let ey = Vector3::y();
+        let ez = Vector3::z();
+
+
+        kin.h = Matrix3x6::from_columns(&[-ez, -ey, -ey, -ex, -ey, -ex]);
+        kin.p = Matrix3x7::from_columns(&[zv, 0.35 * ex + 0.815 * ez, 1.2 * ez, 0.145 * ez + 1.545 * ex, zv, zv, 0.158 * ex]);
+
+        kin
+    }
+}
+
+impl Irb6640 {
+    pub fn new() -> Self {
+        Self {
+            kin: inverse_kinematics::hardcoded::setups::Irb6640::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+        }
+    }
+}
+
+impl SetupIk for KukaKr30Setup {
+    fn setup(&mut self) {
+        let q = Vector6::zeros().map(|_: f64| random_angle());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn run(&mut self) {
+        self.q = kuka_kr30l16(&self.r, &self.t);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().map(|q| {
+            let (r_t, t_t) = self.kin.forward_kinematics(q);
+            (r_t - self.r).norm() + (t_t - self.t).norm()
+        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+    }
+
+    fn ls_count(&self) -> usize {
+        unimplemented!()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.q.len()
+    }
+
+    fn name(&self) -> &'static str {
+        "KUKA KR 30"
+    }
+}
+
+impl SetupIk for Irb6640 {
+    fn setup(&mut self) {
+        let q = Vector6::zeros().map(|_: f64| random_angle());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn run(&mut self) {
+        self.q = kuka_kr30l16(&self.r, &self.t);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().map(|q| {
+            let (r_t, t_t) = self.kin.forward_kinematics(q);
+            (r_t - self.r).norm() + (t_t - self.t).norm()
+        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+    }
+
+    fn ls_count(&self) -> usize {
+        unimplemented!()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.q.len()
+    }
+
+    fn name(&self) -> &'static str {
+        "IKFast IRB 6640"
+    }
+}
 
 extern "C" {
     fn kuka_kr30l16_c(rotation: *const f64, translation: *const f64, q: *mut f64) -> usize;

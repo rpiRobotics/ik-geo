@@ -57,10 +57,10 @@ impl Irb6640 {
     pub fn get_kin() -> Kinematics<6, 7> {
         let mut kin = Kinematics::new();
 
-        let zv = Vector3::new(0.0, 0.0, 0.0);
-        let ex = Vector3::new(1.0, 0.0, 0.0);
-        let ey = Vector3::new(0.0, 1.0, 0.0);
-        let ez = Vector3::new(0.0, 0.0, 1.0);
+        let zv = Vector3::zeros();
+        let ex = Vector3::x();
+        let ey = Vector3::y();
+        let ez = Vector3::z();
 
         kin.h = Matrix3x6::from_columns(&[ez, ey, ey, ex, ey, ex]);
         kin.p = Matrix3x7::from_columns(&[zv, 0.32 * ex + 0.78 * ez, 1.075 * ez, 1.1425 * ex + 0.2 * ez, zv, zv, 0.2 * ex]);
@@ -92,9 +92,9 @@ impl KukaR800FixedQ3 {
     pub fn get_kin() -> Kinematics<7, 8> {
         let mut kin = Kinematics::new();
 
-        let zv = Vector3::new(0.0, 0.0, 0.0);
-        let ey = Vector3::new(0.0, 1.0, 0.0);
-        let ez = Vector3::new(0.0, 0.0, 1.0);
+        let zv = Vector3::zeros();
+        let ey = Vector3::y();
+        let ez = Vector3::z();
 
         kin.h = Matrix3x7::from_columns(&[ez, ey, ez, -ey, ez, ey, ez]);
         kin.p = Matrix3x8::from_columns(&[(0.15 + 0.19) * ez, zv, 0.21 * ez, 0.19 * ez, (0.21 + 0.19) * ez, zv, zv, (0.081 + 0.045) * ez]);
