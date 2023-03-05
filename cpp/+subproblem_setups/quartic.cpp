@@ -60,11 +60,11 @@ std::vector<std::complex<double>> quartic_roots(const std::vector<double>& poly)
 	std::complex<double> P = -alpha*alpha/12. - gamma;
 	std::complex<double> Q = -alpha*alpha*alpha/108. + alpha*gamma/3. - beta*beta*0.125;
 	std::complex<double> R = -Q*0.5 + sqrt(Q*Q*0.25 + P*P*P/27. + 0i);
-	std::complex<double> U = pow(R, 1/3);
+	std::complex<double> U = pow(R, 1./3);
 
 	std::complex<double> y;
 	if (fabs(U.real()) < 1e-12 && fabs(U.imag()) < 1e-12) {
-		y = -alpha*5./6. - pow(Q, 1/3);
+		y = -alpha*5./6. - pow(Q, 1./3);
 	}
 	else {
 		y = -alpha*5./6. + U - P/(3.*U);
@@ -72,10 +72,10 @@ std::vector<std::complex<double>> quartic_roots(const std::vector<double>& poly)
 
 	std::complex<double> W = sqrt(alpha + 2.*y + 0i);
 
-	roots.push_back(-B/(A*4.) + W + sqrt(-(alpha*3. + 2.*y + beta*2./W) + 0i));
-	roots.push_back(-B/(A*4.) + W - sqrt(-(alpha*3. + 2.*y + beta*2./W) + 0i));
-	roots.push_back(-B/(A*4.) - W + sqrt(-(alpha*3. + 2.*y - beta*2./W) + 0i));
-	roots.push_back(-B/(A*4.) - W - sqrt(-(alpha*3. + 2.*y - beta*2./W) + 0i));
+	roots.push_back(-B/(A*4.) + (W + sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
+	roots.push_back(-B/(A*4.) + (W - sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
+	roots.push_back(-B/(A*4.) - (W + sqrt(-(alpha*3. + 2.*y - beta*2./W)))/2.);
+	roots.push_back(-B/(A*4.) - (W - sqrt(-(alpha*3. + 2.*y - beta*2./W)))/2.);
 
 	return roots;
 }
@@ -85,18 +85,25 @@ int main() {
 	// std::cin >> a >> b >> c >> d >> e;
 	a = 1, b = 2, c = 3, d = 4, e = 5;
 
-	printf("a: %lf  b: %lf  c: %lf  d: %lf  e: %lf\n", a, b, c, d, e);
+	// printf("a: %lf  b: %lf  c: %lf  d: %lf  e: %lf\n", a, b, c, d, e);
 
-	auto res = find_roots(a, b, c, d, e);
+	std::vector<std::complex<double>> res;
+
+#if 0
+	res = find_roots(a, b, c, d, e);
 	printf("find_root:\n");
 	for (int i = 0; i < (int)res.size(); i ++ ) {
 		printf("x%d: %.3lf + %.3lfi\n", i + 1, res[i].real(), res[i].imag());
 	}
 
 	puts("");
+#endif
 
 #if 1
 	std::vector<double> poly = {a, b, c, d, e};
+
+	printf("poly = [%lf %lf %lf %lf %lf]\n", a, b, c, d, e);
+
 	res = quartic_roots(poly);
 	printf("quartic_roots:\n");
 	for (int i = 0; i < (int)res.size(); i ++ ) {
