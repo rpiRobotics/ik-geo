@@ -22,7 +22,7 @@ Eigen::Matrix<double, 1, 3> convolution_2(Eigen::Matrix<double, 1, 2> &v1, Eigen
 
 Eigen::Matrix<double, 1, 5> convolution_3(Eigen::Matrix<double, 1, 3> &v1, Eigen::Matrix<double, 1, 3> &v2);
 
-std::vector<double> find_real_roots(Eigen::Matrix<double, 1, 5> &eqn);
+std::vector<std::complex<double>> quartic_roots(const std::vector<double>& poly);
 
 void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3, 
 		  const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, const Eigen::Vector3d &k3, 

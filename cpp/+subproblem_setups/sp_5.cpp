@@ -59,34 +59,45 @@ Eigen::Matrix<double, 1, 5> convolution_3(Eigen::Matrix<double, 1, 3> &v1, Eigen
 	return res;
 }
 
-std::vector<double> find_real_roots(Eigen::Matrix<double, 1, 5> &eqn) {
-	double a = eqn(0, 0), b = eqn(0, 1), c = eqn(0, 2), d = eqn(0, 3), e = eqn(0, 4);
+std::vector<std::complex<double>> quartic_roots(const Eigen::Matrix<double, 1, 5> &poly) {
+	std::vector<std::complex<double>> roots;
 
-	double B = b / a, C = c / a, D = d / a, E = e / a;
+	double A = poly(0, 0), B = poly(0, 1), C = poly(0, 2), D = poly(0, 3), E = poly(0, 4);
 
-	double p = -B * B * 0.375 + C;  // double p = -3.0 / 8 * B * B + 1.0;
-	double q = pow(B, 3) * 0.125 - B * C * 0.5 + D;
-	double r = -pow(B, 4) * 3 / 256 + B * B * C * 0.0625 - B * D * 0.25 + E;
+	std::complex<double> alpha = -0.375*B*B/(A*A) + C/A;
+	std::complex<double> beta = 0.125*B*B*B/(A*A*A) - 0.5*B*C/(A*A) + D/A;
+	std::complex<double> gamma = -B*B*B*B*3./(A*A*A*A*256.) + C*B*B/(A*A*A*16.) - B*D/(A*A*4.) + E/A;
 
-	double tmp1 = 1. / 6 * r * p - 1. / 216 * pow(p, 3) - 1. / 16 * q * q;
-	double tmp2 = pow(1. / 3 * r + 1. / 36 * p * p, 3);
-	std::complex<double> y1 = p/6 - pow(tmp1-sqrt(pow(tmp1,2)-tmp2+0i), 1./3) - pow(tmp1+sqrt(pow(tmp1,2)-tmp2+0i), 1./3);
+	if (fabs(beta.real()) < 1e-12 && fabs(beta.imag()) < 1e-12) {
+		std::complex<double> tmp = sqrt(alpha*alpha - gamma*4. + 0i);
+		roots.push_back(-B/(A*4.) + sqrt((-alpha + tmp)/2. + 0i));
+		roots.push_back(-B/(A*4.) - sqrt((-alpha + tmp)/2. + 0i));
+		roots.push_back(-B/(A*4.) + sqrt((-alpha - tmp)/2. + 0i));
+		roots.push_back(-B/(A*4.) - sqrt((-alpha - tmp)/2. + 0i));
+		return roots;
+	}
 
-	std::complex<double> tmp3 = sqrt(2.*y1 - p);
-	std::complex<double> tmp4 = -2.0 * q / tmp3;
+	std::complex<double> P = -alpha*alpha/12. - gamma;
+	std::complex<double> Q = -alpha*alpha*alpha/108. + alpha*gamma/3. - beta*beta*0.125;
+	std::complex<double> R = -Q*0.5 + sqrt(Q*Q*0.25 + P*P*P/27. + 0i);
+	std::complex<double> U = pow(R, 1./3);
 
-	std::complex<double> x1 = 0.5 * (tmp3 + sqrt(-p - 2.*y1 + tmp4)) - B * 0.25;
-	std::complex<double> x2 = 0.5 * (tmp3 - sqrt(-p - 2.*y1 + tmp4)) - B * 0.25;
-	std::complex<double> x3 = 0.5 * (-tmp3 + sqrt(-p - 2.*y1 - tmp4)) - B * 0.25;
-	std::complex<double> x4 = 0.5 * (-tmp3 - sqrt(-p - 2.*y1 - tmp4)) - B * 0.25;
+	std::complex<double> y;
+	if (fabs(U.real()) < 1e-12 && fabs(U.imag()) < 1e-12) {
+		y = -alpha*5./6. - pow(Q, 1./3);
+	}
+	else {
+		y = -alpha*5./6. + U - P/(3.*U);
+	}
 
-	std::vector<double> res;
-	if (fabs(x1.imag()) < ZERO_THRESH) res.push_back(x1.real());
-	if (fabs(x2.imag()) < ZERO_THRESH) res.push_back(x2.real());
-	if (fabs(x3.imag()) < ZERO_THRESH) res.push_back(x3.real());
-	if (fabs(x4.imag()) < ZERO_THRESH) res.push_back(x4.real());
+	std::complex<double> W = sqrt(alpha + 2.*y + 0i);
 
-	return res;
+	roots.push_back(-B/(A*4.) + (W + sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
+	roots.push_back(-B/(A*4.) + (W - sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
+	roots.push_back(-B/(A*4.) - (W + sqrt(-(alpha*3. + 2.*y - beta*2./W)))/2.);
+	roots.push_back(-B/(A*4.) - (W - sqrt(-(alpha*3. + 2.*y - beta*2./W)))/2.);
+
+	return roots;
 }
 
 // return is_LS
@@ -102,7 +113,6 @@ bool sp1_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2,
 	theta = atan2(x(0), x(1));
 
 	return fabs(p1.norm() - p2.norm()) > ZERO_THRESH || fabs(k.dot(p1) - k.dot(p2)) > ZERO_THRESH;
-   
 }
 
 void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3, 
@@ -131,7 +141,12 @@ void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vec
 
 	Eigen::Matrix<double, 1, 5> EQN = convolution_3(RHS, RHS) - 4*convolution_3(P_13_sq, R_1);
 
-	std::vector<double> H_vec = find_real_roots(EQN);
+	std::vector<std::complex<double>> all_roots = quartic_roots(EQN);
+	std::vector<double> H_vec;
+	for (int i = 0; i < (int)all_roots.size(); i ++ ) {
+		if (fabs(all_roots[i].imag()) < 1e-6)
+			H_vec.push_back(all_roots[i].real());
+	}
 
 	Eigen::Matrix<double, 3, 1> KxP1 = k1.cross(p1);
 	Eigen::Matrix<double, 3, 1> KxP3 = k3.cross(p3);
@@ -210,12 +225,6 @@ int main(int argc, char* argv[]) {
 	    sp_5(p0, p1, p2, p3, k1, k2, k3, theta1, theta2, theta3);
 
 	    auto end = std::chrono::steady_clock::now();
-
-	    // if (i < 10) {
-	    // 	for (unsigned int j = 0; j < theta3.size(); j ++ ) 
-	    // 		std::cout<< theta3[j] << ' ';
-	    // 	std::cout << std::endl;
-	    // }
 
 	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     }
