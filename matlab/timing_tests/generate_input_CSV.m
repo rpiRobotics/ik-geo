@@ -1,4 +1,4 @@
-%N = 100e3;
+% N = 100e3;
 N = 10;
 
 setups = {
@@ -9,7 +9,7 @@ setups = {
     subproblem_setups.sp_4
     subproblem_setups.sp_5
     subproblem_setups.sp_6
-    };
+};
 
 for i = 1:length(setups)
     setup = setups{i};

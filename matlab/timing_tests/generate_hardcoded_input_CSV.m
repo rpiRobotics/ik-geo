@@ -2,13 +2,13 @@
 N = 10;
 
 setups = {
-    IK_setups.IK_gen_6_dof
-    IK_setups.IK_2_intersecting
-    IK_setups.IK_spherical
-    IK_setups.IK_spherical_2_intersecting
-    IK_setups.IK_spherical_2_parallel
-    IK_setups.IK_3_parallel
-    IK_setups.IK_3_parallel_2_intersecting
+    hardcoded_IK_setups.ur5
+    hardcoded_IK_setups.IRB_6640
+    hardcoded_IK_setups.three_parallel_bot
+    hardcoded_IK_setups.KUKA_R800_fixed_q3
+    hardcoded_IK_setups.yumi_fixed_q3
+    hardcoded_IK_setups.RRC_fixed_q6
+    hardcoded_IK_setups.spherical_bot
 };
 
 for i = 1:length(setups)
@@ -27,8 +27,6 @@ end
 %%
 function [T, P_list, S_list] = get_table(setup, N)
     [P, S] = setup.setup;
-    P_CSV.H = P.kin.H;
-    P_CSV.P = P.kin.P;
     P_CSV.R = P.R;
     P_CSV.T = P.T;
     names = [get_col_names(P_CSV) get_col_names(S)];
