@@ -1,5 +1,5 @@
-% N = 100e3;
-N = 10;
+N = 10e3;
+%N = 10;
 
 setups = {
     subproblem_setups.sp_1
@@ -20,7 +20,7 @@ for i = 1:length(setups)
     class_name = string(class(setup)).split(".");
     file_name = class_name(end) + ".csv";
     
-    writetable(T, file_name);
+    %writetable(T, file_name);
     save(class_name(end)+".mat", "P_list", "S_list");
 end
 %%
