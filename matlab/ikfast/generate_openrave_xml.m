@@ -3,8 +3,6 @@ function generate_openrave_xml(kin, robot_name)
 
 N = length(kin.joint_type);
 
-
-
 KinBody = struct;
 
 % Generate all the bodies: Base, N links, End Effector

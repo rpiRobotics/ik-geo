@@ -8,7 +8,6 @@ setups = {
     IK_setups.IK_spherical_2_parallel
     IK_setups.IK_3_parallel
     IK_setups.IK_3_parallel_2_intersecting
-    % IK_setups.IK_2R_2R_3R
 };
 
 %% Just 1 test

@@ -41,5 +41,7 @@ $$\begin{cases}
 
 `python`: Python implementation (Work in progress)
 
+`ikfast`: Comparison to Inverse Kinematics using IKFast (Work in progress)
+
 ## Contributing
 If you have any improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue.
