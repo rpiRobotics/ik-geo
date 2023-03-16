@@ -1,6 +1,7 @@
-use std::fmt::{ Display, Formatter, Result, Debug };
-
-use crate::subproblems::setups::DELTA;
+use {
+    crate::subproblems::setups::DELTA,
+    std::fmt::{ Display, Formatter, Result, Debug },
+};
 
 #[derive(Debug, Clone)]
 pub enum SolutionSet2<T> {

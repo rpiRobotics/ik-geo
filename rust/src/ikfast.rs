@@ -1,6 +1,16 @@
-use nalgebra::{ Matrix3, Vector3, Vector6, Matrix3x6 };
+use {
+    crate::{
+        inverse_kinematics::{
+            self,
+            auxiliary::{ Kinematics, Matrix3x7 },
+            setups::SetupIk
+        },
 
-use crate::{inverse_kinematics::{auxiliary::{Kinematics, Matrix3x7}, setups::SetupIk, self}, subproblems::auxiliary::random_angle};
+        subproblems::auxiliary::random_angle
+    },
+
+    nalgebra::{ Matrix3, Vector3, Vector6, Matrix3x6 },
+};
 
 pub struct KukaKr30Setup {
     kin: Kinematics<6, 7>,
@@ -63,6 +73,14 @@ impl SetupIk for KukaKr30Setup {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!()
+    }
+
+    fn write_output(&self) -> String {
+        unimplemented!()
+    }
+
     fn run(&mut self) {
         self.q = kuka_kr30l16(&self.r, &self.t);
     }
@@ -91,6 +109,14 @@ impl SetupIk for Irb6640 {
     fn setup(&mut self) {
         let q = Vector6::zeros().map(|_: f64| random_angle());
         (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!()
+    }
+
+    fn write_output(&self) -> String {
+        unimplemented!()
     }
 
     fn run(&mut self) {

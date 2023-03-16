@@ -114,6 +114,14 @@ impl SetupIk for Irb6640 {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!()
+    }
+
+    fn write_output(&self) -> String {
+        unimplemented!()
+    }
+
     fn run(&mut self) {
         (self.q, self.is_ls) = spherical_two_parallel(&self.r, &self.t, &self.kin);
     }
@@ -147,6 +155,14 @@ impl SetupIk for KukaR800FixedQ3 {
         let mut q = Vector7::zeros().map(|_: f64| random_angle());
         q[2] = Self::Q3;
         (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!()
+    }
+
+    fn write_output(&self) -> String {
+        unimplemented!()
     }
 
     fn run(&mut self) {

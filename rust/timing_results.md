@@ -36,3 +36,11 @@
 | 4          |                   71 |                 101 |
 | 5          |                  898 |                 872 |
 | 6          |                 1582 |                1553 |
+
+| Ik                              | Separate Time (ns)   | Batched Time (ns)   |
+| :------------------------------ | -------------------: | ------------------: |
+| Spherical                       |                 1807 |                1787 |
+| Spherical Two Intersecting      |                 1451 |                1424 |
+| Spherical Two Parallel          |                 2919 |                2922 |
+| Three Parallel                  |                 2759 |                2733 |
+| Three Parallel Two Intersecting |                 1354 |                1325 |

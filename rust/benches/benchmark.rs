@@ -1,16 +1,19 @@
 #[cfg(link_ikfast)]
 use linear_subproblem_solutions_rust::ikfast::KukaKr30Setup;
-use linear_subproblem_solutions_rust::inverse_kinematics::hardcoded::setups::Irb6640;
 
 use {
     linear_subproblem_solutions_rust::{
-        inverse_kinematics::setups::{
-            SetupIk,
-            SphericalTwoParallelSetup,
-            SphericalTwoIntersectingSetup,
-            SphericalSetup,
-            ThreeParallelTwoIntersectingSetup,
-            ThreeParallelSetup,
+        inverse_kinematics::{
+            hardcoded::setups::Irb6640,
+
+            setups::{
+                SetupIk,
+                SphericalTwoParallelSetup,
+                SphericalTwoIntersectingSetup,
+                SphericalSetup,
+                ThreeParallelTwoIntersectingSetup,
+                ThreeParallelSetup,
+            },
         },
 
         subproblems::setups::{

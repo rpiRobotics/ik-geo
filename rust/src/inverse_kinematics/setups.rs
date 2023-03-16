@@ -1,12 +1,14 @@
-use super::{three_parallel_two_intersecting, three_parallel};
-
 use {
-    nalgebra::{ Vector3, Vector6, Matrix3 },
+    nalgebra::{ Vector3, Vector6, Matrix3, Matrix3x6 },
 
-    crate::subproblems::auxiliary::{
-        random_vector3,
-        random_norm_vector3,
-        random_angle,
+    crate::subproblems::{
+        setups::SetupStatic,
+
+        auxiliary::{
+            random_vector3,
+            random_norm_vector3,
+            random_angle,
+        },
     },
 
     super::{
@@ -18,11 +20,15 @@ use {
         spherical_two_parallel,
         spherical_two_intersecting,
         spherical,
+        three_parallel_two_intersecting,
+        three_parallel,
     },
 };
 
 pub trait SetupIk {
     fn setup(&mut self);
+    fn setup_from_str(&mut self, raw: &str);
+    fn write_output(&self) -> String;
     fn run(&mut self);
     fn error(&self) -> f64;
     fn ls_count(&self) -> usize;
@@ -75,8 +81,55 @@ pub struct ThreeParallelSetup {
     is_ls: Vec<bool>,
 }
 
-impl SphericalTwoParallelSetup {
-    pub fn new() -> Self {
+fn calculate_ik_error(kin: &Kinematics<6, 7>, r: &Matrix3<f64>, t: &Vector3<f64>, q: &Vector6<f64>) -> f64 {
+    let (r_t, t_t) = kin.forward_kinematics(q);
+    (r_t - r).norm() + (t_t - t).norm()
+}
+
+fn ik_setup_from_string(raw: &str, kin: &mut Kinematics<6, 7>, r: &mut Matrix3<f64>, t: &mut Vector3<f64>) {
+    let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+    kin.h = Matrix3x6::from_columns(&[
+        Vector3::new(data[0], data[1], data[2]),
+        Vector3::new(data[3], data[4], data[5]),
+        Vector3::new(data[6], data[7], data[8]),
+        Vector3::new(data[9], data[10], data[11]),
+        Vector3::new(data[12], data[13], data[14]),
+        Vector3::new(data[15], data[16], data[17]),
+    ]);
+
+    kin.p = Matrix3x7::from_columns(&[
+        Vector3::new(data[18], data[19], data[20]),
+        Vector3::new(data[21], data[22], data[23]),
+        Vector3::new(data[24], data[25], data[26]),
+        Vector3::new(data[27], data[28], data[29]),
+        Vector3::new(data[30], data[31], data[32]),
+        Vector3::new(data[33], data[34], data[35]),
+        Vector3::new(data[36], data[37], data[38]),
+    ]);
+
+    *r = Matrix3::new(
+        data[39], data[40], data[41],
+        data[42], data[43], data[44],
+        data[45], data[46], data[47],
+    );
+
+    *t = Vector3::new(
+        data[48],
+        data[49],
+        data[50]
+    );
+}
+
+fn ik_write_output(q: &Vec<Vector6<f64>>) -> String {
+    q.iter()
+        .map(|q| q.iter().map(|x| x.to_string())
+        .collect::<Vec<String>>().join(",")).collect::<Vec<String>>()
+        .join(",")
+}
+
+impl SetupStatic for SphericalTwoParallelSetup {
+    fn new() -> Self {
         Self {
             kin: Kinematics::new(),
             r: Matrix3::zeros(),
@@ -87,14 +140,13 @@ impl SphericalTwoParallelSetup {
         }
     }
 
-    fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = self.kin.forward_kinematics(&q);
-        (r_t - self.r).norm() + (t_t - self.t).norm()
+    fn name() -> &'static str {
+        "Spherical two Parallel"
     }
 }
 
-impl SphericalTwoIntersectingSetup {
-    pub fn new() -> Self {
+impl SetupStatic for SphericalTwoIntersectingSetup {
+    fn new() -> Self {
         Self {
             kin: Kinematics::new(),
             r: Matrix3::zeros(),
@@ -105,14 +157,13 @@ impl SphericalTwoIntersectingSetup {
         }
     }
 
-    fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = self.kin.forward_kinematics(&q);
-        (r_t - self.r).norm() + (t_t - self.t).norm()
+    fn name() -> &'static str {
+        "Spherical Two Intersecting"
     }
 }
 
-impl SphericalSetup {
-    pub fn new() -> Self {
+impl SetupStatic for SphericalSetup {
+    fn new() -> Self {
         Self {
             kin: Kinematics::new(),
             r: Matrix3::zeros(),
@@ -123,14 +174,13 @@ impl SphericalSetup {
         }
     }
 
-    fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = self.kin.forward_kinematics(&q);
-        (r_t - self.r).norm() + (t_t - self.t).norm()
+    fn name() -> &'static str {
+        "Spherical"
     }
 }
 
-impl ThreeParallelTwoIntersectingSetup {
-    pub fn new() -> Self {
+impl SetupStatic for ThreeParallelTwoIntersectingSetup {
+    fn new() -> Self {
         Self {
             kin: Kinematics::new(),
             r: Matrix3::zeros(),
@@ -141,14 +191,13 @@ impl ThreeParallelTwoIntersectingSetup {
         }
     }
 
-    fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = self.kin.forward_kinematics(&q);
-        (r_t - self.r).norm() + (t_t - self.t).norm()
+    fn name() -> &'static str {
+        "Three Parallel Two Intersecting"
     }
 }
 
-impl ThreeParallelSetup {
-    pub fn new() -> Self {
+impl SetupStatic for ThreeParallelSetup {
+    fn new() -> Self {
         Self {
             kin: Kinematics::new(),
             r: Matrix3::zeros(),
@@ -159,9 +208,8 @@ impl ThreeParallelSetup {
         }
     }
 
-    fn calculate_error(&self, q: &Vector6<f64>) -> f64 {
-        let (r_t, t_t) = self.kin.forward_kinematics(&q);
-        (r_t - self.r).norm() + (t_t - self.t).norm()
+    fn name() -> &'static str {
+        "Three Parallel"
     }
 }
 
@@ -189,6 +237,14 @@ impl SetupIk for SphericalTwoParallelSetup {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
+    fn setup_from_str(&mut self, raw: &str) {
+        ik_setup_from_string(raw, &mut self.kin, &mut self.r, &mut self.t);
+    }
+
+    fn write_output(&self) -> String {
+        ik_write_output(&self.q)
+    }
+
     fn run(&mut self) {
         (self.q, self.is_ls) = spherical_two_parallel(&self.r, &self.t, &self.kin);
     }
@@ -199,7 +255,7 @@ impl SetupIk for SphericalTwoParallelSetup {
                 0.0
             }
             else {
-                self.calculate_error(q)
+                calculate_ik_error(&self.kin, &self.r, &self.t, q)
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
@@ -213,7 +269,7 @@ impl SetupIk for SphericalTwoParallelSetup {
     }
 
     fn name(&self) -> &'static str {
-        "Spherical two Parallel"
+        <Self as SetupStatic>::name()
     }
 }
 
@@ -238,6 +294,14 @@ impl SetupIk for SphericalTwoIntersectingSetup {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
+    fn setup_from_str(&mut self, raw: &str) {
+        ik_setup_from_string(raw, &mut self.kin, &mut self.r, &mut self.t);
+    }
+
+    fn write_output(&self) -> String {
+        ik_write_output(&self.q)
+    }
+
     fn run(&mut self) {
         (self.q, self.is_ls) = spherical_two_intersecting(&self.r, &self.t, &self.kin);
     }
@@ -248,7 +312,7 @@ impl SetupIk for SphericalTwoIntersectingSetup {
                 0.0
             }
             else {
-                self.calculate_error(q)
+                calculate_ik_error(&self.kin, &self.r, &self.t, q)
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
@@ -262,7 +326,7 @@ impl SetupIk for SphericalTwoIntersectingSetup {
     }
 
     fn name(&self) -> &'static str {
-        "Spherical Two Intersecting"
+        <Self as SetupStatic>::name()
     }
 }
 
@@ -287,6 +351,14 @@ impl SetupIk for SphericalSetup {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
+    fn setup_from_str(&mut self, raw: &str) {
+        ik_setup_from_string(raw, &mut self.kin, &mut self.r, &mut self.t);
+    }
+
+    fn write_output(&self) -> String {
+        ik_write_output(&self.q)
+    }
+
     fn run(&mut self) {
         (self.q, self.is_ls) = spherical(&self.r, &self.t, &self.kin);
     }
@@ -301,7 +373,7 @@ impl SetupIk for SphericalSetup {
                 0.0
             }
             else {
-                self.calculate_error(q)
+                calculate_ik_error(&self.kin, &self.r, &self.t, q)
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
@@ -315,7 +387,7 @@ impl SetupIk for SphericalSetup {
     }
 
     fn name(&self) -> &'static str {
-        "Spherical"
+        <Self as SetupStatic>::name()
     }
 }
 
@@ -344,6 +416,14 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
+    fn setup_from_str(&mut self, raw: &str) {
+        ik_setup_from_string(raw, &mut self.kin, &mut self.r, &mut self.t);
+    }
+
+    fn write_output(&self) -> String {
+        ik_write_output(&self.q)
+    }
+
     fn run(&mut self) {
         (self.q, self.is_ls) = three_parallel_two_intersecting(&self.r, &self.t, &self.kin);
     }
@@ -354,7 +434,7 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
                 0.0
             }
             else {
-                self.calculate_error(q)
+                calculate_ik_error(&self.kin, &self.r, &self.t, q)
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
@@ -368,7 +448,7 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
     }
 
     fn name(&self) -> &'static str {
-        "Three Parallel Two Intersecting"
+        <Self as SetupStatic>::name()
     }
 }
 
@@ -398,6 +478,14 @@ impl SetupIk for ThreeParallelSetup {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
+    fn setup_from_str(&mut self, raw: &str) {
+        ik_setup_from_string(raw, &mut self.kin, &mut self.r, &mut self.t);
+    }
+
+    fn write_output(&self) -> String {
+        ik_write_output(&self.q)
+    }
+
     fn run(&mut self) {
         (self.q, self.is_ls) = three_parallel(&self.r, &self.t, &self.kin);
     }
@@ -408,7 +496,7 @@ impl SetupIk for ThreeParallelSetup {
                 0.0
             }
             else {
-                self.calculate_error(q)
+                calculate_ik_error(&self.kin, &self.r, &self.t, q)
             }
         }).sum::<f64>() / (self.q.len() as f64 * 2.0)
     }
@@ -422,6 +510,6 @@ impl SetupIk for ThreeParallelSetup {
     }
 
     fn name(&self) -> &'static str {
-        "Three Parallel"
+        <Self as SetupStatic>::name()
     }
 }
