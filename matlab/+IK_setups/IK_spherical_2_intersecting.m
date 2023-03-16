@@ -9,7 +9,7 @@ classdef IK_spherical_2_intersecting
             S.Q = rand_angle([6 1]);
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.P = [rand_vec zv rand_vec rand_vec zv zv rand_vec];
 
             [P.R, P.T] = fwdkin(P.kin, S.Q);
@@ -20,7 +20,7 @@ classdef IK_spherical_2_intersecting
 
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.P = [rand_vec zv rand_vec rand_vec zv zv rand_vec];
             P.kin.P(:,end) = 0; % Set task frame at the wrist
             P.kin.H(:,2) = rand_perp_normal_vec(P.kin.H(:,1)); % h_1 perpendicular to h_2

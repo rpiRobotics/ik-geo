@@ -16,6 +16,10 @@ methods (Static)
         [P.R, P.T] = fwdkin(hardcoded_IK_setups.IRB_6640.get_kin(), S.Q);
     end
 
+    function S = run(P)
+        [S.Q, S.is_LS] = hardcoded_IK.IRB_6640(P.R, P.T);
+    end
+
     function S = run_mex(P)
         [S.Q, S.is_LS] = hardcoded_IK.IRB_6640_mex(P.R, P.T);
     end

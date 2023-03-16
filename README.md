@@ -1,5 +1,5 @@
 # Linear Subproblem Solutions
-Implementation of subproblem solutions using a linear algebra approach from "Canonical Subproblems for Robot Inverse Kinematics"
+Implementation of subproblem solutions using a linear algebra approach from ["Canonical Subproblems for Robot Inverse Kinematics"](https://arxiv.org/abs/2211.05737). We also include inverse kinematics solutions to a number of 6-dof robot types, examples with specific robots, and timing tests.
 
 ### Subproblem 1: Cone and point
 
@@ -40,6 +40,8 @@ $$\begin{cases}
 `rust`: Rust implementation (Work in progress)
 
 `python`: Python implementation (Work in progress)
+
+`ikfast`: Comparison to Inverse Kinematics using IKFast (Work in progress)
 
 ## Contributing
 If you have any improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue.
