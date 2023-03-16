@@ -41,7 +41,7 @@ for i_t1 = 1:length(theta1)
         d = norm(d_inner);
         [theta_3, theta_3_is_LS] = subproblem.sp_3(-p_34, p_23, H(:,2), d);
     
-        for i_q3 = length(theta_3)
+        for i_q3 = 1:length(theta_3)
             q_3 = theta_3(i_q3);
             % solve for q2
             [q_2, q_2_is_LS] = subproblem.sp_1(p_23 + rot(H(:,2), q_3)*p_34, d_inner, H(:,2));
