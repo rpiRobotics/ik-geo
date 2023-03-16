@@ -22,3 +22,11 @@ The command to generate a `cpp` file from an `xml` file is
 ```
 python `openrave-config --python-dir`/openravepy/_openravepy_/ikfast.py --robot=robot_name.xml --baselink=0 --eelink=7 --savefile=robot_name.cpp
 ```
+
+To test timing (in an albeit crude way), use `test_timing.cpp`. This program has a modified version of `main()` from the generated IKfast files which runs the IK function `N` times and times the execution.
+To compile this program and also measure compulation time, run
+```
+time g++ test_timing.cpp -lrt -O2 -DIKFAST_NO_MAIN -include robot_name.cpp  -DN=1000000
+```
+Change `N=` to some other value if desired. Use the matlab script `generate_example_call.m` to generate a random pose.
+For some robots (e.g. ur5), adding `-llapack` is also required.
