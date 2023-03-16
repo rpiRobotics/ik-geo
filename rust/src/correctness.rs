@@ -14,8 +14,11 @@ use crate::{
     inverse_kinematics::{
         setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup, SphericalSetup, ThreeParallelTwoIntersectingSetup, SetupIk, ThreeParallelSetup, },
         hardcoded::setups::{Irb6640, KukaR800FixedQ3, },
-    }, ikfast::KukaKr30Setup,
+    },
 };
+
+#[cfg(link_ikfast)]
+use crate::ikfast::KukaKr30Setup;
 
 const TEST_ITERATIONS: usize = 1000;
 const ERROR_THRESHOLD: f64 = 1e-4;

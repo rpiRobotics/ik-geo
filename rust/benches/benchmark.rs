@@ -129,7 +129,6 @@ pub fn three_parallel_benchmark(c: &mut Criterion) {
     c.bench_function("Ik 3 Parallel", |b| b.iter(|| setup.run()));
 }
 
-#[cfg(link_ikfast)]
 pub fn irb6640_benchmark(c: &mut Criterion) {
     let mut setup = Irb6640::new();
 
