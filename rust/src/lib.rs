@@ -13,3 +13,5 @@ mod correctness;
 
 #[cfg(test)]
 mod timing;
+
+mod search;

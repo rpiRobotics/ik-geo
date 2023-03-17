@@ -284,3 +284,12 @@ pub fn three_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics
 
     (q, is_ls)
 }
+
+pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    let q = Vec::with_capacity(6);
+    let is_ls = Vec::with_capacity(6);
+
+    let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
+
+    (q, is_ls)
+}
