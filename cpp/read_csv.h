@@ -4,6 +4,9 @@
 #include <utility>
 #include <sstream>
 
+#ifndef __read_csv_h__
+#define __read_csv_h__
+
 std::vector<std::pair<std::string, std::vector<double>>> read_csv(const std::string &filename){
     std::vector<std::pair<std::string, std::vector<double>>> result;
     std::ifstream infile(filename);
@@ -33,3 +36,5 @@ std::vector<std::pair<std::string, std::vector<double>>> read_csv(const std::str
 
     return result;
 }
+
+#endif

@@ -1,0 +1,30 @@
+Timing test results: 
+
+subproblem 1: 
+===== 
+ time (nanoseconds): 141.899
+
+subproblem 2: 
+===== 
+ time (nanoseconds): 449.214
+
+subproblem 2 Extended: 
+===== 
+ time (nanoseconds): 263.743
+
+subproblem 3: 
+===== 
+ time (nanoseconds): 177.911
+
+subproblem 4: 
+===== 
+ time (nanoseconds): 215.409
+
+subproblem 5: 
+===== 
+ time (nanoseconds): 2696.82
+
+subproblem 6: 
+===== 
+ time (nanoseconds): 3009.93
+

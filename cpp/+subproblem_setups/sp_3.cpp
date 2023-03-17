@@ -49,7 +49,7 @@ bool sp_3(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vec
 	sc_1 = x_ls + xi*A_perp;
 	sc_2 = x_ls - xi*A_perp;
 
-	theta.push_back(atan2(sc_1(0, 0), sc_1(1, 0)));
+	theta[0] = (atan2(sc_1(0, 0), sc_1(1, 0)));
 	theta.push_back(atan2(sc_2(0, 0), sc_2(1, 0)));
 
 	return false;

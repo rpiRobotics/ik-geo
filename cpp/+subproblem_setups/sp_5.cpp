@@ -9,6 +9,7 @@
 #include <chrono>
 #include "sp_5.h"
 #include "../read_csv.h"
+#include "../helper.h"
 
 using namespace std::complex_literals;
 
@@ -22,82 +23,6 @@ void sp_5_setup(Eigen::Vector3d &p0, Eigen::Vector3d &p1, Eigen::Vector3d &p2, E
 	k1 = rand_normal_vec();
 	k2 = rand_normal_vec();
 	k3 = rand_normal_vec();
-}
-
-void cone_polynomials(const Eigen::Vector3d &p0_i, const Eigen::Vector3d &k_i, const Eigen::Vector3d &p_i, const Eigen::Vector3d &p_i_s, const Eigen::Vector3d &k2, 
-					  Eigen::Matrix<double, 1, 2>& P, Eigen::Matrix<double, 1, 3>& R) {
-	Eigen::Matrix<double, 3, 1> kiXk2 = k_i.cross(k2);
-	Eigen::Matrix<double, 3, 1> kiXkiXk2 = k_i.cross(kiXk2);
-	double norm_kiXk2_sq = kiXk2.dot(kiXk2);
-
-	Eigen::Matrix<double, 3, 1> kiXpi = k_i.cross(p_i);
-	double norm_kiXpi_sq = kiXpi.dot(kiXpi);
-
-	double delta = k2.dot(p_i_s);
-	double alpha = (p0_i.transpose() * kiXkiXk2 / norm_kiXk2_sq)(0, 0);
-	double beta = (p0_i.transpose() * kiXk2 / norm_kiXk2_sq)(0, 0);
-
-	double P_const = norm_kiXpi_sq + p_i_s.dot(p_i_s) + 2*alpha*delta;
-	P << -2*alpha, P_const;
-
-	R << -1, 2*delta, -pow(delta, 2);
-	R(0, 2) = R(0, 2) + norm_kiXpi_sq*norm_kiXk2_sq;
-	R = pow(2*beta, 2) * R;
-	return;
-}
-
-Eigen::Matrix<double, 1, 3> convolution_2(Eigen::Matrix<double, 1, 2> &v1, Eigen::Matrix<double, 1, 2> &v2) {
-	Eigen::Matrix<double, 1, 3> res;
-	res << v1(0, 0)*v2(0, 0), v1(0, 0)*v2(0, 1)+v1(0, 1)*v2(0, 0), v1(0, 1)*v2(0, 1);
-	return res;
-}
-
-Eigen::Matrix<double, 1, 5> convolution_3(Eigen::Matrix<double, 1, 3> &v1, Eigen::Matrix<double, 1, 3> &v2) {
-	Eigen::Matrix<double, 1, 5> res;
-	res << v1(0, 0)*v2(0, 0), v1(0, 1)*v2(0, 0)+v1(0, 0)*v2(0, 1), v1(0, 0)*v2(0, 2)+v1(0, 1)*v2(0, 1)+v1(0, 2)*v2(0, 0), 
-		   v1(0, 1)*v2(0, 2)+v1(0, 2)*v2(0, 1), v1(0, 2)*v2(0, 2);
-	return res;
-}
-
-std::vector<std::complex<double>> quartic_roots(const Eigen::Matrix<double, 1, 5> &poly) {
-	std::vector<std::complex<double>> roots;
-
-	double A = poly(0, 0), B = poly(0, 1), C = poly(0, 2), D = poly(0, 3), E = poly(0, 4);
-
-	std::complex<double> alpha = -0.375*B*B/(A*A) + C/A;
-	std::complex<double> beta = 0.125*B*B*B/(A*A*A) - 0.5*B*C/(A*A) + D/A;
-	std::complex<double> gamma = -B*B*B*B*3./(A*A*A*A*256.) + C*B*B/(A*A*A*16.) - B*D/(A*A*4.) + E/A;
-
-	if (fabs(beta.real()) < 1e-12 && fabs(beta.imag()) < 1e-12) {
-		std::complex<double> tmp = sqrt(alpha*alpha - gamma*4. + 0i);
-		roots.push_back(-B/(A*4.) + sqrt((-alpha + tmp)/2. + 0i));
-		roots.push_back(-B/(A*4.) - sqrt((-alpha + tmp)/2. + 0i));
-		roots.push_back(-B/(A*4.) + sqrt((-alpha - tmp)/2. + 0i));
-		roots.push_back(-B/(A*4.) - sqrt((-alpha - tmp)/2. + 0i));
-		return roots;
-	}
-
-	std::complex<double> P = -alpha*alpha/12. - gamma;
-	std::complex<double> Q = -alpha*alpha*alpha/108. + alpha*gamma/3. - beta*beta*0.125;
-	std::complex<double> R = -Q*0.5 + sqrt(Q*Q*0.25 + P*P*P/27. + 0i);
-	std::complex<double> U = pow(R, 1./3);
-
-	std::complex<double> y;
-	if (fabs(U.real()) < 1e-12 && fabs(U.imag()) < 1e-12) {
-		y = -alpha*5./6. - pow(Q, 1./3);
-	}
-	else {
-		y = -alpha*5./6. + U - P/(3.*U);
-	}
-
-	std::complex<double> W = sqrt(alpha + 2.*y + 0i);
-
-	roots.push_back(-B/(A*4.) + (W + sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
-	roots.push_back(-B/(A*4.) + (W - sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
-	roots.push_back(-B/(A*4.) - (W + sqrt(-(alpha*3. + 2.*y - beta*2./W)))/2.);
-	roots.push_back(-B/(A*4.) - (W - sqrt(-(alpha*3. + 2.*y - beta*2./W)))/2.);
-
-	return roots;
 }
 
 // return is_LS

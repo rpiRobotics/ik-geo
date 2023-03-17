@@ -17,8 +17,9 @@
 #include "../+subproblem_setups/sp_4.h"
 
 struct Kin {
-	Eigen::Matrix<double, 3, 7> H;
+	Eigen::Matrix<double, 3, 6> H;
 	Eigen::Matrix<double, 3, 7> P;
+	Eigen::Matrix<double, 1, 6> joint_type;
 };
 
 struct Soln {
@@ -26,11 +27,17 @@ struct Soln {
 	std::vector<bool> is_LS_vec;
 };
 
-void setup(Eigen::Matrix<double, 3, 7>& H, Eigen::Matrix<double, 3, 7>& P, 
-           Eigen::Matrix<double, 6, 1>& Q, Eigen::Matrix<double, 1, 6>& joint_type);
+void fwdkin(const Kin& kin, const Soln& soln, 
+            Eigen::Matrix<double, 3, 1>& p, 
+						Eigen::Matrix<double, 3, 3>& R);
 
-void setup_LS(Eigen::Matrix<double, 3, 7>& H, Eigen::Matrix<double, 3, 7>& P, 
-           Eigen::Matrix<double, 6, 1>& Q, Eigen::Matrix<double, 1, 6>& joint_type);
+void setup(Kin& kin, Soln& soln,
+					 Eigen::Matrix<double, 3, 1>& T, 
+					 Eigen::Matrix<double, 3, 3>& R);
+
+void setup_LS(Kin& kin, Soln& soln,
+					 Eigen::Matrix<double, 3, 1>& T, 
+					 Eigen::Matrix<double, 3, 3>& R);
 
 void error();
 

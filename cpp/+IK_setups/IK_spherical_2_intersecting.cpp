@@ -5,89 +5,130 @@
 // Purpose: Port of the IK_spherical_2_intersecting files
 //---------------------------------------------------------------//
 
+#pragma GCC optimize(3)
 
 #include <eigen3/Eigen/Dense>
-#include "+IK_setups/IK_spherical_2_intersecting.h"
+#include "IK_spherical_2_intersecting.h"
 #include "../rand_cpp.h"
-#include "../+subproblem_setups/sp_1.h"
-#include "../+subproblem_setups/sp_2.h"
-#include "../+subproblem_setups/sp_3.h"
-#include "../+subproblem_setups/sp_4.h"
+#include "../+subproblem_setups/sp_1.cpp"
+#include "../+subproblem_setups/sp_2.cpp"
+#include "../+subproblem_setups/sp_3.cpp"
+#include "../+subproblem_setups/sp_4.cpp"
 
-void setup(Eigen::Matrix<double, 3, 7>& H, Eigen::Matrix<double, 3, 7>& P, 
-           Eigen::Matrix<double, 6, 1>& Q, Eigen::Matrix<double, 1, 6>& joint_type) {
-  Eigen::Vector3d zv;
-  zv << 0, 0, 0;
+void fwdkin(const Kin& kin, const Soln& soln, 
+            Eigen::Matrix<double, 3, 1>& p, Eigen::Matrix<double, 3, 3>& R) {
+  p = kin.P.col(0);
+  R = Eigen::Matrix3d::Identity();
+  R.setIdentity();
 
-  Eigen::Matrix<double, 6, 1> Q = rand_angle(6);
-
-  Eigen::Matrix<double, 1, 6> joint_type = Eigen::Matrix<double, 1, 6>::Zero();
-
-  Eigen::Matrix<double, 3, 7> H = rand_normal_vec(7);
-  Eigen::Matrix<double, 3, 7> P;
-  P.col(0) = rand_vec();
-  P.col(1) = zv;
-  P.col(2) = rand_vec();
-  P.col(3) = rand_vec();
-  P.col(4) = zv;
-  P.col(5) = zv;
-  P.col(6) = rand_vec();
+  for (unsigned int i = 0; i < kin.joint_type.size(); i++) {
+    if (kin.joint_type(i) == 0 || kin.joint_type(i) == 2) {
+      R = R * rot(kin.H.col(i), soln.Q[i][0]);
+    } else if (kin.joint_type(i) == 1 || kin.joint_type(i) == 3) {
+      p = p + R * kin.H.col(i)*soln.Q[i][0];
+    }
+    p = p + R*kin.P.col(i + 1);
+  }
 }
 
-void setup_LS(Eigen::Matrix<double, 3, 7>& H, Eigen::Matrix<double, 3, 7>& P, 
-           Eigen::Matrix<double, 6, 1>& Q, Eigen::Matrix<double, 1, 6>& joint_type) {
+void setup(Kin& kin, Soln& soln,
+           Eigen::Matrix<double, 3, 1>& T, Eigen::Matrix<double, 3, 3>& R) {
   Eigen::Vector3d zv;
   zv << 0, 0, 0;
 
-  Eigen::Matrix<double, 6, 1> Q = rand_angle(6);
+  for (int i = 0; i < 6; i++) {
+    soln.Q.push_back(std::vector<double>());
+    for (int j = 0; j < 5; j++) {
+      soln.Q[i].push_back(rand_angle());
+    }
+  }
 
-  Eigen::Matrix<double, 1, 6> joint_type = Eigen::Matrix<double, 1, 6>::Zero();
 
-  Eigen::Matrix<double, 3, 7> H = rand_normal_vec(7);
-  Eigen::Matrix<double, 3, 7> P;
-  P.col(0) = rand_vec();
-  P.col(1) = zv;
-  P.col(2) = rand_vec();
-  P.col(3) = rand_vec();
-  P.col(4) = zv;
-  P.col(5) = zv;
-  P.col(6) = zv;
-  H.col(1) = rand_perp_normal_vec(H.col(1));
-  H.col(2) = H.col(1);
-  P.col(3) = P.col(3) - H.col(2) * (H.col(2).transpose() * (P.col(2) + P.col(3)));
-  P.col(4) = rand_perp_normal_vec(H.col(3));
-  P.col(5) = rand_perp_normal_vec(H.col(4));
+  kin.joint_type = Eigen::Matrix<double, 1, 6>::Zero();
 
-  Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> R = rot(rand_normal_vec(), rand_angle());
-  Eigen::Matrix<double, 3, 1> T = rand_vec();
+  kin.H = rand_normal_vec(6);
+  kin.P.col(0) = rand_vec();
+  kin.P.col(1) = zv;
+  kin.P.col(2) = rand_vec();
+  kin.P.col(3) = rand_vec();
+  kin.P.col(4) = zv;
+  kin.P.col(5) = zv;
+  kin.P.col(6) = rand_vec();
+
+
+  fwdkin(kin, soln, T, R);
+}
+
+void setup_LS(Kin& kin, Soln& soln,
+              Eigen::Matrix<double, 3, 1>& T, Eigen::Matrix<double, 3, 3>& R) {
+                
+  Eigen::Vector3d zv;
+  zv << 0, 0, 0;
+
+  for (int i = 0; i < 6; i++) {
+    soln.Q.push_back(std::vector<double>());
+    for (int j = 0; j < 5; j++) {
+      soln.Q[i].push_back(rand_angle());
+    }
+  }
+
+  kin.joint_type = Eigen::Matrix<double, 1, 6>::Zero();
+
+  kin.H = rand_normal_vec(6);
+  kin.P.col(0) = rand_vec();
+  kin.P.col(1) = zv;
+  kin.P.col(2) = rand_vec();
+  kin.P.col(3) = rand_vec();
+  kin.P.col(4) = zv;
+  kin.P.col(5) = zv;
+  kin.P.col(6) = zv;
+  kin.H.col(1) = rand_perp_normal_vec(kin.H.col(1));
+  kin.H.col(2) = kin.H.col(1);
+  kin.P.col(3) = kin.P.col(3) - kin.H.col(2) * (kin.H.col(2).transpose() * (kin.P.col(2) + kin.P.col(3)));
+  kin.P.col(4) = rand_perp_normal_vec(kin.H.col(3));
+  kin.P.col(5) = rand_perp_normal_vec(kin.H.col(4));
+
+  R = rot(rand_normal_vec(), rand_angle());
+  T = rand_vec();
+
 }
 
 void error() {
   //implement
 }
 
+// TODO: Fix output for Q and LS to Soln
 void IK_spherical_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kin& kin, 
                                  Eigen::Matrix<double, 6, Eigen::Dynamic>& Q, Eigen::Matrix<double, 5, Eigen::Dynamic>& Q_LS) {
-  //////
 
   Eigen::Matrix<double, 3, 1> p_16 = (p_0T - R_0T * kin.P.col(6) - kin.P.col(0)); 
 
   std::vector <double> theta;
 
+  theta.push_back(0);
+
   bool t3_is_ls = sp_3(kin.P.col(3), -kin.P.col(2), kin.H.col(2), p_16.norm(), theta);
 
-  for (int i = 0; i < theta.size(); i++) {
+
+
+  for (unsigned int i = 0; i < theta.size(); i++) {
 
     double q3 = theta[i];
 
+
     std::vector<double> t1, t2;
+
+    t1.push_back(0);
+    t2.push_back(0);
 
     bool t12_is_ls = sp2_run(p_16,
                              kin.P.col(2) + rot(kin.H.col(2), q3) * kin.P.col(3),
                              -kin.H.col(0),
                              kin.H.col(1),
                              t1, t2);
-    for (int j = 0; j < t1.size(); j++) {
+
+
+    for (unsigned int j = 0; j < t1.size(); j++) {
       double q1 = t1[j];
       double q2 = t2[j];
 
@@ -95,10 +136,14 @@ void IK_spherical_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_0T, const 
 
       std::vector<double> t5;
 
+      t5.push_back(0);
+
       bool q5_is_ls = sp4_run(kin.H.col(3), kin.H.col(5), kin.H.col(4), 
                               kin.H.col(3).transpose() * R_36 * kin.H.col(5), 
                               t5);
-      for (int k = 0; k < t5.size(); k++) {
+
+
+      for (unsigned int k = 0; k < t5.size(); k++) {
         double q5 = t5[k];
 
         double q4, q6 = 0;
@@ -107,18 +152,55 @@ void IK_spherical_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_0T, const 
                                 R_36*kin.H.col(5),
                                 kin.H.col(4), q4);
 
+
         bool q6_is_ls = sp1_run(rot(-kin.H.col(4), q5) * kin.H.col(3),
                                 R_36.transpose()*kin.H.col(3),
                                 -kin.H.col(6), q6);
+
         
         Eigen::Matrix<double, 6, 1> q;
         q << q1, q2, q3, q4, q5, q6;
-        Q << q;
+        Q.conservativeResize(6, Q.cols() + 1);
+        Q.col(Q.cols() - 1) = q;
 
         Eigen::Matrix<double, 5, 1> q_ls;
         q_ls << t3_is_ls, t12_is_ls, q5_is_ls, q4_is_ls, q6_is_ls;
-        Q_LS << q_ls;
+        Q_LS.conservativeResize(5, Q_LS.cols() + 1);
+        Q_LS.col(Q_LS.cols() - 1) = q_ls;
       }
     }
   }
+}
+
+
+int main(int argc, char** argv) {
+  
+  double time_avg = 0;
+
+  for (int i = 0; i < 100000; i ++ ) {
+    Kin kin;
+    Soln soln;
+    Eigen::Matrix<double, 3, 1> T;
+    Eigen::Matrix<double, 3, 3> R;
+
+    setup(kin, soln, T, R);
+
+    Eigen::Matrix<double, 6, Eigen::Dynamic> Q;
+    Eigen::Matrix<double, 5, Eigen::Dynamic> Q_LS;
+
+    auto start = std::chrono::steady_clock::now();
+
+    IK_spherical_2_intersecting(R, T, kin, Q, Q_LS);
+
+    auto end = std::chrono::steady_clock::now();
+
+    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+  }
+
+  time_avg /= 100000;
+
+  std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+
+  // std::cout << "Q: " << Q << std::endl;
+  // std::cout << "Q_LS: " << Q_LS << std::endl;
 }
