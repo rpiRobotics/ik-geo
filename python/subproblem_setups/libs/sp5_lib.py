@@ -1,6 +1,5 @@
-from math import atan2,sqrt
+from math import atan2
 import numpy as np
-import cmath
 
 #Handle rand_py, sp1_lib imports
 import rand_py as rand

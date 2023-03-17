@@ -1,7 +1,5 @@
-import sys
-sys.path.append(sys.path[0]+"\\libs")
+from linearSubproblemSltns import sp2E_lib as sp2E
 
-import libs.sp2E_lib as sp2E
 import time as time
 
 #Helper variables

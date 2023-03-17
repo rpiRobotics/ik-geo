@@ -1,15 +1,13 @@
-import sys
 import numpy as np
 import time as time
 
-sys.path.append(sys.path[0]+"\\subproblem_setups\\libs")
-import subproblem_setups.libs.sp1_lib  as sp1
-import subproblem_setups.libs.sp2_lib  as sp2
-import subproblem_setups.libs.sp2E_lib as sp2E
-import subproblem_setups.libs.sp3_lib  as sp3
-import subproblem_setups.libs.sp4_lib  as sp4
-import subproblem_setups.libs.sp5_lib  as sp5
-import subproblem_setups.libs.sp6_lib  as sp6
+from linearSubproblemSltns import sp1_lib  as sp1
+from linearSubproblemSltns import sp2_lib  as sp2
+from linearSubproblemSltns import sp2E_lib as sp2E
+from linearSubproblemSltns import sp3_lib  as sp3
+from linearSubproblemSltns import sp4_lib  as sp4
+from linearSubproblemSltns import sp5_lib  as sp5
+from linearSubproblemSltns import sp6_lib  as sp6
 
 
 
@@ -165,5 +163,5 @@ if __name__ == "__main__":
       #print(theta[0:2], arr["theta1"][i], arr["theta2"][i])
       #print("Calculated is: {}\n Actual is: {}".format(theta, str(arr["theta1"][i]) + " " + str(arr["theta2"][i])))
    endT = time.perf_counter_ns()
-   print("For sp6: Average time is {} ns across {} inputs. Total avg is {}".format(timeSum/len(arr["P_1"]), len(arr["P_1"]), (endT-startT)/len(arr["P_1"])))
+   print("For sp6: Average time is {} ns across {} inputs. Average with inputs is {} ns".format(timeSum/len(arr["P_1"]), len(arr["P_1"]), (endT-startT)/len(arr["P_1"])))
    print("-"*120)

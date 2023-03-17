@@ -1,12 +1,5 @@
-import sys
-sys.path.append(sys.path[0]+"\\libs")
-
-import libs.sp3_lib as sp3
+from linearSubproblemSltns import sp3_lib as sp3
 import time as time
-
-
-#Handle rand import
-import libs.rand_py as rand
 
 #Helper variables
 p1 = sp3.np.array([1., 2., 3.])

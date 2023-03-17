@@ -1,17 +1,7 @@
 from math import atan2
 import numpy as np
-import time
  
 #Handle rand_py import
-"""
-try:
-   import rand_py as rand
-except:
-   import libs.rand_py as rand
-"""
-
-#Handle rand_py import
-#if __name__ == "__main__":
 import rand_py as rand
 
 

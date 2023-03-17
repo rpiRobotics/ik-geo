@@ -1,12 +1,6 @@
-import sys
-sys.path.append(sys.path[0]+"\\libs")
-
 #Four cones
-import libs.sp6_lib as sp6
+from linearSubproblemSltns import sp6_lib as sp6
 import time as time
-
-#Handle rand import
-import libs.rand_py as rand
 
 #Helper variables
 H = sp6.np.zeros((4, 3))
