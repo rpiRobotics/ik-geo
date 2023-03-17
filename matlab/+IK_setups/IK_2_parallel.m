@@ -6,7 +6,7 @@ classdef IK_2_parallel
             S.Q = rand_angle([6 1]);
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.H(:,3) = P.kin.H(:,2);
 
             P.kin.P = rand_vec(7);

@@ -1,9 +1,10 @@
-N = 10e3;
-%N = 10;
+% N = 10e3;
+N = 10;
 
 setups = {
     hardcoded_IK_setups.ur5
     hardcoded_IK_setups.IRB_6640
+    hardcoded_IK_setups.two_parallel_bot
     hardcoded_IK_setups.three_parallel_bot
     hardcoded_IK_setups.KUKA_R800_fixed_q3
     hardcoded_IK_setups.yumi_fixed_q3
@@ -20,7 +21,7 @@ for i = 1:length(setups)
     class_name = string(class(setup)).split(".");
     file_name = class_name(end) + ".csv";
     
-    %writetable(T, file_name);
+    writetable(T, file_name);
     save(class_name(end)+".mat", "P_list", "S_list");
 end
 

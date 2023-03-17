@@ -6,7 +6,8 @@ is_LS_vec = [];
 
 p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
-[q1_vec, soln_num_vec] = search_1D(@error_given_q1, -pi, pi, 1000, true);
+% [q1_vec, soln_num_vec] = search_1D(@error_given_q1, -pi, pi, 1000, true);
+[q1_vec, soln_num_vec] = search_1D(@error_given_q1, -pi, pi, 200, false);
 
 for i_q1 = 1:length(q1_vec)
     q1 = q1_vec(i_q1);

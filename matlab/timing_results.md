@@ -18,8 +18,8 @@
 | Inverse Kinematics              | Hardcoded Example   | `m` Time (us)   | `MEX` Time (us) |Hardcoded `MEX` Time (us) | N |
 | :------------------------------ |  :----------        | ----------:     | ----------:     | --:                      | --:|
 | General 6-dof                   | Yumi (fixed q3)     | 332,759.41      | 7,145.03        | 5,581.96                 | 100  |
-| 2 Intersecting                  | RRC (fixed q6)      | 46,812.45       |   512.65        | 139.4490                 | 100  |
-| 2 Parallel                      |       ??            |        ??       |       ??        |        ??                | ??   |
+| 2 Intersecting                  | RRC (fixed q6)      | 37,889.28       |   578.89        | 153.3720                 | 100  |
+| 2 Parallel                      | Two-Parallel-Bot    | 82,191.55       |   504.92        | 566.6760                 | 100  |
 | Spherical                       | Spherical-Bot       |    541.14       |   4.8332        | 4.0720                   | 10e3 |
 | Spherical Two Intersecting      | KUKA R800 (fixed q3)|    666.37       |   3.9413        | 3.6478                   | 10e3 |
 | Spherical Two Parallel          | IRB 6640            |    758.80       |   3.8589        | 3.1370                   | 10e3 |

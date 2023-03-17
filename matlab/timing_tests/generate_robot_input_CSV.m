@@ -1,9 +1,10 @@
-N = 10e3;
-%N = 10;
+% N = 10e3;
+N = 10;
 
 setups = {
     IK_setups.IK_gen_6_dof
     IK_setups.IK_2_intersecting
+    IK_setups.IK_2_parallel
     IK_setups.IK_spherical
     IK_setups.IK_spherical_2_intersecting
     IK_setups.IK_spherical_2_parallel
@@ -20,7 +21,7 @@ for i = 1:length(setups)
     class_name = string(class(setup)).split(".");
     file_name = class_name(end) + ".csv";
     
-    %writetable(T, file_name);
+    writetable(T, file_name);
     save(class_name(end)+".mat", "P_list", "S_list");
 end
 

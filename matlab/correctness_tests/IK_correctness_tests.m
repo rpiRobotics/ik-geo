@@ -3,6 +3,7 @@
 setups = {
     IK_setups.IK_gen_6_dof
     IK_setups.IK_2_intersecting
+    IK_setups.IK_2_parallel
     IK_setups.IK_spherical
     IK_setups.IK_spherical_2_intersecting
     IK_setups.IK_spherical_2_parallel
@@ -11,10 +12,12 @@ setups = {
 };
 
 %% Just 1 test
-setup = IK_setups.IK_spherical;
+setup = IK_setups.IK_2_parallel;
 
 [P, S_given] = setup.setup();
 setup.error(P,S_given) % Make sure S_given is correct
+
+% P = setup.setup_LS();
 
 S = setup.run(P);
 %S = setup.run_mex(P);
