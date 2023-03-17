@@ -58,11 +58,12 @@ bool sp4_run(const Eigen::Vector3d& p, const Eigen::Vector3d& k,
 
     double theta_1 = atan2(sc_1(0, 0), sc_1(1, 0));
     double theta_2 = atan2(sc_2(0, 0), sc_2(1, 0));
-    theta[0] = (theta_1);
+    theta.clear();
+    theta.push_back(theta_1);
     theta.push_back(theta_2);
     return false;
   } else {
-    theta[0] = (atan2(x_ls(0, 0), x_ls(1, 0)));
+    theta.push_back(atan2(x_ls(0, 0), x_ls(1, 0)));
     return true;
   }
 }

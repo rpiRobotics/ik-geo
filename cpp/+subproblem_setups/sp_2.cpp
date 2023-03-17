@@ -78,15 +78,19 @@ bool sp2_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2,
     double xi = sqrt(1 - pow(x_ls.block<2, 1>(0,0).norm(), 2)) / A_perp_tilde.block<2, 1>(0, 0).norm();
     Eigen::Matrix<double, 4, 1> sc_1 = x_ls + xi*A_perp_tilde;
     Eigen::Matrix<double, 4, 1> sc_2 = x_ls - xi*A_perp_tilde;
-
-    theta1[0] = (atan2(sc_1(0, 0), sc_1(1, 0)));
+    
+    theta1.clear();
+    theta1.push_back(atan2(sc_1(0, 0), sc_1(1, 0)));
     theta1.push_back(atan2(sc_2(0, 0), sc_2(1, 0)));
-    theta2[0] = (atan2(sc_1(2, 0), sc_1(3, 0)));
+    theta2.clear();
+    theta2.push_back(atan2(sc_1(2, 0), sc_1(3, 0)));
     theta2.push_back(atan2(sc_2(2, 0), sc_2(3, 0)));
     return false;
   } else {
-    theta1[0] = (atan2(x_ls(0, 0), x_ls(1, 0)));
-    theta2[0] = (atan2(x_ls(2, 0), x_ls(3, 0)));
+    theta1.clear();
+    theta1.push_back(atan2(x_ls(0, 0), x_ls(1, 0)));
+    theta2.clear();
+    theta2.push_back((x_ls(2, 0), x_ls(3, 0)));
     return true;
   }
 }
