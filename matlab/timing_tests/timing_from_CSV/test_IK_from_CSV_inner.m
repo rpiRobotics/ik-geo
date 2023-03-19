@@ -21,8 +21,8 @@ setup = hardcoded_IK_setups.RRC_fixed_q6;
 setup = coder.const(setup);
 
 %     N = 10e3;
-    %N = 1e3;
-    N = 100;
+    N = 1e3;
+%     N = 100;
 
     Q_testing = NaN(6,16, N); % each q is 6 long. Up to 16 solns. N poses.
     
@@ -30,6 +30,10 @@ setup = coder.const(setup);
     for i = 1:N
         S_i = setup.run(P_list(i));
         Q_testing(:,1:width(S_i.Q),i) = S_i.Q;
+
+        
+%         Q =   robotIK([P_list(i).R P_list(i).T; 0 0 0 1])'; % Matlab Robotics Toolbox Solver
+%         Q_testing(:,1:width(Q),i) = Q;
     end
     T = toc;
     
