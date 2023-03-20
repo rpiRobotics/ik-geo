@@ -1,3 +1,9 @@
+use std::f64::consts::PI;
+
+use nalgebra::{Vector4, Matrix4x3, Matrix3x4};
+
+use self::auxiliary::search_1d;
+
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
@@ -290,6 +296,49 @@ pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6
     let is_ls = Vec::with_capacity(6);
 
     let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
+
+    let error_given_q1 = |q1: f64| {
+        let mut error = Vector4::new(100.0, 100.0, 100.0, 100.0);
+        let r_01 = rot(&kin.h.column(0).into(), q1);
+
+        let h1: Vector3<f64> = (kin.h.column(1).transpose() * r_06.transpose() * r_01).transpose();
+        let h2: Vector3<f64> = kin.h.column(1).into();
+        let h3: Vector3<f64> = h1.clone();
+        let h4: Vector3<f64> = h2.clone();
+        let sp_h: [Vector3<f64>; 4] = [h1, h2.into(), h3, h4];
+
+        let sp_k: [Vector3<f64>; 4] = [
+            -kin.h.column(5),
+            kin.h.column(3).into(),
+            -kin.h.column(5),
+            kin.h.column(3).into(),
+        ];
+
+        let sp_p: [Vector3<f64>; 4] = [
+            kin.h.column(5).into(),
+            kin.h.column(4).into(),
+            kin.h.column(4).into(),
+            -kin.h.column(4),
+        ];
+
+        let d1 = (kin.h.column(1).transpose() * (r_01.transpose() * p_16 - kin.p.column(1) - kin.p.column(2) - kin.p.column(3)))[0];
+        let d2 = 0.0;
+
+        let t64 = subproblem6(&sp_h, &sp_k, &sp_p, d1, d2);
+
+        for (i, (t6, t4)) in t64.get_all().into_iter().enumerate() {
+            let r_34 = rot(&kin.h.column(3).into(), t4);
+            let r_56 = rot(&kin.h.column(5).into(), t6);
+            let (t23, _) = subproblem1(&(r_34 * kin.h.column(4)), &(r_01.transpose() * r_06 * r_56.transpose() * kin.h.column(4)), &kin.h.column(1).into());
+            let r_13 = rot(&kin.h.column(1).into(), t23);
+
+            error[i] = (r_01.transpose() * p_16 - kin.p.column(1) - r_13 * kin.p.column(3) - r_13 * r_34 * kin.p.column(4) - r_01.transpose() * r_06 * r_56.transpose() * kin.p.column(5)).norm() - kin.p.column(2).norm();
+        }
+
+        error
+    };
+
+    let q1_vec = search_1d(error_given_q1, -PI, PI, 1000);
 
     (q, is_ls)
 }

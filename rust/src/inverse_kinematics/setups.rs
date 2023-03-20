@@ -34,6 +34,7 @@ pub trait SetupIk {
     fn ls_count(&self) -> usize;
     fn solution_count(&self) -> usize;
     fn name(&self) -> &'static str;
+    fn debug(&self, i: usize);
 }
 
 pub struct SphericalTwoParallelSetup {
@@ -271,6 +272,10 @@ impl SetupIk for SphericalTwoParallelSetup {
     fn name(&self) -> &'static str {
         <Self as SetupStatic>::name()
     }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
 }
 
 impl SetupIk for SphericalTwoIntersectingSetup {
@@ -327,6 +332,10 @@ impl SetupIk for SphericalTwoIntersectingSetup {
 
     fn name(&self) -> &'static str {
         <Self as SetupStatic>::name()
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
     }
 }
 
@@ -389,6 +398,10 @@ impl SetupIk for SphericalSetup {
     fn name(&self) -> &'static str {
         <Self as SetupStatic>::name()
     }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
 }
 
 impl SetupIk for ThreeParallelTwoIntersectingSetup {
@@ -449,6 +462,10 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
 
     fn name(&self) -> &'static str {
         <Self as SetupStatic>::name()
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
     }
 }
 
@@ -511,5 +528,9 @@ impl SetupIk for ThreeParallelSetup {
 
     fn name(&self) -> &'static str {
         <Self as SetupStatic>::name()
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
     }
 }

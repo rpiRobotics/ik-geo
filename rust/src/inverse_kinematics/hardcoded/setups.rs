@@ -148,6 +148,10 @@ impl SetupIk for Irb6640 {
     fn name(&self) -> &'static str {
         "IRB 6640"
     }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
 }
 
 impl SetupIk for KukaR800FixedQ3 {
@@ -201,5 +205,9 @@ impl SetupIk for KukaR800FixedQ3 {
 
     fn name(&self) -> &'static str {
         "KUKA R800 Fixed Q3"
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
     }
 }

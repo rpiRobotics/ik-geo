@@ -79,7 +79,8 @@ pub fn wrap_to_pi(theta: f64) -> f64 {
     (theta + PI).rem_euclid(TAU) - PI
 }
 
-fn find_zero<const N: usize>(f: fn(q: f64) -> Vector<f64, N>, mut left: f64, mut right: f64, i: usize) -> f64 {
+fn find_zero<F, const N: usize>(f: F, mut left: f64, mut right: f64, i: usize) -> f64
+where F: Fn(f64) -> Vector<f64, N> {
     const ITERATIONS: usize = 100;
     const EPSILON: f64 = 1e-12;
 
@@ -87,8 +88,6 @@ fn find_zero<const N: usize>(f: fn(q: f64) -> Vector<f64, N>, mut left: f64, mut
         let y_left = f(left)[i];
         let y_right = f(right)[i];
         let delta = y_right - y_left;
-
-        println!("{i} [{left} {right}]");
 
         if delta.abs() < EPSILON {
             break;
@@ -108,7 +107,8 @@ fn find_zero<const N: usize>(f: fn(q: f64) -> Vector<f64, N>, mut left: f64, mut
     left
 }
 
-pub fn search_1d<const N: usize>(f: fn(q: f64) -> Vector<f64, N>, left: f64, right: f64, initial_samples: usize) -> Vec<f64> {
+pub fn search_1d<F, const N: usize>(f: F, left: f64, right: f64, initial_samples: usize) -> Vec<(f64, usize)>
+where F: Fn(f64) -> Vector<f64, N> {
     const CROSS_THRESHOLD: f64 = 0.1;
 
     let delta = (right - left) / initial_samples as f64;
@@ -123,7 +123,7 @@ pub fn search_1d<const N: usize>(f: fn(q: f64) -> Vector<f64, N>, left: f64, rig
 
         for (i, (&y, &last_y)) in v.iter().zip(last_v.into_iter()).enumerate() {
             if (y < 0.0) != (last_y < 0.0) && y.abs() < CROSS_THRESHOLD && last_y.abs() < CROSS_THRESHOLD {
-                zeros.push(find_zero(f, x - delta, x, i));
+                zeros.push((find_zero(&f, x - delta, x, i), i));
             }
         }
 

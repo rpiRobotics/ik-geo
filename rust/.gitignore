@@ -7,5 +7,5 @@ lib
 # Dependancy info
 Cargo.lock
 
-# Timing inputs
+# Testing data
 data
