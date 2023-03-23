@@ -13,6 +13,7 @@ use {
                 SphericalSetup,
                 ThreeParallelTwoIntersectingSetup,
                 ThreeParallelSetup,
+                TwoParallelSetup
             },
         },
 
@@ -132,6 +133,14 @@ pub fn three_parallel_benchmark(c: &mut Criterion) {
     c.bench_function("Ik 3 Parallel", |b| b.iter(|| setup.run()));
 }
 
+pub fn two_parallel_benchmark(c: &mut Criterion) {
+    let mut setup = TwoParallelSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Ik 2 Parallel", |b| b.iter(|| setup.run()));
+}
+
 pub fn irb6640_benchmark(c: &mut Criterion) {
     let mut setup = Irb6640::new();
 
@@ -164,6 +173,7 @@ criterion_group!(
     spherical_benchmark,
     three_parallel_two_intersecting_benchmark,
     three_parallel_benchmark,
+    two_parallel_benchmark,
     spherical_benchmark,
     irb6640_benchmark,
     ikfast_kuka_kr30l16_benchmark,
@@ -183,6 +193,7 @@ criterion_group!(
     spherical_two_intersecting_benchmark,
     three_parallel_two_intersecting_benchmark,
     three_parallel_benchmark,
+    two_parallel_benchmark,
     spherical_benchmark,
     irb6640_benchmark,
 );

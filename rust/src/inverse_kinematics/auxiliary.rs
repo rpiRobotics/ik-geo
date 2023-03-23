@@ -107,8 +107,7 @@ where F: Fn(f64) -> Vector<f64, N> {
     left
 }
 
-pub fn search_1d<F, const N: usize>(f: F, left: f64, right: f64, initial_samples: usize) -> Vec<(f64, usize)>
-where F: Fn(f64) -> Vector<f64, N> {
+pub fn search_1d<F: Fn(f64) -> Vector<f64, N>, const N: usize>(f: F, left: f64, right: f64, initial_samples: usize) -> Vec<(f64, usize)> {
     const CROSS_THRESHOLD: f64 = 0.1;
 
     let delta = (right - left) / initial_samples as f64;
@@ -123,7 +122,11 @@ where F: Fn(f64) -> Vector<f64, N> {
 
         for (i, (&y, &last_y)) in v.iter().zip(last_v.into_iter()).enumerate() {
             if (y < 0.0) != (last_y < 0.0) && y.abs() < CROSS_THRESHOLD && last_y.abs() < CROSS_THRESHOLD {
-                zeros.push((find_zero(&f, x - delta, x, i), i));
+                let zero = find_zero(&f, x - delta, x, i);
+
+                if x - delta <= zero && zero <= x {
+                    zeros.push((zero, i));
+                }
             }
         }
 

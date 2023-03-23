@@ -1,30 +1,30 @@
-use std::f64::consts::PI;
-
-use nalgebra::{Vector4, Matrix4x3, Matrix3x4};
-
-use self::auxiliary::search_1d;
-
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
 
 use {
-    nalgebra::{ Vector3, Vector6, Matrix3 },
+    nalgebra::{ Vector3, Vector4, Vector6, Matrix3 },
+    std::f64::{ consts::PI, INFINITY },
 
-    crate::subproblems::{
-        subproblem1,
-        subproblem2,
-        subproblem3,
-        subproblem4,
-        subproblem5,
-        subproblem6,
+    crate::{
+        solutionset::SolutionSet4,
 
-        auxiliary::rot
+        subproblems::{
+            subproblem1,
+            subproblem2,
+            subproblem3,
+            subproblem4,
+            subproblem5,
+            subproblem6,
+
+            auxiliary::rot
+        }
     },
 
     auxiliary::{
         Kinematics,
         wrap_to_pi,
+        search_1d,
     },
 };
 
@@ -292,20 +292,19 @@ pub fn three_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics
 }
 
 pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
-    let q = Vec::with_capacity(6);
-    let is_ls = Vec::with_capacity(6);
+    let mut q = Vec::with_capacity(6);
+    let mut is_ls = Vec::with_capacity(6);
 
     let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
 
-    let error_given_q1 = |q1: f64| {
-        let mut error = Vector4::new(100.0, 100.0, 100.0, 100.0);
+    fn t64_given_q1(r_06: &Matrix3<f64>, kin: &Kinematics<6, 7>, q1: f64, p_16: &Vector3<f64>) -> SolutionSet4<(f64, f64)> {
         let r_01 = rot(&kin.h.column(0).into(), q1);
 
-        let h1: Vector3<f64> = (kin.h.column(1).transpose() * r_06.transpose() * r_01).transpose();
+        let h1: Vector3<f64> = (kin.h.column(1).transpose() * r_01.transpose() * r_06).transpose();
         let h2: Vector3<f64> = kin.h.column(1).into();
         let h3: Vector3<f64> = h1.clone();
         let h4: Vector3<f64> = h2.clone();
-        let sp_h: [Vector3<f64>; 4] = [h1, h2.into(), h3, h4];
+        let sp_h: [Vector3<f64>; 4] = [h1, h2, h3, h4];
 
         let sp_k: [Vector3<f64>; 4] = [
             -kin.h.column(5),
@@ -315,8 +314,38 @@ pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6
         ];
 
         let sp_p: [Vector3<f64>; 4] = [
-            kin.h.column(5).into(),
+            kin.p.column(5).into(),
+            kin.p.column(4).into(),
             kin.h.column(4).into(),
+            -kin.h.column(4),
+        ];
+
+        let d1 = (kin.h.column(1).transpose() * (r_01.transpose() * p_16 - kin.p.column(1) - kin.p.column(2) - kin.p.column(3)))[0];
+        let d2 = 0.0;
+
+        subproblem6(&sp_h, &sp_k, &sp_p, d1, d2)
+    }
+
+    let error_given_q1 = |q1: f64| {
+        let mut error = Vector4::new(INFINITY, INFINITY, INFINITY, INFINITY);
+        let r_01 = rot(&kin.h.column(0).into(), q1);
+
+        let h1: Vector3<f64> = (kin.h.column(1).transpose() * r_01.transpose() * r_06).transpose();
+        let h2: Vector3<f64> = kin.h.column(1).into();
+        let h3: Vector3<f64> = h1.clone();
+        let h4: Vector3<f64> = h2.clone();
+        let sp_h: [Vector3<f64>; 4] = [h1, h2, h3, h4];
+
+        let sp_k: [Vector3<f64>; 4] = [
+            -kin.h.column(5),
+            kin.h.column(3).into(),
+            -kin.h.column(5),
+            kin.h.column(3).into(),
+        ];
+
+        let sp_p: [Vector3<f64>; 4] = [
+            kin.p.column(5).into(),
+            kin.p.column(4).into(),
             kin.h.column(4).into(),
             -kin.h.column(4),
         ];
@@ -339,6 +368,39 @@ pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6
     };
 
     let q1_vec = search_1d(error_given_q1, -PI, PI, 1000);
+
+    for (q1, i) in q1_vec {
+        let t64 = t64_given_q1(r_06, kin, q1, &p_16).get_all();
+        let q6 = t64[i].0;
+        let q4 = t64[i].1;
+        let r_01 = rot(&kin.h.column(0).into(), q1);
+        let r_34 = rot(&kin.h.column(3).into(), q4);
+        let r_56 = rot(&kin.h.column(5).into(), q6);
+
+        let (t23, t23_is_ls) = subproblem1(
+            &(r_34 * kin.h.column(4)),
+            &(r_01.transpose() * r_06 * r_56.transpose() * kin.h.column(4)),
+            &kin.h.column(1).into()
+        );
+        let r_13 = rot(&kin.h.column(1).into(), t23);
+
+        let (q2, q2_is_ls) = subproblem1(
+            &kin.p.column(2).into(),
+            &(r_01.transpose() * p_16 - kin.p.column(1) - r_13 * kin.p.column(3) - r_13 * r_34 * kin.p.column(4) - r_01.transpose() * r_06 * r_56.transpose() * kin.p.column(5)),
+            &kin.h.column(1).into()
+        );
+
+        let (q5, q5_is_ls) = subproblem1(
+            &(r_34.transpose() * kin.h.column(1)),
+            &(r_56 * r_06.transpose() * r_01 * kin.h.column(1)),
+            &-kin.h.column(4),
+        );
+
+        let q3 = wrap_to_pi(t23 - q2);
+
+        q.push(Vector6::new(q1, q2, q3, q4, q5, q6));
+        is_ls.push(t23_is_ls || q2_is_ls || q5_is_ls);
+    }
 
     (q, is_ls)
 }

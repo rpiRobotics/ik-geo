@@ -23,6 +23,7 @@
 | Spherical                       |      2993.6 |
 | Three Parallel Two Intersecting |      2993.6 |
 | Three Parallel                  |      3446.3 |
+| Two Parallel                    |      966940 |
 
 
 # Manual Timing
@@ -39,8 +40,9 @@
 
 | Ik                              | Separate Time (ns)   | Batched Time (ns)   |
 | :------------------------------ | -------------------: | ------------------: |
-| Spherical                       |                 1807 |                1787 |
-| Spherical Two Intersecting      |                 1451 |                1424 |
-| Spherical Two Parallel          |                 2919 |                2922 |
-| Three Parallel                  |                 2759 |                2733 |
-| Three Parallel Two Intersecting |                 1354 |                1325 |
+| Spherical                       |                 1691 |                1661 |
+| Spherical Two Intersecting      |                 2064 |                2067 |
+| Spherical Two Parallel          |                 2265 |                2245 |
+| Three Parallel                  |                 2918 |                2844 |
+| Three Parallel Two Intersecting |                 2250 |                2212 |
+| Two Parallel                    |              1541456 |             1542489 |

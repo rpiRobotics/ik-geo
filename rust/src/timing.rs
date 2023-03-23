@@ -1,3 +1,5 @@
+use crate::inverse_kinematics::setups::TwoParallelSetup;
+
 use {
     std::{
         io::{ self, Lines, BufReader, BufRead, Write },
@@ -64,6 +66,7 @@ fn time_separate_ik() {
     time_ik_separate::<SphericalTwoParallelSetup>();
     time_ik_separate::<ThreeParallelSetup>();
     time_ik_separate::<ThreeParallelTwoIntersectingSetup>();
+    time_ik_separate::<TwoParallelSetup>();
 }
 
 #[test]
@@ -75,6 +78,7 @@ fn time_batch_ik() {
     time_ik_batched::<SphericalTwoParallelSetup>();
     time_ik_batched::<ThreeParallelSetup>();
     time_ik_batched::<ThreeParallelTwoIntersectingSetup>();
+    time_ik_batched::<TwoParallelSetup>();
 }
 
 fn time_subproblem_batched<S: SetupStatic + SetupDynamic>() {
