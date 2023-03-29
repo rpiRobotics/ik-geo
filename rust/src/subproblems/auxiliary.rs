@@ -1,6 +1,8 @@
 use {
     crate::solutionset::{ SolutionSet4, SolutionSet2 },
 
+    std::f64::consts::PI,
+
     nalgebra::{
         ComplexField,
         Complex,
@@ -35,7 +37,7 @@ pub fn random_norm_perp_vector3(reference: &Vector3<f64>) -> Vector3<f64> {
 }
 
 pub fn random_angle() -> f64 {
-    random() * std::f64::consts::PI
+    random() * PI
 }
 
 pub fn cone_polynomials(p0_i: &Vector3<f64>, k_i: &Vector3<f64>, p_i: &Vector3<f64>, p_i_s: &Vector3<f64>, k2: &Vector3<f64>) -> (Vector2<f64>, Vector3<f64>) {

@@ -1,14 +1,10 @@
-use std::f64::NAN;
-
-use nalgebra::Matrix4;
-
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
 
 use {
-    nalgebra::{ Vector3, Vector4, Vector6, Matrix3 },
-    std::f64::{ consts::PI, INFINITY },
+    nalgebra::{ Vector3, Vector4, Vector6, Matrix3, Matrix4 },
+    std::f64::{ consts::PI, INFINITY, NAN },
 
     crate::{
         solutionset::SolutionSet4,

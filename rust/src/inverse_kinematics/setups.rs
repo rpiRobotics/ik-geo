@@ -1,5 +1,3 @@
-use super::two_intersecting;
-
 use {
     nalgebra::{ Vector3, Vector6, Matrix3, Matrix3x6 },
 
@@ -25,6 +23,7 @@ use {
         three_parallel_two_intersecting,
         three_parallel,
         two_parallel,
+        two_intersecting,
     },
 };
 

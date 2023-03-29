@@ -1,5 +1,3 @@
-use crate::inverse_kinematics::setups::{TwoParallelSetup, TwoIntersectingSetup};
-
 use {
     std::{
         io::{ self, Lines, BufReader, BufRead, Write },
@@ -27,6 +25,8 @@ use {
             SphericalTwoParallelSetup,
             ThreeParallelSetup,
             ThreeParallelTwoIntersectingSetup,
+            TwoParallelSetup,
+            TwoIntersectingSetup,
         },
     },
 };
