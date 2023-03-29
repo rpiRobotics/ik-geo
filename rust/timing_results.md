@@ -23,7 +23,7 @@
 | Spherical                       |      2993.6 |
 | Three Parallel Two Intersecting |      2993.6 |
 | Three Parallel                  |      3446.3 |
-| Two Parallel                    |      966940 |
+| Two Parallel                    |      437870 |
 
 
 # Manual Timing
@@ -45,4 +45,4 @@
 | Spherical Two Parallel          |                 2265 |                2245 |
 | Three Parallel                  |                 2918 |                2844 |
 | Three Parallel Two Intersecting |                 2250 |                2212 |
-| Two Parallel                    |              1541456 |             1542489 |
+| Two Parallel                    |               328937 |              328445 |

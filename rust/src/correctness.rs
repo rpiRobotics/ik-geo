@@ -80,6 +80,7 @@ fn run_tests() {
 
     for mut setup in setups {
         let mut total_error = 0.0;
+        let mut nan_count = 0;
 
         for _ in 0..TEST_ITERATIONS {
             setup.setup();
@@ -88,7 +89,7 @@ fn run_tests() {
             let error = setup.error();
 
             if error.is_nan() {
-                println!("[WARN]\t{} error was NaN", setup.name());
+                nan_count += 1;
             }
             else {
                 assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
@@ -97,8 +98,11 @@ fn run_tests() {
         }
 
         let avg_err = total_error / TEST_ITERATIONS as f64;
+        let nan_percent = nan_count as f64 / TEST_ITERATIONS as f64;
 
-        println!("{}\n\tAvg Error:\t{avg_err}\n", setup.name());
+        println!("{}", setup.name());
+        println!("\tAvg Error:\t{avg_err}");
+        println!("\t% NaN:\t{nan_percent}");
     }
 
     for mut setup in ik_setups {
@@ -106,6 +110,7 @@ fn run_tests() {
         let mut num_q_ls = 0;
         let mut num_all_ls = 0;
         let mut total_q_count = 0;
+        let mut nan_count = 0;
 
         for _ in 0..TEST_ITERATIONS {
             setup.setup();
@@ -116,7 +121,7 @@ fn run_tests() {
             let n_sol = setup.solution_count();
 
             if error.is_nan() {
-                println!("[WARN]\t{} error was NaN", setup.name());
+                nan_count += 1;
             }
             else {
                 assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
@@ -129,10 +134,15 @@ fn run_tests() {
         }
 
         let avg_err = total_error / (TEST_ITERATIONS - num_all_ls) as f64;
+        let nan_percent = nan_count as f64 / TEST_ITERATIONS as f64 * 100.0;
         let ls_percent = num_q_ls as f64 / total_q_count as f64 * 100.0;
         let all_ls_percent = num_all_ls as f64 / TEST_ITERATIONS as f64 * 100.0;
 
-        println!("{}\n\tAvg Error:\t{avg_err}\n\tPercent LS:\t{ls_percent}\n\tPercent all LS:\t{all_ls_percent}", setup.name());
+        println!("{}", setup.name());
+        println!("\tAvg Error:\t{avg_err}");
+        println!("\t% NaN:\t{nan_percent}");
+        println!("\t% LS:\t{ls_percent}");
+        println!("\t% All LS:\t{all_ls_percent}");
     }
 }
 

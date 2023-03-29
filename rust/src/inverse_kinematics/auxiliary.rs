@@ -79,8 +79,7 @@ pub fn wrap_to_pi(theta: f64) -> f64 {
     (theta + PI).rem_euclid(TAU) - PI
 }
 
-fn find_zero<F, const N: usize>(f: F, left: f64, right: f64, i: usize) -> Option<f64>
-where F: Fn(f64) -> Vector<f64, N> {
+fn find_zero<const N: usize, F: Fn(f64) -> Vector<f64, N>>(f: F, left: f64, right: f64, i: usize) -> Option<f64> {
     const ITERATIONS: usize = 100;
     const EPSILON: f64 = 1e-5;
 
@@ -114,15 +113,15 @@ where F: Fn(f64) -> Vector<f64, N> {
         }
     }
 
-    if left <= y_left && y_left <= right {
-        Some(y_left)
+    if left <= x_left && x_left <= right {
+        Some(x_left)
     }
     else {
         None
     }
 }
 
-pub fn search_1d<F: Fn(f64) -> Vector<f64, N>, const N: usize>(f: F, left: f64, right: f64, initial_samples: usize) -> Vec<(f64, usize)> {
+pub fn search_1d<const N: usize, F: Fn(f64) -> Vector<f64, N>>(f: F, left: f64, right: f64, initial_samples: usize) -> Vec<(f64, usize)> {
     const CROSS_THRESHOLD: f64 = 0.1;
 
     let delta = (right - left) / initial_samples as f64;

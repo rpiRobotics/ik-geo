@@ -367,7 +367,7 @@ pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6
         error
     };
 
-    let q1_vec = search_1d(error_given_q1, -PI, PI, 1000);
+    let q1_vec = search_1d(error_given_q1, -PI, PI, 200);
 
     for (q1, i) in q1_vec {
         let t64 = t64_given_q1(r_06, kin, q1, &p_16).get_all();
