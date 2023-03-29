@@ -1,4 +1,4 @@
-use crate::inverse_kinematics::setups::TwoParallelSetup;
+use crate::inverse_kinematics::setups::{TwoParallelSetup, TwoIntersectingSetup};
 
 use {
     std::{
@@ -67,6 +67,7 @@ fn time_separate_ik() {
     time_ik_separate::<ThreeParallelSetup>();
     time_ik_separate::<ThreeParallelTwoIntersectingSetup>();
     time_ik_separate::<TwoParallelSetup>();
+    time_ik_separate::<TwoIntersectingSetup>();
 }
 
 #[test]
@@ -79,6 +80,7 @@ fn time_batch_ik() {
     time_ik_batched::<ThreeParallelSetup>();
     time_ik_batched::<ThreeParallelTwoIntersectingSetup>();
     time_ik_batched::<TwoParallelSetup>();
+    time_ik_batched::<TwoIntersectingSetup>();
 }
 
 fn time_subproblem_batched<S: SetupStatic + SetupDynamic>() {

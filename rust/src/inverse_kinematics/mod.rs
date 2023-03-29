@@ -1,3 +1,7 @@
+use std::f64::NAN;
+
+use nalgebra::Matrix4;
+
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
@@ -327,7 +331,7 @@ pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6
     }
 
     let error_given_q1 = |q1: f64| {
-        let mut error = Vector4::new(INFINITY, INFINITY, INFINITY, INFINITY);
+        let mut error = Vector4::from_element(INFINITY);
         let r_01 = rot(&kin.h.column(0).into(), q1);
 
         let h1: Vector3<f64> = (kin.h.column(1).transpose() * r_01.transpose() * r_06).transpose();
@@ -401,6 +405,92 @@ pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6
         q.push(Vector6::new(q1, q2, q3, q4, q5, q6));
         is_ls.push(t23_is_ls || q2_is_ls || q5_is_ls);
     }
+
+    (q, is_ls)
+}
+
+pub fn two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    let mut q = Vec::with_capacity(6);
+    let mut is_ls = Vec::with_capacity(6);
+
+    let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
+
+    fn q_partial_given_q4(q4: f64, kin: &Kinematics<6, 7>, p_16: &Vector3<f64>) -> Matrix4<f64> {
+        let mut q_partial = Matrix4::from_element(NAN);
+
+        let p_35_3 = kin.p.column(3) + rot(&kin.h.column(3).into(), q4) * kin.p.column(4);
+
+        let t123 = subproblem5(
+            &-kin.p.column(1),
+            p_16,
+            &kin.p.column(2).into(),
+            &p_35_3,
+            &-kin.h.column(0),
+            &kin.h.column(1).into(),
+            &kin.h.column(2).into()
+        );
+
+        for (i, (q1, q2, q3)) in t123.get_all().into_iter().enumerate() {
+            q_partial.set_column(i, &Vector4::new(q1, q2, q3, q4));
+        }
+
+        q_partial
+    }
+
+    let alignment_error_given_q4 = |q4: f64| {
+        let mut error = Vector4::from_element(INFINITY);
+
+        let p_35_3 = kin.p.column(3) + rot(&kin.h.column(3).into(), q4) * kin.p.column(4);
+
+        let t123 = subproblem5(
+            &-kin.p.column(1),
+            &p_16.into(),
+            &kin.p.column(2).into(),
+            &p_35_3,
+            &-kin.h.column(0),
+            &kin.h.column(1).into(),
+            &kin.h.column(2).into()
+        );
+
+        for (i, (q1, q2, q3)) in t123.get_all().into_iter().enumerate() {
+            let r_04 =
+                rot(&kin.h.column(0).into(), q1) *
+                rot(&kin.h.column(1).into(), q2) *
+                rot(&kin.h.column(2).into(), q3) *
+                rot(&kin.h.column(3).into(), q4);
+
+            error[i] = (kin.h.column(4).transpose() * r_04.transpose() * r_06 * kin.h.column(5) - kin.h.column(4).transpose() * kin.h.column(5))[0];
+        }
+
+        error
+    };
+
+    let q4_vec = search_1d(alignment_error_given_q4, -PI, PI, 200);
+
+    for (q4, i) in q4_vec {
+        let q_partial: Vector4<f64> = q_partial_given_q4(q4, kin, &p_16).column(i).into();
+
+        let r_04 =
+            rot(&kin.h.column(0).into(), q_partial[0]) *
+            rot(&kin.h.column(1).into(), q_partial[1]) *
+            rot(&kin.h.column(2).into(), q_partial[2]) *
+            rot(&kin.h.column(3).into(), q_partial[3]);
+
+        let (q5, q5_is_ls) = subproblem1(&kin.h.column(5).into(), &(r_04.transpose() * r_06 * kin.h.column(5)), &kin.h.column(4).into());
+        let (q6, q6_is_ls) = subproblem1(&kin.h.column(4).into(), &(r_06.transpose() * r_04 * kin.h.column(4)), &-kin.h.column(5));
+
+        q.push(Vector6::new(
+            q_partial[0],
+            q_partial[1],
+            q_partial[2],
+            q_partial[3],
+            q5,
+            q6,
+        ));
+
+        is_ls.push(q5_is_ls || q6_is_ls);
+    }
+
 
     (q, is_ls)
 }

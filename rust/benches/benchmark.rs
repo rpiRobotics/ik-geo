@@ -1,5 +1,6 @@
 #[cfg(link_ikfast)]
 use linear_subproblem_solutions_rust::ikfast::KukaKr30Setup;
+use linear_subproblem_solutions_rust::inverse_kinematics::setups::TwoIntersectingSetup;
 
 use {
     linear_subproblem_solutions_rust::{
@@ -141,6 +142,14 @@ pub fn two_parallel_benchmark(c: &mut Criterion) {
     c.bench_function("Ik 2 Parallel", |b| b.iter(|| setup.run()));
 }
 
+pub fn two_intersecting_benchmark(c: &mut Criterion) {
+    let mut setup = TwoIntersectingSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Ik 2 Intersecting", |b| b.iter(|| setup.run()));
+}
+
 pub fn irb6640_benchmark(c: &mut Criterion) {
     let mut setup = Irb6640::new();
 
@@ -174,6 +183,7 @@ criterion_group!(
     three_parallel_two_intersecting_benchmark,
     three_parallel_benchmark,
     two_parallel_benchmark,
+    two_intersecting_benchmark,
     spherical_benchmark,
     irb6640_benchmark,
     ikfast_kuka_kr30l16_benchmark,
@@ -194,6 +204,7 @@ criterion_group!(
     three_parallel_two_intersecting_benchmark,
     three_parallel_benchmark,
     two_parallel_benchmark,
+    two_intersecting_benchmark,
     spherical_benchmark,
     irb6640_benchmark,
 );

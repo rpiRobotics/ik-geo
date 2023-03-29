@@ -1,3 +1,5 @@
+use super::two_intersecting;
+
 use {
     nalgebra::{ Vector3, Vector6, Matrix3, Matrix3x6 },
 
@@ -84,6 +86,15 @@ pub struct ThreeParallelSetup {
 }
 
 pub struct TwoParallelSetup {
+    kin: Kinematics<6, 7>,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+    is_ls: Vec<bool>,
+}
+
+pub struct TwoIntersectingSetup {
     kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
@@ -238,6 +249,23 @@ impl SetupStatic for TwoParallelSetup {
 
     fn name() -> &'static str {
         "Two Parallel"
+    }
+}
+
+impl SetupStatic for TwoIntersectingSetup {
+    fn new() -> Self {
+        Self {
+            kin: Kinematics::new(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn name() -> &'static str {
+        "Two Intersecting"
     }
 }
 
@@ -595,6 +623,67 @@ impl SetupIk for TwoParallelSetup {
 
     fn run(&mut self) {
         (self.q, self.is_ls) = two_parallel(&self.r, &self.t, &self.kin);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
+            if is_ls {
+                0.0
+            }
+            else {
+                calculate_ik_error(&self.kin, &self.r, &self.t, q)
+            }
+        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+    }
+
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
+    }
+
+    fn name(&self) -> &'static str {
+        <Self as SetupStatic>::name()
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
+}
+
+impl SetupIk for TwoIntersectingSetup {
+    fn setup(&mut self) {
+        for i in 0..self.kin.h.ncols() {
+            self.kin.h.set_column(i, &random_norm_vector3())
+        }
+
+        let q = Vector6::zeros().map(|_: f64| random_angle());
+
+        self.kin.p = Matrix3x7::from_columns(&[
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            random_vector3(),
+            Vector3::zeros(),
+            random_vector3(),
+        ]);
+
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn setup_from_str(&mut self, raw: &str) {
+        ik_setup_from_string(raw, &mut self.kin, &mut self.r, &mut self.t);
+    }
+
+    fn write_output(&self) -> String {
+        ik_write_output(&self.q)
+    }
+
+    fn run(&mut self) {
+        (self.q, self.is_ls) = two_intersecting(&self.r, &self.t, &self.kin);
     }
 
     fn error(&self) -> f64 {

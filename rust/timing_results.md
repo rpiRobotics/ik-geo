@@ -24,7 +24,7 @@
 | Three Parallel Two Intersecting |      2993.6 |
 | Three Parallel                  |      3446.3 |
 | Two Parallel                    |      437870 |
-
+| Two Intersecting                |      244410 |
 
 # Manual Timing
 
@@ -46,3 +46,4 @@
 | Three Parallel                  |                 2918 |                2844 |
 | Three Parallel Two Intersecting |                 2250 |                2212 |
 | Two Parallel                    |               328937 |              328445 |
+| Two Intersecting                |               212851 |              210588 |
