@@ -79,32 +79,47 @@ pub fn wrap_to_pi(theta: f64) -> f64 {
     (theta + PI).rem_euclid(TAU) - PI
 }
 
-fn find_zero<F, const N: usize>(f: F, mut left: f64, mut right: f64, i: usize) -> f64
+fn find_zero<F, const N: usize>(f: F, left: f64, right: f64, i: usize) -> Option<f64>
 where F: Fn(f64) -> Vector<f64, N> {
     const ITERATIONS: usize = 100;
-    const EPSILON: f64 = 1e-12;
+    const EPSILON: f64 = 1e-5;
+
+    let mut x_left = left;
+    let mut x_right = right;
+
+    let mut y_left = f(x_left)[i];
+    let mut y_right = f(x_right)[i];
 
     for _ in 0..ITERATIONS {
-        let y_left = f(left)[i];
-        let y_right = f(right)[i];
         let delta = y_right - y_left;
 
         if delta.abs() < EPSILON {
             break;
         }
 
-        let x_0 = left - y_left * (right - left) / delta;
+        let x_0 = x_left - y_left * (x_right - x_left) / delta;
         let y_0 = f(x_0)[i];
 
+        if !y_0.is_finite() {
+            return None;
+        }
+
         if (y_left < 0.0) != (y_0 < 0.0) {
-            left = x_0;
+            x_left = x_0;
+            y_left = y_0;
         }
         else {
-            right = x_0;
+            x_right = x_0;
+            y_right = y_0;
         }
     }
 
-    left
+    if left <= y_left && y_left <= right {
+        Some(y_left)
+    }
+    else {
+        None
+    }
 }
 
 pub fn search_1d<F: Fn(f64) -> Vector<f64, N>, const N: usize>(f: F, left: f64, right: f64, initial_samples: usize) -> Vec<(f64, usize)> {
@@ -122,10 +137,8 @@ pub fn search_1d<F: Fn(f64) -> Vector<f64, N>, const N: usize>(f: F, left: f64, 
 
         for (i, (&y, &last_y)) in v.iter().zip(last_v.into_iter()).enumerate() {
             if (y < 0.0) != (last_y < 0.0) && y.abs() < CROSS_THRESHOLD && last_y.abs() < CROSS_THRESHOLD {
-                let zero = find_zero(&f, x - delta, x, i);
-
-                if x - delta <= zero && zero <= x {
-                    zeros.push((zero, i));
+                if let Some(z) = find_zero(&f, x - delta, x, i) {
+                    zeros.push((z, i));
                 }
             }
         }
