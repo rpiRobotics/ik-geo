@@ -30,6 +30,8 @@ e.g. `subproblem.sp_1(p1, p2, k)`.
 
 `robot_examples`: Inverse kinematics solutions for specific robots
 
+`tan_half_angle`: Demonstration of singularity issues arising from $x = tan(\theta/2)$
+
 `timing_tests`: Measures the runtime of subproblem and IK solutions
 
 `unit_tests`: Testing for smaller helper functions
