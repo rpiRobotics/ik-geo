@@ -38,7 +38,7 @@ OS: Ubuntu 20.04.1 LTS
 | spherical                 |   4310.7 ns   |
 | spherical 2 intersecting  |               |
 | spherical 2 parallel      |   3632.8 ns   |
-| 3 parallel                |   8445.0 ns   |
+| 3 parallel                |   6582.7 ns   |
 | 3 parallel 2 intersecting |               |
 | 2 intersecting            |               |
 | 2 parallel                |               |
