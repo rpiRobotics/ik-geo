@@ -22,42 +22,44 @@
 
 #### Correctness Tests
 
-```shell
+```
 $ cargo test correctness
 ```
 
 For diagnostic info:
 
-```shell
+```
 $ cargo test correctness -- --nocapture
 ```
 
 #### Timing Tests
 
-```shell
+```
 $ cargo test timing --release -- --nocapture --test-threads 1
 ```
 
 ### Benchmarking
 
-```shell
+```
 $ cargo bench
 ```
 
 ### Linking ikfast
 
-Compile `kuka_kr30l16.cpp` into a static library and place it into a folder called `lib` in the project directory.
+Compile the generated file into a static library with `ikfast_proxy.cpp` and place it into a folder called `lib_ikfast` in the project directory.
 
 Example compilation for the msvc toolchain:
 
-```shell
-$ cl /O2 /c /EHsc /Folib/kuka_kr30l16.obj /DIKFAST_NO_MAIN ikfast/kuka_kr30l16.cpp
-$ lib lib/kuka_kr30l16.obj /out:lib/kuka_kr30l16.lib
+```
+$ cl /O2 /c /EHsc /Folib_ikfast/[NAME].obj /DIKFAST_NO_MAIN .../[NAME].cpp
+$ cl /O2 /c /EHsc /Folib_ikfast/ikfast_proxy.obj /DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
+$ lib lib_ikfast/[NAME].obj lib_ikfast/ikfast_proxy.obj /out:lib/[NAME].lib
 ```
 
 Example compilation for the gnu toolchain:
 
-```shell
-$ g++ -O3 -o lib/kuka_kr30l16.obj -DIKFAST_NO_MAIN ikfast/kuka_kr30l16.cpp
-$ ar rcs lib/kuka_kr30l16.a lib/kuka_kr30l16.obj
+```
+$ g++ -O3 -o lib/[NAME].obj -DIKFAST_NO_MAIN .../[NAME].cpp
+$ g++ -O3 -o lib/ikfast_proxy.obj -DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
+$ ar rcs lib/[NAME].a lib/kuka_kr30l16.obj lib/ikfast_proxy.obj
 ```

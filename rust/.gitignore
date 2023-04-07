@@ -2,7 +2,10 @@
 target
 
 # Libraries
-lib
+lib_ikfast
+
+# IkFast config
+lib_ikfast.config
 
 # Dependancy info
 Cargo.lock

@@ -18,7 +18,7 @@ use crate::{
 };
 
 #[cfg(link_ikfast)]
-use crate::ikfast::KukaKr30Setup;
+use crate::ikfast::IkFast;
 
 const TEST_ITERATIONS: usize = 1000;
 const ERROR_THRESHOLD: f64 = 1e-4;
@@ -27,7 +27,7 @@ const ERROR_THRESHOLD: f64 = 1e-4;
 #[test]
 fn ikfast_tests() {
     let setups: Vec<Box<dyn SetupIk>> = vec![
-        Box::new(KukaKr30Setup::new()),
+        Box::new(IkFast::new()),
     ];
 
     for mut setup in setups {

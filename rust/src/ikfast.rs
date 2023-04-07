@@ -1,7 +1,6 @@
 use {
     crate::{
         inverse_kinematics::{
-            self,
             auxiliary::{ Kinematics, Matrix3x7 },
             setups::SetupIk
         },
@@ -9,10 +8,14 @@ use {
         subproblems::auxiliary::random_angle
     },
 
+    std::fs,
+
     nalgebra::{ Matrix3, Vector3, Vector6, Matrix3x6 },
 };
 
-pub struct KukaKr30Setup {
+const CONFIG_PATH: &'static str = "lib_ikfast.config";
+
+pub struct IkFast {
     kin: Kinematics<6, 7>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
@@ -20,15 +23,99 @@ pub struct KukaKr30Setup {
     q: Vec<Vector6<f64>>,
 }
 
-pub struct Irb6640 {
+pub struct IkFastConfig {
     kin: Kinematics<6, 7>,
-    r: Matrix3<f64>,
-    t: Vector3<f64>,
-
-    q: Vec<Vector6<f64>>,
 }
 
-impl KukaKr30Setup {
+impl IkFastConfig {
+    pub fn load(path: &str) -> Result<Self, String> {
+        let raw = fs::read_to_string(path).expect(&format!("Failed to read from {path}"));
+
+        let mut this = IkFastConfig {
+            kin: Kinematics { h: Matrix3x6::zeros(), p: Matrix3x7::zeros(), }
+        };
+
+        for line in raw.split('\n') {
+            this.process_line(line.trim())?
+        }
+
+        Ok(this)
+    }
+
+    fn process_line(&mut self, line: &str) -> Result<(), String>{
+        match line.split_once('=') {
+            Some((key, value)) => match key.trim() {
+                "kinematics_h" => self.set_h(value.trim()),
+                "kinematics_p" => self.set_p(value.trim()),
+                _ => Ok(()),
+            },
+            None => Err(format!("Line '{}' is not in the form `key=value`", line)),
+        }
+    }
+
+    fn set_h(&mut self, value: &str) -> Result<(), String> {
+        let vectors = self.parse_kinematics(value)?;
+
+        match vectors.len() {
+            6 => {
+                self.kin.h = Matrix3x6::from_columns(&vectors);
+                Ok(())
+            }
+
+            l => Err(format!("Invalid matrix size for h, {l} instead of 6"))
+        }
+    }
+
+    fn set_p(&mut self, value: &str) -> Result<(), String> {
+        let vectors = self.parse_kinematics(value)?;
+
+        match vectors.len() {
+            7 => {
+                self.kin.p = Matrix3x7::from_columns(&vectors);
+                Ok(())
+            }
+
+            l => Err(format!("Invalid matrix size for h, {l} instead of 7"))
+        }
+    }
+
+    fn parse_kinematics(&mut self, raw: &str) -> Result<Vec<Vector3<f64>>, String> {
+        raw.split(',').map(|element| element.trim().split('+').map(|term| self.parse_term(term.trim())).sum()).collect()
+    }
+
+    fn parse_term(&mut self, term: &str) -> Result<Vector3<f64>, String> {
+        let mut scalar = 1.0;
+        let mut vector = None;
+
+        for component in term.split('*') {
+            match component.trim() {
+                "i" => match vector {
+                    None => vector = Some(Vector3::x()),
+                    Some(_) => return Err(format!("Failed to express kinematic parameters as linear combinations of unit vectors at {term}"))
+                },
+
+                "j" => match vector {
+                    None => vector = Some(Vector3::y()),
+                    Some(_) => return Err(format!("Failed to express kinematic parameters as linear combinations of unit vectors at {term}"))
+                },
+
+                "k" => match vector {
+                    None => vector = Some(Vector3::z()),
+                    Some(_) => return Err(format!("Failed to express kinematic parameters as linear combinations of unit vectors at {term}"))
+                },
+
+                s => scalar *= s.parse::<f64>().or(Err(format!("Invalid float {s}")))?,
+            }
+        }
+
+        Ok(match vector {
+            Some(v) => v * scalar,
+            _ => Vector3::zeros(),
+        })
+    }
+}
+
+impl IkFast {
     pub fn new() -> Self {
         Self {
             kin: Self::get_kin(),
@@ -40,34 +127,12 @@ impl KukaKr30Setup {
     }
 
     fn get_kin() -> Kinematics<6, 7> {
-        let mut kin = Kinematics::new();
-
-        let zv = Vector3::zeros();
-        let ex = Vector3::x();
-        let ey = Vector3::y();
-        let ez = Vector3::z();
-
-
-        kin.h = Matrix3x6::from_columns(&[-ez, -ey, -ey, -ex, -ey, -ex]);
-        kin.p = Matrix3x7::from_columns(&[zv, 0.35 * ex + 0.815 * ez, 1.2 * ez, 0.145 * ez + 1.545 * ex, zv, zv, 0.158 * ex]);
-
-        kin
+        let config = IkFastConfig::load(CONFIG_PATH).expect("Failed to parse kinematic parameters");
+        config.kin
     }
 }
 
-impl Irb6640 {
-    pub fn new() -> Self {
-        Self {
-            kin: inverse_kinematics::hardcoded::setups::Irb6640::get_kin(),
-            r: Matrix3::zeros(),
-            t: Vector3::zeros(),
-
-            q: Vec::new(),
-        }
-    }
-}
-
-impl SetupIk for KukaKr30Setup {
+impl SetupIk for IkFast {
     fn setup(&mut self) {
         let q = Vector6::zeros().map(|_: f64| random_angle());
         (self.r, self.t) = self.kin.forward_kinematics(&q);
@@ -82,7 +147,7 @@ impl SetupIk for KukaKr30Setup {
     }
 
     fn run(&mut self) {
-        self.q = kuka_kr30l16(&self.r, &self.t);
+        self.q = compute_ik(&self.r, &self.t);
     }
 
     fn error(&self) -> f64 {
@@ -101,49 +166,7 @@ impl SetupIk for KukaKr30Setup {
     }
 
     fn name(&self) -> &'static str {
-        "KUKA KR 30"
-    }
-
-    fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
-    }
-}
-
-impl SetupIk for Irb6640 {
-    fn setup(&mut self) {
-        let q = Vector6::zeros().map(|_: f64| random_angle());
-        (self.r, self.t) = self.kin.forward_kinematics(&q);
-    }
-
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
-    }
-
-    fn write_output(&self) -> String {
-        unimplemented!()
-    }
-
-    fn run(&mut self) {
-        self.q = kuka_kr30l16(&self.r, &self.t);
-    }
-
-    fn error(&self) -> f64 {
-        self.q.iter().map(|q| {
-            let (r_t, t_t) = self.kin.forward_kinematics(q);
-            (r_t - self.r).norm() + (t_t - self.t).norm()
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
-    }
-
-    fn ls_count(&self) -> usize {
-        unimplemented!()
-    }
-
-    fn solution_count(&self) -> usize {
-        self.q.len()
-    }
-
-    fn name(&self) -> &'static str {
-        "IKFast IRB 6640"
+        include!("../lib_ikfast/name.rs")
     }
 
     fn debug(&self, i: usize) {
@@ -152,10 +175,10 @@ impl SetupIk for Irb6640 {
 }
 
 extern "C" {
-    fn kuka_kr30l16_c(rotation: *const f64, translation: *const f64, q: *mut f64) -> usize;
+    fn compute_ik_proxy(rotation: *const f64, translation: *const f64, q: *mut f64) -> usize;
 }
 
-pub fn kuka_kr30l16(rotation: &Matrix3<f64>, translation: &Vector3<f64>) -> Vec<Vector6<f64>> {
+pub fn compute_ik(rotation: &Matrix3<f64>, translation: &Vector3<f64>) -> Vec<Vector6<f64>> {
     let rotation_transposed = rotation.transpose();
     let rotation = rotation_transposed.as_slice();
     let translation = translation.as_slice();
@@ -164,7 +187,7 @@ pub fn kuka_kr30l16(rotation: &Matrix3<f64>, translation: &Vector3<f64>) -> Vec<
     let mut q: Vec<Vector6<f64>> = Vec::new();
 
     let solutions = unsafe {
-        kuka_kr30l16_c(rotation.as_ptr(), translation.as_ptr(), q_data.as_mut_ptr())
+        compute_ik_proxy(rotation.as_ptr(), translation.as_ptr(), q_data.as_mut_ptr())
     };
 
     for i in 0..solutions {
