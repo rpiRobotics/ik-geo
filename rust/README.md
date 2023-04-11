@@ -46,20 +46,37 @@ $ cargo bench
 
 ### Linking ikfast
 
-Compile the generated file into a static library with `ikfast_proxy.cpp` and place it into a folder called `lib_ikfast` in the project directory.
+1. Compile the generated file into a static library with `ikfast_proxy.cpp` and place it into a folder called `lib_ikfast` in the project directory.
 
-Example compilation for the msvc toolchain:
+    Example compilation for the msvc toolchain:
 
-```
-$ cl /O2 /c /EHsc /Folib_ikfast/[NAME].obj /DIKFAST_NO_MAIN .../[NAME].cpp
-$ cl /O2 /c /EHsc /Folib_ikfast/ikfast_proxy.obj /DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
-$ lib lib_ikfast/[NAME].obj lib_ikfast/ikfast_proxy.obj /out:lib/[NAME].lib
-```
+    ```
+    $ cl /O2 /c /EHsc /Folib_ikfast/[NAME].obj /DIKFAST_NO_MAIN .../[NAME].cpp
+    $ cl /O2 /c /EHsc /Folib_ikfast/ikfast_proxy.obj /DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
+    $ lib lib_ikfast/[NAME].obj lib_ikfast/ikfast_proxy.obj /out:lib/[NAME].lib
+    ```
 
-Example compilation for the gnu toolchain:
+    Example compilation for the gnu toolchain:
 
-```
-$ g++ -O3 -o lib/[NAME].obj -DIKFAST_NO_MAIN .../[NAME].cpp
-$ g++ -O3 -o lib/ikfast_proxy.obj -DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
-$ ar rcs lib/[NAME].a lib/kuka_kr30l16.obj lib/ikfast_proxy.obj
-```
+    ```
+    $ g++ -O3 -o lib/[NAME].obj -DIKFAST_NO_MAIN .../[NAME].cpp
+    $ g++ -O3 -o lib/ikfast_proxy.obj -DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
+    $ ar rcs lib/[NAME].a lib/kuka_kr30l16.obj lib/ikfast_proxy.obj
+    ```
+
+    Make sure IKFAST_NO_MAIN is defined.
+
+2. Create a file in the project directory called `lib_ikfast.config` and place the following contents into it.
+
+    ```
+    active = true
+    link_lib = spherical_bot
+    kinematics_h = -1*k, -1*j, -1*j, -1*i, -1*j, -1*i
+    kinematics_p = 0, 0.35*i + 0.815*k, 1.2*k, 0.145*k + 1.545*i, 0, 0, 0.158*i
+    ```
+
+    `active` specifies whether or not to link.
+
+    `link_lib` specifies the name of the library to link.
+
+    `kinematics_*` is used to specify the kinematic parameters of the robot.
