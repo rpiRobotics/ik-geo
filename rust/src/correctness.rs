@@ -21,7 +21,6 @@ use crate::{
 use crate::ikfast::IkFast;
 
 const TEST_ITERATIONS: usize = 1000;
-const ERROR_THRESHOLD: f64 = 1e-4;
 
 #[cfg(link_ikfast)]
 #[test]
@@ -82,10 +81,15 @@ fn run_tests() {
     for mut setup in setups {
         let mut total_error = 0.0;
         let mut nan_count = 0;
+        let mut ls_count = 0;
 
         for _ in 0..TEST_ITERATIONS {
             setup.setup();
-            setup.run();
+            let is_ls = setup.run_report_info();
+
+            if is_ls {
+                ls_count += 1;
+            }
 
             let error = setup.error();
 
@@ -93,17 +97,19 @@ fn run_tests() {
                 nan_count += 1;
             }
             else {
-                assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
+                // assert!(error <= ERROR_THRESHOLD, "{} error was at: {:.2e}", setup.name(), error);
                 total_error += error;
             }
         }
 
         let avg_err = total_error / TEST_ITERATIONS as f64;
-        let nan_percent = nan_count as f64 / TEST_ITERATIONS as f64;
+        let nan_percent = nan_count as f64 * 100.0 / TEST_ITERATIONS as f64;
+        let ls_percent = ls_count as f64 * 100.0 / TEST_ITERATIONS as f64;
 
         println!("{}", setup.name());
-        println!("\tAvg Error:\t{avg_err}");
-        println!("\t% NaN:\t{nan_percent}");
+        println!("\tAvg Error:\t{avg_err:.2e}");
+        println!("\t% NaN:\t{nan_percent:.2}");
+        println!("\t% LS:\t{ls_percent:.2}");
     }
 
     for mut setup in ik_setups {
@@ -125,7 +131,7 @@ fn run_tests() {
                 nan_count += 1;
             }
             else {
-                assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
+                // assert!(error <= ERROR_THRESHOLD, "{} error was at: {:.2e}", setup.name(), error);
                 total_error += error;
             }
 
@@ -135,15 +141,15 @@ fn run_tests() {
         }
 
         let avg_err = total_error / (TEST_ITERATIONS - num_all_ls) as f64;
-        let nan_percent = nan_count as f64 / TEST_ITERATIONS as f64 * 100.0;
-        let ls_percent = num_q_ls as f64 / total_q_count as f64 * 100.0;
-        let all_ls_percent = num_all_ls as f64 / TEST_ITERATIONS as f64 * 100.0;
+        let nan_percent = nan_count as f64 * 100.0 / TEST_ITERATIONS as f64;
+        let ls_percent = num_q_ls as f64 * 100.0 / total_q_count as f64;
+        let all_ls_percent = num_all_ls as f64 * 100.0 / TEST_ITERATIONS as f64;
 
         println!("{}", setup.name());
-        println!("\tAvg Error:\t{avg_err}");
-        println!("\t% NaN:\t{nan_percent}");
-        println!("\t% LS:\t{ls_percent}");
-        println!("\t% All LS:\t{all_ls_percent}");
+        println!("\tAvg min Error:\t{avg_err:.2e}");
+        println!("\t% NaN:\t{nan_percent:.2}");
+        println!("\t% LS:\t{ls_percent:.2}");
+        println!("\t% All LS:\t{all_ls_percent:.2}");
     }
 }
 

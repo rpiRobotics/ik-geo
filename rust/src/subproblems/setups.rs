@@ -38,6 +38,7 @@ pub trait SetupDynamic {
     fn write_output(&self) -> String;
 
     fn run(&mut self);
+    fn run_report_info(&mut self) -> bool;
 
     fn error(&self) -> f64;
     fn is_at_local_min(&self) -> bool;
@@ -312,6 +313,12 @@ impl SetupDynamic for Subproblem1Setup {
         (self.theta, _) = subproblem1(&self.p1, &self.p2, &self.k);
     }
 
+    fn run_report_info(&mut self) -> bool {
+        let (theta, is_ls) = subproblem1(&self.p1, &self.p2, &self.k);
+        self.theta = theta;
+        is_ls
+    }
+
     fn error(&self) -> f64 {
         self.calculate_error(self.theta)
     }
@@ -366,6 +373,12 @@ impl SetupDynamic for Subproblem2Setup {
 
     fn run(&mut self) {
         (self.theta, _) = subproblem2(&self.p1, &self.p2, &self.k1, &self.k2);
+    }
+
+    fn run_report_info(&mut self) -> bool {
+        let (theta, is_ls) = subproblem2(&self.p1, &self.p2, &self.k1, &self.k2);
+        self.theta = theta;
+        is_ls
     }
 
     fn error(&self) -> f64 {
@@ -430,6 +443,11 @@ impl SetupDynamic for Subproblem2ExtendedSetup {
         (self.theta1, self.theta2) = subproblem2extended(&self.p0, &self.p1, &self.p2, &self.k1, &self.k2);
     }
 
+    fn run_report_info(&mut self) -> bool {
+        (self.theta1, self.theta2) = subproblem2extended(&self.p0, &self.p1, &self.p2, &self.k1, &self.k2);
+        false
+    }
+
     fn error(&self) -> f64 {
         (self.p0 + rot(&self.k1, self.theta1) * self.p1 - rot(&self.k2, self.theta2) * self.p2).norm()
     }
@@ -482,6 +500,12 @@ impl SetupDynamic for Subproblem3Setup {
 
     fn error(&self) -> f64 {
         self.calculate_error(&self.theta.get_all())
+    }
+
+    fn run_report_info(&mut self) -> bool {
+        let (theta, is_ls) = subproblem3(&self.p1, &self.p2, &self.k, self.d);
+        self.theta = theta;
+        is_ls
     }
 
     fn is_at_local_min(&self) -> bool {
@@ -546,6 +570,12 @@ impl SetupDynamic for Subproblem4Setup {
 
     fn run(&mut self) {
         (self.theta, _) = subproblem4(&self.h, &self.p, &self.k, self.d);
+    }
+
+    fn run_report_info(&mut self) -> bool {
+        let (theta, is_ls) = subproblem4(&self.h, &self.p, &self.k, self.d);
+        self.theta = theta;
+        is_ls
     }
 
     fn error(&self) -> f64 {
@@ -620,6 +650,11 @@ impl SetupDynamic for Subproblem5Setup {
 
     fn run(&mut self) {
         self.theta = subproblem5(&self.p0, &self.p1, &self.p2, &self.p3, &self.k1, &self.k2, &self.k3);
+    }
+
+    fn run_report_info(&mut self) -> bool {
+        self.theta = subproblem5(&self.p0, &self.p1, &self.p2, &self.p3, &self.k1, &self.k2, &self.k3);
+        false
     }
 
     fn error(&self) -> f64 {
@@ -714,6 +749,17 @@ impl SetupDynamic for Subproblem6Setup {
             self.d1,
             self.d2,
         );
+    }
+
+    fn run_report_info(&mut self) -> bool {
+        self.theta = subproblem6(
+            &self.h,
+            &self.k,
+            &self.p,
+            self.d1,
+            self.d2,
+        );
+        false
     }
 
     fn error(&self) -> f64 {

@@ -11,6 +11,8 @@ use {
         },
     },
 
+    std::f64::NAN,
+
     super::{
         auxiliary::{
             Kinematics,
@@ -271,7 +273,7 @@ impl SetupStatic for TwoIntersectingSetup {
 impl SetupIk for SphericalTwoParallelSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
-            self.kin.h.set_column(i, &random_norm_vector3())
+            self.kin.h.set_column(i, &random_norm_vector3());
         }
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -305,14 +307,9 @@ impl SetupIk for SphericalTwoParallelSetup {
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                calculate_ik_error(&self.kin, &self.r, &self.t, q)
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -328,14 +325,14 @@ impl SetupIk for SphericalTwoParallelSetup {
     }
 
     fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
+        println!("{i}\nr{}t{}h{}p{}", self.r, self.t, self.kin.h, self.kin.p);
     }
 }
 
 impl SetupIk for SphericalTwoIntersectingSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
-            self.kin.h.set_column(i, &random_norm_vector3())
+            self.kin.h.set_column(i, &random_norm_vector3());
         }
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -366,14 +363,9 @@ impl SetupIk for SphericalTwoIntersectingSetup {
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                calculate_ik_error(&self.kin, &self.r, &self.t, q)
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -389,14 +381,14 @@ impl SetupIk for SphericalTwoIntersectingSetup {
     }
 
     fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
+        println!("{i}\nr{}t{}h{}p{}", self.r, self.t, self.kin.h, self.kin.p);
     }
 }
 
 impl SetupIk for SphericalSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
-            self.kin.h.set_column(i, &random_norm_vector3())
+            self.kin.h.set_column(i, &random_norm_vector3());
         }
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -427,18 +419,9 @@ impl SetupIk for SphericalSetup {
     }
 
     fn error(&self) -> f64 {
-        if self.q.len() == 0 {
-            return 0.0;
-        }
-
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                calculate_ik_error(&self.kin, &self.r, &self.t, q)
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -454,14 +437,14 @@ impl SetupIk for SphericalSetup {
     }
 
     fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
+        println!("{i}\nr{}t{}h{}p{}", self.r, self.t, self.kin.h, self.kin.p);
     }
 }
 
 impl SetupIk for ThreeParallelTwoIntersectingSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
-            self.kin.h.set_column(i, &random_norm_vector3())
+            self.kin.h.set_column(i, &random_norm_vector3());
         }
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -475,8 +458,8 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
             random_vector3(),
             random_vector3(),
             random_vector3(),
-            Vector3::zeros(),
             random_vector3(),
+            Vector3::zeros(),
             random_vector3(),
         ]);
 
@@ -496,14 +479,9 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                calculate_ik_error(&self.kin, &self.r, &self.t, q)
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -519,14 +497,14 @@ impl SetupIk for ThreeParallelTwoIntersectingSetup {
     }
 
     fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
+        println!("{i}\nr{}t{}h{}p{}", self.r, self.t, self.kin.h, self.kin.p);
     }
 }
 
 impl SetupIk for ThreeParallelSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
-            self.kin.h.set_column(i, &random_norm_vector3())
+            self.kin.h.set_column(i, &random_norm_vector3());
         }
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -561,14 +539,9 @@ impl SetupIk for ThreeParallelSetup {
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                calculate_ik_error(&self.kin, &self.r, &self.t, q)
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -584,14 +557,14 @@ impl SetupIk for ThreeParallelSetup {
     }
 
     fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
+        println!("{i}\nr{}t{}h{}p{}", self.r, self.t, self.kin.h, self.kin.p);
     }
 }
 
 impl SetupIk for TwoParallelSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
-            self.kin.h.set_column(i, &random_norm_vector3())
+            self.kin.h.set_column(i, &random_norm_vector3());
         }
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -625,14 +598,9 @@ impl SetupIk for TwoParallelSetup {
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                calculate_ik_error(&self.kin, &self.r, &self.t, q)
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -648,14 +616,14 @@ impl SetupIk for TwoParallelSetup {
     }
 
     fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
+        println!("{i}\nr{}t{}h{}p{}", self.r, self.t, self.kin.h, self.kin.p);
     }
 }
 
 impl SetupIk for TwoIntersectingSetup {
     fn setup(&mut self) {
         for i in 0..self.kin.h.ncols() {
-            self.kin.h.set_column(i, &random_norm_vector3())
+            self.kin.h.set_column(i, &random_norm_vector3());
         }
 
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -686,14 +654,9 @@ impl SetupIk for TwoIntersectingSetup {
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                calculate_ik_error(&self.kin, &self.r, &self.t, q)
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -709,6 +672,6 @@ impl SetupIk for TwoIntersectingSetup {
     }
 
     fn debug(&self, i: usize) {
-        println!("{i}{}{}", self.r, self.t);
+        println!("{i}\nr{}t{}h{}p{}", self.r, self.t, self.kin.h, self.kin.p);
     }
 }

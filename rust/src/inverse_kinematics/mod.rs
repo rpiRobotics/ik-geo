@@ -156,7 +156,8 @@ pub fn spherical(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7
     );
 
     for (q1, q2, q3) in t123.get_all() {
-        let r_36 = rot(&-kin.h.column(2), q3) *
+        let r_36 =
+            rot(&-kin.h.column(2), q3) *
             rot(&-kin.h.column(1), q2) *
             rot(&-kin.h.column(0), q1) * r_06;
 
@@ -192,7 +193,7 @@ pub fn three_parallel_two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>,
     let mut q = Vec::with_capacity(6);
     let mut is_ls = Vec::with_capacity(6);
 
-    let sum_p_2_5 = kin.p.slice((0, 1), (3, 4)).column_sum();
+    let sum_p_2_5 = kin.p.fixed_columns::<4>(1).column_sum();
     let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
 
     let (theta1, theta1_is_ls) = subproblem4(&kin.h.column(1).into(), &p_16, &-kin.h.column(0), (kin.h.column(1).transpose() * sum_p_2_5)[0]);
