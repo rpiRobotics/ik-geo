@@ -1,3 +1,5 @@
+use std::f64::INFINITY;
+
 pub mod auxiliary;
 pub mod setups;
 
@@ -214,6 +216,34 @@ Solves for `theta1`, `theta2`, and `theta3` where `p0 + rot(k1, theta1) * p1 = r
 There can be up to 4 solutions.
  */
 pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>, k3: &Vector3<f64>) -> SolutionSet4<(f64, f64, f64)> {
+    fn reduced_solutionset(mut solutions: Vec<(f64, f64, f64)>) -> SolutionSet4<(f64, f64, f64)> {
+        if solutions.len() <= 4 {
+            return SolutionSet4::from_vec(&solutions);
+        }
+
+        solutions.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+
+        let mut solutions_with_ordering = Vec::with_capacity(solutions.len());
+        let mut last = INFINITY;
+
+        for solution in solutions {
+            let delta = solution.0 - last;
+            let ordering = 1.0 / (delta * delta);
+
+            solutions_with_ordering.push((ordering, solution));
+            last = solution.0;
+        }
+
+        solutions_with_ordering.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+
+        SolutionSet4::Four(
+            solutions_with_ordering[0].1,
+            solutions_with_ordering[1].1,
+            solutions_with_ordering[2].1,
+            solutions_with_ordering[3].1,
+        )
+    }
+
     const EPSILON: f64 = 1e-6;
 
     let mut theta = Vec::with_capacity(8);
@@ -293,7 +323,8 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
         }
     }
 
-    SolutionSet4::from_vec(&theta)
+    // SolutionSet4::from_vec(&theta)
+    reduced_solutionset(theta)
 }
 
 /**

@@ -23,15 +23,6 @@ const DELTAS_SIZE_2: usize = 4;
 const DELTAS_SIZE_4: usize = 8;
 
 impl<T: Copy> SolutionSet2<T> {
-    pub fn from_vec(vec: &Vec<T>) -> Self {
-        match vec.len() {
-            0 => Self::Zero,
-            1 => Self::One(vec[0]),
-            2 => Self::Two(vec[0], vec[1]),
-            i => panic!("Vector contains too many solutions: {}", i)
-        }
-    }
-
     pub fn expect_one(&self) -> T {
         match self {
             Self::Zero => panic!("Found no soliutions where one was expected"),
@@ -80,20 +71,18 @@ impl<T: Copy + Debug> SolutionSet2<T> {
         results.append(&mut vec![String::new(); 2 - results.len()]);
         results.join(",")
     }
-}
 
-impl<T: Copy> SolutionSet4<T> {
     pub fn from_vec(vec: &Vec<T>) -> Self {
         match vec.len() {
             0 => Self::Zero,
             1 => Self::One(vec[0]),
             2 => Self::Two(vec[0], vec[1]),
-            3 => Self::Three(vec[0], vec[1], vec[2]),
-            4 => Self::Four(vec[0], vec[1], vec[2], vec[3]),
-            i => panic!("Vector contains too many solutions: {}", i)
+            i => panic!("Vector {vec:?} contains too many solutions: {i}")
         }
     }
+}
 
+impl<T: Copy> SolutionSet4<T> {
     pub fn expect_one(&self) -> T {
         match self {
             Self::One(s) => *s,
@@ -156,6 +145,25 @@ impl<T: Copy> SolutionSet4<T> {
     }
 }
 
+impl<T: Copy + Debug> SolutionSet4<T> {
+    pub fn as_csv(&self) -> String {
+        let mut results = self.get_all().into_iter().map(|v| format!("{v:?}")).collect::<Vec<String>>();
+        results.append(&mut vec![String::new(); 4 - results.len()]);
+        results.join(",")
+    }
+
+    pub fn from_vec(vec: &Vec<T>) -> Self {
+        match vec.len() {
+            0 => Self::Zero,
+            1 => Self::One(vec[0]),
+            2 => Self::Two(vec[0], vec[1]),
+            3 => Self::Three(vec[0], vec[1], vec[2]),
+            4 => Self::Four(vec[0], vec[1], vec[2], vec[3]),
+            i => panic!("Vector {vec:?} contains too many solutions: {i}")
+        }
+    }
+}
+
 impl<T: Display> Display for SolutionSet2<T> {
     fn fmt(&self, f: &mut Formatter) -> Result {
         match self {
@@ -175,13 +183,5 @@ impl<T: Display> Display for SolutionSet4<T> {
             Self::Three(s1, s2, s3) => write!(f, "{{ {} {} {} }}", s1, s2, s3),
             Self::Four(s1, s2, s3, s4) => write!(f, "{{ {} {} {} {} }}", s1, s2, s3, s4),
         }
-    }
-}
-
-impl<T: Copy + Debug> SolutionSet4<T> {
-    pub fn as_csv(&self) -> String {
-        let mut results = self.get_all().into_iter().map(|v| format!("{v:?}")).collect::<Vec<String>>();
-        results.append(&mut vec![String::new(); 4 - results.len()]);
-        results.join(",")
     }
 }

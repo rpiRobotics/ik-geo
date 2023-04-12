@@ -40,6 +40,10 @@ pub fn random_angle() -> f64 {
     random() * PI
 }
 
+fn random() -> f64 {
+    fastrand::f64() * 2.0 - 1.0
+}
+
 pub fn cone_polynomials(p0_i: &Vector3<f64>, k_i: &Vector3<f64>, p_i: &Vector3<f64>, p_i_s: &Vector3<f64>, k2: &Vector3<f64>) -> (Vector2<f64>, Vector3<f64>) {
     let ki_x_k2 = k_i.cross(k2);
     let ki_x_ki_x_k2 = k_i.cross(&ki_x_k2);
@@ -211,10 +215,6 @@ pub fn solve_two_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &V
     let x = -(((a * c1 * y_sq.clone()).add_scalar(a * fq) - a1 * c * y_sq.clone() + a * e1 * y.clone() - a1 * e * y.clone()).add_scalar(-a1 * f)).component_div(&(((a * b1 * y.clone()).add_scalar(a * d1) - a1 * b * y.clone()).add_scalar(-a1 * d)));
 
     SolutionSet4::from_vec(&x.iter().zip(y.iter()).map(|(u, v)| (*u, *v)).collect::<Vec<(f64, f64)>>())
-}
-
-fn random() -> f64 {
-    fastrand::f64() * 2.0 - 1.0
 }
 
 // Matrix cross-product for a 3 x 3 vector
