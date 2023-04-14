@@ -16,4 +16,10 @@ name = "benchmark"
 harness = false
 
 [lib]
+name = "linear_subproblem_solutions_rust"
+path = "src/lib.rs"
 doctest = false
+
+[[bin]]
+name = "demo"
+path = "src/demo.rs"

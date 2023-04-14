@@ -18,6 +18,12 @@
     use subproblems::nalgebra as na;
     ```
 
+### Running the Demo
+
+```
+$ cargo run
+```
+
 ### Testing
 
 #### Correctness Tests
