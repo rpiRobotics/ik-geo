@@ -35,9 +35,9 @@ gamma = -3*B^4/(256*A^4) + C*B^2/(16*A^3) - B*D/(4*A^2) + E/A;
 % if beta == 0
 if norm(beta) < 1e-12
     rts = -B/(4*A) + [ + sqrt((-alpha + sqrt(alpha^2-4*gamma))/2)
-                         - sqrt((-alpha + sqrt(alpha^2-4*gamma))/2)
-                         + sqrt((-alpha - sqrt(alpha^2-4*gamma))/2)
-                         - sqrt((-alpha - sqrt(alpha^2-4*gamma))/2)];
+                       - sqrt((-alpha + sqrt(alpha^2-4*gamma))/2)
+                       + sqrt((-alpha - sqrt(alpha^2-4*gamma))/2)
+                       - sqrt((-alpha - sqrt(alpha^2-4*gamma))/2)];
     return
 end
 
@@ -56,7 +56,7 @@ end
 W = sqrt(alpha + 2*y);
 
 rts = -B/(4*A) + [+W + sqrt(-(3*alpha+2*y+2*beta/W))
-                    +W - sqrt(-(3*alpha+2*y+2*beta/W))
-                    -W + sqrt(-(3*alpha+2*y-2*beta/W))
-                    -W - sqrt(-(3*alpha+2*y-2*beta/W))] /2;
+                  +W - sqrt(-(3*alpha+2*y+2*beta/W))
+                  -W + sqrt(-(3*alpha+2*y-2*beta/W))
+                  -W - sqrt(-(3*alpha+2*y-2*beta/W))] /2;
 end
