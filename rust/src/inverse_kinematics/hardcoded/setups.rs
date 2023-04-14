@@ -1,7 +1,9 @@
 use {
-    std::f64::consts::PI,
+    std::f64::{ NAN, consts::PI },
 
     nalgebra::{ Vector3, Vector6, Matrix3, Matrix3x6 },
+
+    super::{ irb6640, kuka_r800_fixed_q3, ur5, three_parallel_bot, two_parallel_bot },
 
     crate::{
         inverse_kinematics::{
@@ -11,10 +13,7 @@ use {
                 Matrix3x8,
             },
 
-            setups::SetupIk,
-
-            spherical_two_parallel,
-            spherical_two_intersecting,
+            setups::{ SetupIk, calculate_ik_error },
         },
 
         subproblems::{ Vector7, auxiliary::random_angle },
@@ -35,8 +34,32 @@ pub struct KukaR800FixedQ3 {
     r: Matrix3<f64>,
     t: Vector3<f64>,
 
-    kin_partial: Kinematics<6, 7>,
-    r_6t: Matrix3<f64>,
+    q: Vec<Vector6<f64>>,
+    is_ls: Vec<bool>,
+}
+
+pub struct Ur5 {
+    kin: Kinematics<6, 7>,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+    is_ls: Vec<bool>,
+}
+
+pub struct ThreeParallelBot {
+    kin: Kinematics<6, 7>,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+    is_ls: Vec<bool>,
+}
+
+pub struct TwoParallelBot {
+    kin: Kinematics<6, 7>,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
 
     q: Vec<Vector6<f64>>,
     is_ls: Vec<bool>,
@@ -73,16 +96,11 @@ impl KukaR800FixedQ3 {
     const Q3: f64 = PI / 6.0;
 
     pub fn new() -> Self {
-        let (kin_partial, r_6t) = Self::get_kin_partial();
-
         Self {
             kin: Self::get_kin(),
 
             r: Matrix3::zeros(),
             t: Vector3::zeros(),
-
-            kin_partial,
-            r_6t,
 
             q: Vec::new(),
             is_ls: Vec::new(),
@@ -108,6 +126,86 @@ impl KukaR800FixedQ3 {
     }
 }
 
+impl Ur5 {
+    pub fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    pub fn get_kin() -> Kinematics<6, 7> {
+        let mut kin = Kinematics::new();
+
+        let ex = Vector3::x();
+        let ey = Vector3::y();
+        let ez = Vector3::z();
+
+        kin.h = Matrix3x6::from_columns(&[ez, ey, ey, ey, -ez, ey]);
+        kin.p = Matrix3x7::from_columns(&[0.089159*ez, 0.1358*ey, -0.1197*ey + 0.425*ex, 0.3922*ex, 0.093*ey, -0.0946*ez, 0.0823*ey]);
+
+        kin
+    }
+}
+
+impl ThreeParallelBot {
+    pub fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    pub fn get_kin() -> Kinematics<6, 7> {
+        let mut kin = Kinematics::new();
+
+        let ex = Vector3::x();
+        let ey = Vector3::y();
+        let ez = Vector3::z();
+
+        kin.h = Matrix3x6::from_columns(&[ez, ex, ex, ex, ez, ex]);
+        kin.p = Matrix3x7::from_columns(&[ez, ey, ey, ey, ey, ey + ex, ex]);
+
+        kin
+    }
+}
+
+impl TwoParallelBot {
+    pub fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    pub fn get_kin() -> Kinematics<6, 7> {
+        let mut kin = Kinematics::new();
+
+        let ex = Vector3::x();
+        let ey = Vector3::y();
+        let ez = Vector3::z();
+
+        let es = (ex + ez).normalize();
+
+        kin.h = Matrix3x6::from_columns(&[ez, ex, ex, ez, ex, es]);
+        kin.p = Matrix3x7::from_columns(&[ez, ey, ey, ey, ey, ey, ez]);
+
+        kin
+    }
+}
+
 impl SetupIk for Irb6640 {
     fn setup(&mut self) {
         let q = Vector6::zeros().map(|_: f64| random_angle());
@@ -123,19 +221,13 @@ impl SetupIk for Irb6640 {
     }
 
     fn run(&mut self) {
-        (self.q, self.is_ls) = spherical_two_parallel(&self.r, &self.t, &self.kin);
+        (self.q, self.is_ls) = irb6640(&self.r, &self.t)
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                let (r_t, t_t) = self.kin.forward_kinematics(q);
-                (r_t - self.r).norm() + (t_t - self.t).norm()
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -170,29 +262,24 @@ impl SetupIk for KukaR800FixedQ3 {
     }
 
     fn run(&mut self) {
-        (self.q, self.is_ls) = spherical_two_intersecting(&(self.r * self.r_6t.transpose()), &self.t, &self.kin_partial);
+        (self.q, self.is_ls) = kuka_r800_fixed_q3(&self.r, &self.t);
     }
 
     fn error(&self) -> f64 {
-        self.q.iter().zip(self.is_ls.iter()).map(|(q, &is_ls)| {
-            if is_ls {
-                0.0
-            }
-            else {
-                let q_e = Vector7::from_column_slice(&[
-                    q[0],
-                    q[1],
-                    Self::Q3,
-                    q[2],
-                    q[3],
-                    q[4],
-                    q[5],
-                ]);
+        self.q.iter().map(|q| {
+            let q_e = Vector7::from_column_slice(&[
+                q[0],
+                q[1],
+                Self::Q3,
+                q[2],
+                q[3],
+                q[4],
+                q[5],
+            ]);
 
-                let (r_t, t_t) = self.kin.forward_kinematics(&q_e);
-                (r_t - self.r).norm() + (t_t - self.t).norm()
-            }
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+            let (r_t, t_t) = self.kin.forward_kinematics(&q_e);
+            (r_t - self.r).norm() + (t_t - self.t).norm()
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -205,6 +292,126 @@ impl SetupIk for KukaR800FixedQ3 {
 
     fn name(&self) -> &'static str {
         "KUKA R800 Fixed Q3"
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
+}
+
+impl SetupIk for Ur5 {
+    fn setup(&mut self) {
+        let q = Vector6::zeros().map(|_: f64| random_angle());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!()
+    }
+
+    fn write_output(&self) -> String {
+        unimplemented!()
+    }
+
+    fn run(&mut self) {
+        (self.q, self.is_ls) = ur5(&self.r, &self.t);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
+    }
+
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
+    }
+    fn name(&self) -> &'static str {
+        "UR5"
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
+}
+
+impl SetupIk for ThreeParallelBot {
+    fn setup(&mut self) {
+        let q = Vector6::zeros().map(|_: f64| random_angle());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!()
+    }
+
+    fn write_output(&self) -> String {
+        unimplemented!()
+    }
+
+    fn run(&mut self) {
+        (self.q, self.is_ls) = three_parallel_bot(&self.r, &self.t);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
+    }
+
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
+    }
+    fn name(&self) -> &'static str {
+        "Three Parallel Bot"
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
+}
+
+impl SetupIk for TwoParallelBot {
+    fn setup(&mut self) {
+        let q = Vector6::zeros().map(|_: f64| random_angle());
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn setup_from_str(&mut self, _raw: &str) {
+        unimplemented!()
+    }
+
+    fn write_output(&self) -> String {
+        unimplemented!()
+    }
+
+    fn run(&mut self) {
+        (self.q, self.is_ls) = two_parallel_bot(&self.r, &self.t);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().map(|q| {
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
+    }
+
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
+    }
+    fn name(&self) -> &'static str {
+        "Two Parallel Bot"
     }
 
     fn debug(&self, i: usize) {

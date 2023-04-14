@@ -104,7 +104,7 @@ pub struct TwoIntersectingSetup {
     is_ls: Vec<bool>,
 }
 
-fn calculate_ik_error(kin: &Kinematics<6, 7>, r: &Matrix3<f64>, t: &Vector3<f64>, q: &Vector6<f64>) -> f64 {
+pub fn calculate_ik_error(kin: &Kinematics<6, 7>, r: &Matrix3<f64>, t: &Vector3<f64>, q: &Vector6<f64>) -> f64 {
     let (r_t, t_t) = kin.forward_kinematics(q);
     (r_t - r).norm() + (t_t - t).norm()
 }

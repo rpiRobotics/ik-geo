@@ -1,12 +1,18 @@
-use std::{env, collections::HashMap};
+use linear_subproblem_solutions_rust::inverse_kinematics::hardcoded::{ur5, three_parallel_bot, two_parallel_bot};
 
-use linear_subproblem_solutions_rust::inverse_kinematics::hardcoded::{irb6640, kuka_r800_fixed_q3};
-use nalgebra::{Matrix3, Vector3, Vector6};
+use {
+    std::{ env, collections::HashMap },
+    linear_subproblem_solutions_rust::inverse_kinematics::hardcoded::{irb6640, kuka_r800_fixed_q3},
+    nalgebra::{Matrix3, Vector3, Vector6},
+};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(PartialEq, Eq, Hash, Clone, Copy)]
 enum Robot {
     Irb6640,
     KukaR800FixedQ3,
+    Ur5,
+    ThreeParallelBot,
+    TwoParallelBot,
 }
 
 struct DemoArgs {
@@ -29,7 +35,7 @@ fn print_usage(exe_name: &str, robot_names: Vec<&&str>) {
     println!("\tt is the translation vector");
 }
 
-fn parse_args(robot_map: &HashMap<&str, Robot>) -> Result<DemoArgs, String> {
+fn parse_args(robot_lookup: &HashMap<&str, Robot>) -> Result<DemoArgs, String> {
     fn extract_float<T: Iterator<Item = String>>(iter: &mut T) -> Result<f64, String> {
         let raw = iter.next().ok_or("Not enough arguments".to_owned())?;
         raw.parse().or(Err(format!("Malformed float {raw:?}")))
@@ -38,7 +44,7 @@ fn parse_args(robot_map: &HashMap<&str, Robot>) -> Result<DemoArgs, String> {
     let mut args = env::args().skip(1);
 
     let robot = args.next().ok_or("No robot specified".to_owned())?;
-    let robot = *robot_map.get(&robot[..]).ok_or(format!("Invalid robot {robot:?}"))?;
+    let robot = *robot_lookup.get(&robot[..]).ok_or(format!("Invalid robot {robot:?}"))?;
 
     let mut r = Vec::new();
     let mut t = Vec::new();
@@ -57,11 +63,8 @@ fn parse_args(robot_map: &HashMap<&str, Robot>) -> Result<DemoArgs, String> {
     Ok(DemoArgs { robot, r, t })
 }
 
-fn compute_ik(demo_args: DemoArgs) -> (Vec<Vector6<f64>>, Vec<bool>) {
-    match demo_args.robot {
-        Robot::Irb6640 => irb6640(&demo_args.r, &demo_args.t),
-        Robot::KukaR800FixedQ3 => kuka_r800_fixed_q3(&demo_args.r, &demo_args.t),
-    }
+fn compute_ik(demo_args: DemoArgs, function_lookup: &HashMap<Robot, fn(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>)>) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    function_lookup.get(&demo_args.robot).unwrap()(&demo_args.r, &demo_args.t)
 }
 
 fn display_ik_result(result: (Vec<Vector6<f64>>, Vec<bool>)) {
@@ -75,11 +78,28 @@ fn display_ik_result(result: (Vec<Vector6<f64>>, Vec<bool>)) {
     }
 }
 
-fn main() {
-    let mut robot_map = HashMap::new();
+macro_rules! create_lookups {
+    ($($s:literal, $p:expr, $f:ident),*,) => {{
+        let mut robot_lookup = HashMap::new();
+        let mut function_lookup: HashMap<Robot, fn(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>)> = HashMap::new();
 
-    robot_map.insert("irb-6640", Robot::Irb6640);
-    robot_map.insert("kuka-r800-fixed-q3", Robot::KukaR800FixedQ3);
+        $(
+            robot_lookup.insert($s, $p);
+            function_lookup.insert($p, $f);
+        )*
+
+        (robot_lookup, function_lookup)
+    }};
+}
+
+fn main() {
+    let (robot_lookup, function_lookup) = create_lookups!(
+        "irb-6640", Robot::Irb6640, irb6640,
+        "kuka-r800-fixed-q3", Robot::KukaR800FixedQ3, kuka_r800_fixed_q3,
+        "ur5", Robot::Ur5, ur5,
+        "three-parallel-bot", Robot::ThreeParallelBot, three_parallel_bot,
+        "two-parallel-bot", Robot::TwoParallelBot, two_parallel_bot,
+    );
 
     let mut args = env::args();
 
@@ -88,15 +108,14 @@ fn main() {
 
     if let Some(s) = first_arg {
         if s != "--help" {
-            match parse_args(&robot_map) {
-                Ok(demo_args) => {
-                    display_ik_result(compute_ik(demo_args));
-                    return;
-                },
-                Err(s) => eprintln!("{s}\nRun with \"--help\" for usage information")
+            match parse_args(&robot_lookup) {
+                Ok(demo_args) => display_ik_result(compute_ik(demo_args, &function_lookup)),
+                Err(s) => eprintln!("ERROR: {s}\nRun with \"--help\" for usage information")
             }
+
+            return;
         }
     }
 
-    print_usage(&exe_name, robot_map.keys().collect());
+    print_usage(&exe_name, robot_lookup.keys().collect());
 }

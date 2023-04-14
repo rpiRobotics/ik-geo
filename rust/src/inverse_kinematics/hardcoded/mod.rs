@@ -1,8 +1,8 @@
 pub mod setups;
 
 use {
-    self::setups::{ Irb6640, KukaR800FixedQ3 },
-    super::{ spherical_two_parallel, spherical_two_intersecting },
+    self::setups::{ Irb6640, KukaR800FixedQ3, Ur5, ThreeParallelBot, TwoParallelBot },
+    super::{ spherical_two_parallel, spherical_two_intersecting, three_parallel_two_intersecting, three_parallel, two_parallel },
     nalgebra::{Matrix3, Vector3, Vector6},
 };
 
@@ -13,4 +13,16 @@ pub fn irb6640(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bo
 pub fn kuka_r800_fixed_q3(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>) {
     let (kin_partial, r_6t) = KukaR800FixedQ3::get_kin_partial();
     spherical_two_intersecting(&(r * r_6t.transpose()), &t, &kin_partial)
+}
+
+pub fn ur5(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    three_parallel_two_intersecting(r, t, &Ur5::get_kin())
+}
+
+pub fn three_parallel_bot(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    three_parallel(r, t, &ThreeParallelBot::get_kin())
+}
+
+pub fn two_parallel_bot(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    two_parallel(r, t, &TwoParallelBot::get_kin())
 }
