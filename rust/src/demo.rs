@@ -1,9 +1,7 @@
-use linear_subproblem_solutions_rust::inverse_kinematics::hardcoded::{ur5, three_parallel_bot, two_parallel_bot};
-
 use {
     std::{ env, collections::HashMap },
-    linear_subproblem_solutions_rust::inverse_kinematics::hardcoded::{irb6640, kuka_r800_fixed_q3},
-    nalgebra::{Matrix3, Vector3, Vector6},
+    linear_subproblem_solutions_rust::inverse_kinematics::hardcoded::{ irb6640, kuka_r800_fixed_q3, ur5, three_parallel_bot, two_parallel_bot },
+    nalgebra::{ Matrix3, Vector3, Vector6 },
 };
 
 #[derive(PartialEq, Eq, Hash, Clone, Copy)]

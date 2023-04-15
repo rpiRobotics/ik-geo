@@ -1,3 +1,5 @@
+use crate::{subproblems::setups::SetupStatic, inverse_kinematics::setups::ik_write_output};
+
 use {
     std::f64::{ NAN, consts::PI },
 
@@ -65,18 +67,23 @@ pub struct TwoParallelBot {
     is_ls: Vec<bool>,
 }
 
+fn hardcoded_setup_from_string(raw: &str, r: &mut Matrix3<f64>, t: &mut Vector3<f64>) {
+    let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
+
+    *r = Matrix3::new(
+        data[0], data[1], data[2],
+        data[3], data[4], data[5],
+        data[6], data[7], data[8],
+    );
+
+    *t = Vector3::new(
+        data[9],
+        data[10],
+        data[11]
+    );
+}
+
 impl Irb6640 {
-    pub fn new() -> Self {
-        Self {
-            kin: Self::get_kin(),
-            r: Matrix3::zeros(),
-            t: Vector3::zeros(),
-
-            q: Vec::new(),
-            is_ls: Vec::new(),
-        }
-    }
-
     pub fn get_kin() -> Kinematics<6, 7> {
         let mut kin = Kinematics::new();
 
@@ -94,18 +101,6 @@ impl Irb6640 {
 
 impl KukaR800FixedQ3 {
     const Q3: f64 = PI / 6.0;
-
-    pub fn new() -> Self {
-        Self {
-            kin: Self::get_kin(),
-
-            r: Matrix3::zeros(),
-            t: Vector3::zeros(),
-
-            q: Vec::new(),
-            is_ls: Vec::new(),
-        }
-    }
 
     pub fn get_kin() -> Kinematics<7, 8> {
         let mut kin = Kinematics::new();
@@ -127,17 +122,6 @@ impl KukaR800FixedQ3 {
 }
 
 impl Ur5 {
-    pub fn new() -> Self {
-        Self {
-            kin: Self::get_kin(),
-            r: Matrix3::zeros(),
-            t: Vector3::zeros(),
-
-            q: Vec::new(),
-            is_ls: Vec::new(),
-        }
-    }
-
     pub fn get_kin() -> Kinematics<6, 7> {
         let mut kin = Kinematics::new();
 
@@ -153,17 +137,6 @@ impl Ur5 {
 }
 
 impl ThreeParallelBot {
-    pub fn new() -> Self {
-        Self {
-            kin: Self::get_kin(),
-            r: Matrix3::zeros(),
-            t: Vector3::zeros(),
-
-            q: Vec::new(),
-            is_ls: Vec::new(),
-        }
-    }
-
     pub fn get_kin() -> Kinematics<6, 7> {
         let mut kin = Kinematics::new();
 
@@ -179,17 +152,6 @@ impl ThreeParallelBot {
 }
 
 impl TwoParallelBot {
-    pub fn new() -> Self {
-        Self {
-            kin: Self::get_kin(),
-            r: Matrix3::zeros(),
-            t: Vector3::zeros(),
-
-            q: Vec::new(),
-            is_ls: Vec::new(),
-        }
-    }
-
     pub fn get_kin() -> Kinematics<6, 7> {
         let mut kin = Kinematics::new();
 
@@ -212,12 +174,12 @@ impl SetupIk for Irb6640 {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
+    fn setup_from_str(&mut self, raw: &str) {
+        hardcoded_setup_from_string(raw, &mut self.r, &mut self.t);
     }
 
     fn write_output(&self) -> String {
-        unimplemented!()
+        ik_write_output(&self.q)
     }
 
     fn run(&mut self) {
@@ -237,8 +199,9 @@ impl SetupIk for Irb6640 {
     fn solution_count(&self) -> usize {
         self.is_ls.len()
     }
+
     fn name(&self) -> &'static str {
-        "IRB 6640"
+        <Self as SetupStatic>::name()
     }
 
     fn debug(&self, i: usize) {
@@ -253,12 +216,12 @@ impl SetupIk for KukaR800FixedQ3 {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
+    fn setup_from_str(&mut self, raw: &str) {
+        hardcoded_setup_from_string(raw, &mut self.r, &mut self.t);
     }
 
     fn write_output(&self) -> String {
-        unimplemented!()
+        ik_write_output(&self.q)
     }
 
     fn run(&mut self) {
@@ -291,7 +254,7 @@ impl SetupIk for KukaR800FixedQ3 {
     }
 
     fn name(&self) -> &'static str {
-        "KUKA R800 Fixed Q3"
+        <Self as SetupStatic>::name()
     }
 
     fn debug(&self, i: usize) {
@@ -305,12 +268,12 @@ impl SetupIk for Ur5 {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
+    fn setup_from_str(&mut self, raw: &str) {
+        hardcoded_setup_from_string(raw, &mut self.r, &mut self.t);
     }
 
     fn write_output(&self) -> String {
-        unimplemented!()
+        ik_write_output(&self.q)
     }
 
     fn run(&mut self) {
@@ -330,8 +293,9 @@ impl SetupIk for Ur5 {
     fn solution_count(&self) -> usize {
         self.is_ls.len()
     }
+
     fn name(&self) -> &'static str {
-        "UR5"
+        <Self as SetupStatic>::name()
     }
 
     fn debug(&self, i: usize) {
@@ -345,12 +309,12 @@ impl SetupIk for ThreeParallelBot {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
+    fn setup_from_str(&mut self, raw: &str) {
+        hardcoded_setup_from_string(raw, &mut self.r, &mut self.t);
     }
 
     fn write_output(&self) -> String {
-        unimplemented!()
+        ik_write_output(&self.q)
     }
 
     fn run(&mut self) {
@@ -370,8 +334,9 @@ impl SetupIk for ThreeParallelBot {
     fn solution_count(&self) -> usize {
         self.is_ls.len()
     }
+
     fn name(&self) -> &'static str {
-        "Three Parallel Bot"
+        <Self as SetupStatic>::name()
     }
 
     fn debug(&self, i: usize) {
@@ -385,12 +350,12 @@ impl SetupIk for TwoParallelBot {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
+    fn setup_from_str(&mut self, raw: &str) {
+        hardcoded_setup_from_string(raw, &mut self.r, &mut self.t);
     }
 
     fn write_output(&self) -> String {
-        unimplemented!()
+        ik_write_output(&self.q)
     }
 
     fn run(&mut self) {
@@ -410,11 +375,98 @@ impl SetupIk for TwoParallelBot {
     fn solution_count(&self) -> usize {
         self.is_ls.len()
     }
+
     fn name(&self) -> &'static str {
-        "Two Parallel Bot"
+        <Self as SetupStatic>::name()
     }
 
     fn debug(&self, i: usize) {
         println!("{i}{}{}", self.r, self.t);
+    }
+}
+
+impl SetupStatic for Irb6640 {
+    fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn name() -> &'static str {
+        "IRB 6640"
+    }
+}
+
+impl SetupStatic for KukaR800FixedQ3 {
+    fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn name() -> &'static str {
+        "KUKA R800 Fixed Q3"
+    }
+}
+
+impl SetupStatic for Ur5 {
+    fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn name() -> &'static str {
+        "UR5"
+    }
+}
+
+impl SetupStatic for ThreeParallelBot {
+    fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn name() -> &'static str {
+        "Three Parallel Bot"
+    }
+}
+
+impl SetupStatic for TwoParallelBot {
+    fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn name() -> &'static str {
+        "Two Parallel Bot"
     }
 }

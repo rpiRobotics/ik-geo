@@ -29,13 +29,13 @@ $ cargo run
 #### Correctness Tests
 
 ```
-$ cargo test correctness
+$ cargo test correctness --release
 ```
 
 For diagnostic info:
 
 ```
-$ cargo test correctness -- --nocapture
+$ cargo test correctness --release -- --nocapture
 ```
 
 #### Timing Tests

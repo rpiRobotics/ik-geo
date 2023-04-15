@@ -144,7 +144,7 @@ fn ik_setup_from_string(raw: &str, kin: &mut Kinematics<6, 7>, r: &mut Matrix3<f
     );
 }
 
-fn ik_write_output(q: &Vec<Vector6<f64>>) -> String {
+pub fn ik_write_output(q: &Vec<Vector6<f64>>) -> String {
     q.iter()
         .map(|q| q.iter().map(|x| x.to_string())
         .collect::<Vec<String>>().join(",")).collect::<Vec<String>>()
