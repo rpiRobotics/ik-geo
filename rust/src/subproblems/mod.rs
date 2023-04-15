@@ -27,11 +27,9 @@ use {
 pub type Vector7<T> = Matrix<T, U7, U1, ArrayStorage<T, 7, 1>>;
 pub type Vector8<T> = Matrix<T, U8, U1, ArrayStorage<T, 8, 1>>;
 
-/**
-Solves for `theta` where `rot(k, theta) * p1 = p2` if possible.
-If not, minimizes `|| rot(k, theta) * p1 - p2 ||`.
-Also returns a boolean of whether or not `theta` is a least-squares solution.
-*/
+/// Solves for `theta` where `rot(k, theta) * p1 = p2` if possible.
+/// If not, minimizes `|| rot(k, theta) * p1 - p2 ||`.
+/// Also returns a boolean of whether or not `theta` is a least-squares solution.
 pub fn subproblem1(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>) -> (f64, bool) {
     let kxp = k.cross(p1);
     let a = Matrix3x2::from_columns(&[kxp, -k.cross(&kxp)]);
@@ -43,12 +41,10 @@ pub fn subproblem1(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>) -> (f
     (theta, is_ls)
 }
 
-/**
-Solves for `theta1` and `theta2` where `rot(k1, theta1) * p1 = rot(k2, theta2) * p2` if possible.
-If not, minimizes `|| rot(k1, theta1) * p1 - rot(k2, theta2) * p2 ||`.
-Also returns a boolean of whether or not `{ theta1, theta2 }` is a least-squares solution.
-There may be 1 or 2 solutions for `theta1` and `theta2`.
-*/
+// Solves for `theta1` and `theta2` where `rot(k1, theta1) * p1 = rot(k2, theta2) * p2` if possible.
+// If not, minimizes `|| rot(k1, theta1) * p1 - rot(k2, theta2) * p2 ||`.
+// Also returns a boolean of whether or not `{ theta1, theta2 }` is a least-squares solution.
+// There may be 1 or 2 solutions for `theta1` and `theta2`.
 pub fn subproblem2(p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>) -> (SolutionSet2<(f64, f64)>, bool) {
     let is_ls = (p1.norm() - p2.norm()).abs() >= 1e-8;
 
@@ -101,10 +97,8 @@ pub fn subproblem2(p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: 
     }
 }
 
-/**
-Solves for `theta1` and `theta2` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * p2`.
-Assumes only one solution. If there could be two, `subproblem2` should be used.
-*/
+// Solves for `theta1` and `theta2` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * p2`.
+// Assumes only one solution. If there could be two, `subproblem2` should be used.
 pub fn subproblem2extended(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>) -> (f64, f64) {
     let kxp1 = k1.cross(p1);
     let kxp2 = k2.cross(p2);
@@ -141,11 +135,9 @@ pub fn subproblem2extended(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f6
     (sc[0].atan2(sc[1]), sc[2].atan2(sc[3]))
 }
 
-/**
-Solves for `theta` where `|| rot(k, theta) * p1 - p2 || = d` if possibble.
-If not, minimizes `| || rot(k, theta)*p1 - p2 || - d |`.
-Also returns a boolean of whether or not `theta` is a least-squares solution.
-*/
+// Solves for `theta` where `|| rot(k, theta) * p1 - p2 || = d` if possibble.
+// If not, minimizes `| || rot(k, theta)*p1 - p2 || - d |`.
+// Also returns a boolean of whether or not `theta` is a least-squares solution.
 pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
     let kxp = k.cross(p1);
     let a_1 = Matrix3x2::from_columns(&[kxp, -k.cross(&kxp)]);
@@ -175,11 +167,9 @@ pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f6
     ), false)
 }
 
-/**
-Solves for `theta` where `h' * rot(k, theta) * p = d` if possible.
-If not minimizes `| h' * rot(k, theta) * p - d |`.
-Also returns a boolean of whether or not `theta` is a least-squares solution.
- */
+/// Solves for `theta` where `h' * rot(k, theta) * p = d` if possible.
+/// If not minimizes `| h' * rot(k, theta) * p - d |`.
+/// Also returns a boolean of whether or not `theta` is a least-squares solution.
 pub fn subproblem4(h: &Vector3<f64>, p: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
     let a_11 = k.cross(p);
     let a_1 = Matrix3x2::from_columns(&[a_11, -k.cross(&a_11)]);
@@ -211,11 +201,10 @@ pub fn subproblem4(h: &Vector3<f64>, p: &Vector3<f64>, k: &Vector3<f64>, d: f64)
     }
 }
 
-/**
-Solves for `theta1`, `theta2`, and `theta3` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * (p2 + rot(k3, theta3) * p3)` if possible.
-There can be up to 4 solutions.
- */
+/// Solves for `theta1`, `theta2`, and `theta3` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * (p2 + rot(k3, theta3) * p3)` if possible.
+/// There can be up to 4 solutions.
 pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>, k3: &Vector3<f64>) -> SolutionSet4<(f64, f64, f64)> {
+    /// Given n >= 4 solutions, return the top 4 most unique
     fn reduced_solutionset(mut solutions: Vec<(f64, f64, f64)>) -> SolutionSet4<(f64, f64, f64)> {
         if solutions.len() <= 4 {
             return SolutionSet4::from_vec(&solutions);
@@ -323,14 +312,11 @@ pub fn subproblem5(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f64>, p3: 
         }
     }
 
-    // SolutionSet4::from_vec(&theta)
     reduced_solutionset(theta)
 }
 
-/**
-Solves for `theta1` and `theta2` where `h1' * rot(k1, theta1) + h2' * rot(k2, theta2) = d1` and `h3' * rot(k3, theta1) + h4' * rot(k4, theta2) = d2`
-There can be up to 4 solutions
- */
+/// Solves for `theta1` and `theta2` where `h1' * rot(k1, theta1) + h2' * rot(k2, theta2) = d1` and `h3' * rot(k3, theta1) + h4' * rot(k4, theta2) = d2`
+/// There can be up to 4 solutions
 pub fn subproblem6(h: &[Vector3<f64>; 4], k: &[Vector3<f64>; 4], p: &[Vector3<f64>; 4], d1: f64, d2: f64) -> SolutionSet4<(f64, f64)> {
     let k1xp1 = k[0].cross(&p[0]);
     let k2xp2 = k[1].cross(&p[1]);

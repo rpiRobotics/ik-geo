@@ -18,7 +18,7 @@ use {
     },
 };
 
-/// Creates a 3x3 rotation matrix
+/// Creates a 3x3 rotation matrix about `k` by `theta`
 pub fn rot(k: &Vector3<f64>, theta: f64) -> Matrix3<f64> {
     let k = k.normalize();
     Matrix3::identity() + hat(&k) * theta.sin() + hat(&k) * hat(&k) * (1.0 - theta.cos())
@@ -65,16 +65,19 @@ pub fn cone_polynomials(p0_i: &Vector3<f64>, k_i: &Vector3<f64>, p_i: &Vector3<f
     (p, r)
 }
 
+/// Performs convolution on a 2d vector with itself
 pub fn vec_self_convolve_2(v: &Vector2<f64>) -> Vector3<f64> {
     let (a, b) = (v[0], v[1]);
     Vector3::new(a * a, 2.0 * a * b, b * b)
 }
 
+/// Performs convolution on a 3d vector with itself
 pub fn vec_self_convolve_3(v: &Vector3<f64>) -> Vector5<f64> {
     let (a, b, c) = (v[0], v[1], v[2]);
     Vector5::new(a * a, 2.0 * a * b, 2.0 * a * c + b * b, 2.0 * b * c, c * c)
 }
 
+/// Performs convolution between two 3d vectors
 pub fn vec_convolve_3(v1: &Vector3<f64>, v2: &Vector3<f64>) -> Vector5<f64> {
     let (a, b, c) = (v1[0], v1[1], v1[2]);
     let (x, y, z) = (v2[0], v2[1], v2[2]);
@@ -90,6 +93,9 @@ pub fn approximate_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f
     ]).transpose().eigenvalues().unwrap()
 }
 
+/// Solves the roots of a quartic equation using the quartic formula
+///
+/// https://math.stackexchange.com/a/786
 pub fn solve_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
     let a = p[0];
     let b = p[1];
@@ -114,6 +120,7 @@ pub fn solve_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
     );
 }
 
+/// Finds the null space of a 2x4 matrix given some `epsilon` using the eigenpairs of A'*A
 pub fn null_space_matrix2x4(a: &Matrix2x4<f64>, epsilon: f64) -> SolutionSet2<Vector4<f64>> {
     let eigen = (a.transpose() * a).symmetric_eigen();
 
@@ -138,6 +145,7 @@ pub fn null_space_matrix2x4(a: &Matrix2x4<f64>, epsilon: f64) -> SolutionSet2<Ve
     }
 }
 
+/// Finds the null space of a 2x4 matrix using qr decomposition
 pub fn null_space_matrix2x4_qr(a: &Matrix2x4<f64>) -> (Vector4<f64>, Vector4<f64>) {
     let mut null_space = Matrix4::identity();
     let qr = a.transpose().qr();
@@ -158,6 +166,15 @@ pub fn solve_lower_triangular_system_2x2(l: &Matrix2<f64>, b_v: &Vector2<f64>) -
     Vector2::new(x, (q - x * b) / c)
 }
 
+/// Solve for intersection of 2 ellipses defined by
+///
+/// `xm1'*xm1 + xi'*xn1'*xn1*xi + xm1'*xn1*xi == 1`
+///
+/// `xm2'*xm2 + xi'*xn2'*xn2*xi + xm2'*xn2*xi == 1`
+///
+/// Where `xi = [xi_1; xi_2]`
+///
+/// https://elliotnoma.wordpress.com/2013/04/10/a-closed-form-solution-for-the-intersections-of-two-ellipses/
 pub fn solve_two_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &Vector2<f64>, xn2: &Matrix2<f64>) -> SolutionSet4<(f64, f64)> {
     const EPSILON: f64 = 1e-12;
 
@@ -210,7 +227,6 @@ pub fn solve_two_ellipse_numeric(xm1: &Vector2<f64>, xn1: &Matrix2<f64>, xm2: &V
     let y = y.iter().filter(|z| z.im.abs() < EPSILON).map(|z| z.re).collect::<Vec<f64>>();
     let y_sq = DVector::from_vec(y_sq);
     let y = DVector::from_vec(y);
-
 
     let x = -(((a * c1 * y_sq.clone()).add_scalar(a * fq) - a1 * c * y_sq.clone() + a * e1 * y.clone() - a1 * e * y.clone()).add_scalar(-a1 * f)).component_div(&(((a * b1 * y.clone()).add_scalar(a * d1) - a1 * b * y.clone()).add_scalar(-a1 * d)));
 
