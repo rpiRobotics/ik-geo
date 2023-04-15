@@ -25,6 +25,10 @@ impl IkFastConfig {
     }
 
     fn process_line(&mut self, line: &str) -> Result<(), String>{
+        if line.is_empty() {
+            return Ok(())
+        }
+
         match line.split_once('=') {
             Some((key, value)) => match key.trim() {
                 "active" => self.set_active(value.trim()),

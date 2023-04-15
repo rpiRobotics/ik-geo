@@ -58,16 +58,16 @@ $ cargo bench
 
     ```
     $ cl /O2 /c /EHsc /Folib_ikfast/[NAME].obj /DIKFAST_NO_MAIN .../[NAME].cpp
-    $ cl /O2 /c /EHsc /Folib_ikfast/ikfast_proxy.obj /DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
-    $ lib lib_ikfast/[NAME].obj lib_ikfast/ikfast_proxy.obj /out:lib/[NAME].lib
+    $ cl /O2 /c /EHsc /Folib_ikfast/ikfast_proxy.obj ikfast/ikfast_proxy.cpp
+    $ lib lib_ikfast/[NAME].obj lib_ikfast/ikfast_proxy.obj /out:lib_ikfast/[NAME].lib
     ```
 
     Example compilation for the gnu toolchain:
 
     ```
-    $ g++ -O3 -o lib/[NAME].obj -DIKFAST_NO_MAIN .../[NAME].cpp
-    $ g++ -O3 -o lib/ikfast_proxy.obj -DIKFAST_NO_MAIN ikfast/ikfast_proxy.cpp
-    $ ar rcs lib/[NAME].a lib/kuka_kr30l16.obj lib/ikfast_proxy.obj
+    $ g++ -O3 -o lib_ikfast/[NAME].obj -DIKFAST_NO_MAIN .../[NAME].cpp
+    $ g++ -O3 -o lib_ikfast/ikfast_proxy.obj ikfast/ikfast_proxy.cpp
+    $ ar rcs lib_ikfast/[NAME].a lib_ikfast/kuka_kr30l16.obj lib_ikfast/ikfast_proxy.obj
     ```
 
     Make sure IKFAST_NO_MAIN is defined.

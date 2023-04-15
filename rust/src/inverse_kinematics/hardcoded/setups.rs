@@ -67,7 +67,7 @@ pub struct TwoParallelBot {
     is_ls: Vec<bool>,
 }
 
-fn hardcoded_setup_from_string(raw: &str, r: &mut Matrix3<f64>, t: &mut Vector3<f64>) {
+pub fn hardcoded_setup_from_string(raw: &str, r: &mut Matrix3<f64>, t: &mut Vector3<f64>) {
     let data: Vec<f64> = raw.split(',').map(|s| s.parse().unwrap()).collect();
 
     *r = Matrix3::new(

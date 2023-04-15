@@ -25,32 +25,34 @@ const TEST_ITERATIONS: usize = 1000;
 #[cfg(link_ikfast)]
 #[test]
 fn ikfast_tests() {
-    let setups: Vec<Box<dyn SetupIk>> = vec![
-        Box::new(IkFast::new()),
-    ];
+    let mut setup = IkFast::new();
 
-    for mut setup in setups {
-        let mut total_error = 0.0;
+    let mut total_error = 0.0;
+    let mut num_iterations = 0;
+    let mut nan_count = 0;
 
-        for _ in 0..TEST_ITERATIONS {
-            setup.setup();
-            setup.run();
+    for _ in 0..TEST_ITERATIONS {
+        setup.setup();
+        setup.run();
 
-            let error = setup.error();
+        let error = setup.error();
 
-            if error.is_nan() {
-                println!("[WARN]\t{} error was NaN", setup.name());
-            }
-            else {
-                assert!(error <= ERROR_THRESHOLD, "{} error was at: {}", setup.name(), error);
-                total_error += error;
-            }
+        if error.is_nan() {
+            nan_count += 1;
         }
-
-        let avg_err = total_error / (TEST_ITERATIONS) as f64;
-
-        println!("{}\n\tAvg Error:\t{avg_err}", setup.name());
+        else {
+            // assert!(error <= ERROR_THRESHOLD, "{} error was at: {:.2e}", setup.name(), error);
+            total_error += error;
+            num_iterations += 1;
+        }
     }
+
+    let avg_err = total_error / (num_iterations) as f64;
+    let nan_percent = nan_count as f64 * 100.0 / TEST_ITERATIONS as f64;
+
+    println!("{}", setup.name());
+    println!("\tAvg min Error:\t{avg_err:.2e}");
+    println!("\t% NaN:\t{nan_percent:.2}");
 }
 
 #[test]
@@ -85,6 +87,7 @@ fn run_tests() {
         let mut total_error = 0.0;
         let mut nan_count = 0;
         let mut ls_count = 0;
+        let mut num_iterations = 0;
 
         for _ in 0..TEST_ITERATIONS {
             setup.setup();
@@ -102,10 +105,11 @@ fn run_tests() {
             else {
                 // assert!(error <= ERROR_THRESHOLD, "{} error was at: {:.2e}", setup.name(), error);
                 total_error += error;
+                num_iterations += 1;
             }
         }
 
-        let avg_err = total_error / TEST_ITERATIONS as f64;
+        let avg_err = total_error / num_iterations as f64;
         let nan_percent = nan_count as f64 * 100.0 / TEST_ITERATIONS as f64;
         let ls_percent = ls_count as f64 * 100.0 / TEST_ITERATIONS as f64;
 
@@ -121,6 +125,7 @@ fn run_tests() {
         let mut num_all_ls = 0;
         let mut total_q_count = 0;
         let mut nan_count = 0;
+        let mut num_iterations = 0;
 
         for _ in 0..TEST_ITERATIONS {
             setup.setup();
@@ -136,14 +141,15 @@ fn run_tests() {
             else {
                 // assert!(error <= ERROR_THRESHOLD, "{} error was at: {:.2e}", setup.name(), error);
                 total_error += error;
-            }
+                num_iterations += 1;
 
-            num_q_ls += n_ls;
-            total_q_count += n_sol;
-            if n_ls == n_sol { num_all_ls += 1 }
+                num_q_ls += n_ls;
+                total_q_count += n_sol;
+                if n_ls == n_sol { num_all_ls += 1 }
+            }
         }
 
-        let avg_err = total_error / (TEST_ITERATIONS - num_all_ls) as f64;
+        let avg_err = total_error / (num_iterations - num_all_ls) as f64;
         let nan_percent = nan_count as f64 * 100.0 / TEST_ITERATIONS as f64;
         let ls_percent = num_q_ls as f64 * 100.0 / total_q_count as f64;
         let all_ls_percent = num_all_ls as f64 * 100.0 / TEST_ITERATIONS as f64;

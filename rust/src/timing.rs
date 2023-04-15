@@ -1,3 +1,5 @@
+use crate::ikfast::IkFast;
+
 use {
     std::{
         io::{ self, Lines, BufReader, BufRead, Write },
@@ -110,6 +112,14 @@ fn time_batch_hardcoded() {
     time_hardcoded_batched::<KukaR800FixedQ3>();
     time_hardcoded_batched::<Ur5>();
     time_hardcoded_batched::<ThreeParallelBot>();
+}
+
+#[test]
+fn time_ikfast() {
+    println!();
+
+    time_ikfast_separate(<Irb6640 as SetupStatic>::name());
+    time_ikfast_batched(<Irb6640 as SetupStatic>::name());
 }
 
 fn time_subproblem_batched<S: SetupStatic + SetupDynamic>() {
@@ -278,6 +288,66 @@ fn time_hardcoded_separate<S: SetupStatic + SetupIk>() {
 
     for line in read_lines(&input_path).unwrap().skip(1) {
         setups.push(S::new());
+        setups.last_mut().unwrap().setup_from_str(&line.unwrap());
+    }
+
+    let mut total_time = 0;
+
+    for setup in setups.iter_mut() {
+        let start = Instant::now();
+        setup.run();
+        total_time += start.elapsed().as_nanos();
+    }
+
+    for setup in setups.iter() {
+        results.push(setup.write_output())
+    }
+
+    println!("Separate\t{}\t{} ns", name, total_time / setups.len() as u128);
+
+    file.write(&results.join("\n").as_bytes()).unwrap();
+}
+
+fn time_ikfast_batched(name: &str) {
+    let input_path = "data/Hc".to_owned() + &name.replace(' ', "") + ".csv";
+    let output_path = "data/out/Hc".to_owned() + &name.replace(' ', "") + "_batched.csv";
+
+    let mut file = File::create(output_path).unwrap();
+    let mut setups = Vec::new();
+    let mut results = Vec::new();
+
+    for line in read_lines(&input_path).unwrap().skip(1) {
+        setups.push(IkFast::new());
+        setups.last_mut().unwrap().setup_from_str(&line.unwrap());
+    }
+
+    let start = Instant::now();
+
+    for setup in setups.iter_mut() {
+        setup.run();
+    }
+
+    let time_per_iteration = start.elapsed().as_nanos() / setups.len() as u128;
+
+    for setup in setups.iter() {
+        results.push(setup.write_output())
+    }
+
+    println!("Batched \t{}\t{} ns", name, time_per_iteration);
+
+    file.write(&results.join("\n").as_bytes()).unwrap();
+}
+
+fn time_ikfast_separate(name: &str) {
+    let input_path = "data/Hc".to_owned() + &name.replace(' ', "") + ".csv";
+    let output_path = "data/out/Hc".to_owned() + &name.replace(' ', "") + "_separate.csv";
+
+    let mut file = File::create(output_path).unwrap();
+    let mut setups = Vec::new();
+    let mut results = Vec::new();
+
+    for line in read_lines(&input_path).unwrap().skip(1) {
+        setups.push(IkFast::new());
         setups.last_mut().unwrap().setup_from_str(&line.unwrap());
     }
 

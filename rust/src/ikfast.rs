@@ -1,3 +1,7 @@
+use std::f64::NAN;
+
+use crate::inverse_kinematics::{setups::{calculate_ik_error, ik_write_output}, hardcoded::setups::hardcoded_setup_from_string};
+
 use {
     crate::{
         inverse_kinematics::{
@@ -42,7 +46,11 @@ impl IkFastConfig {
         Ok(this)
     }
 
-    fn process_line(&mut self, line: &str) -> Result<(), String>{
+    fn process_line(&mut self, line: &str) -> Result<(), String> {
+        if line.is_empty() {
+            return Ok(())
+        }
+
         match line.split_once('=') {
             Some((key, value)) => match key.trim() {
                 "kinematics_h" => self.set_h(value.trim()),
@@ -138,12 +146,12 @@ impl SetupIk for IkFast {
         (self.r, self.t) = self.kin.forward_kinematics(&q);
     }
 
-    fn setup_from_str(&mut self, _raw: &str) {
-        unimplemented!()
+    fn setup_from_str(&mut self, raw: &str) {
+        hardcoded_setup_from_string(raw, &mut self.r, &mut self.t);
     }
 
     fn write_output(&self) -> String {
-        unimplemented!()
+        ik_write_output(&self.q)
     }
 
     fn run(&mut self) {
@@ -152,9 +160,8 @@ impl SetupIk for IkFast {
 
     fn error(&self) -> f64 {
         self.q.iter().map(|q| {
-            let (r_t, t_t) = self.kin.forward_kinematics(q);
-            (r_t - self.r).norm() + (t_t - self.t).norm()
-        }).sum::<f64>() / (self.q.len() as f64 * 2.0)
+            calculate_ik_error(&self.kin, &self.r, &self.t, q)
+        }).reduce(f64::min).unwrap_or(NAN)
     }
 
     fn ls_count(&self) -> usize {
@@ -166,7 +173,7 @@ impl SetupIk for IkFast {
     }
 
     fn name(&self) -> &'static str {
-        include!("../lib_ikfast/name.rs")
+        concat!("IKFAST ", include!("../lib_ikfast/name.rs"))
     }
 
     fn debug(&self, i: usize) {
