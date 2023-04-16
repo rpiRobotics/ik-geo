@@ -25,7 +25,7 @@ impl IkFastConfig {
     }
 
     fn process_line(&mut self, line: &str) -> Result<(), String>{
-        if line.is_empty() {
+        if line.is_empty() || line.starts_with('#') {
             return Ok(())
         }
 
