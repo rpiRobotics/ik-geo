@@ -24,4 +24,4 @@
 | Spherical Two Intersecting      | KUKA R800 (fixed q3)|    666.37       |   3.9413        | 3.6478                   | 10e3 |
 | Spherical Two Parallel          | IRB 6640            |    758.80       |   3.8589        | 3.1370                   | 10e3 |
 | Three Parallel                  | Three-Parallel-Bot  |    411.98       |   5.0142        | 4.3541                   | 10e3 |
-| Three Parallel Two Intersecting | UR5                 |    456.67       |   3.5232        | 3.4960                   | 10e3 |
+| Three Parallel Two Intersecting | UR5                 |    315.70       |   2.4373        | 3.0185                   | 10e3 |
