@@ -1,11 +1,11 @@
+#ifndef __rand_cpp__
+#define __rand_cpp__
+
 #include <time.h>
 #include <math.h>
 #include <random>
 #include <eigen3/Eigen/Core>
 #include <vector>
-
-#ifndef __rand_cpp__
-#define __rand_cpp__
 
 //Global variables for functions
 double pi = 2 * acos(0.0);
