@@ -33,12 +33,18 @@ p1_nrm = p1/norm(p1);
 p2_nrm = p2/norm(p2);
 
 [theta1, t1_is_LS] = subproblem.sp_4(k2, p1_nrm, k1, dot(k2,p2_nrm));
-[theta2          ] = subproblem.sp_4(k1, p2_nrm, k2, dot(k1,p1_nrm));
+[theta2, t2_is_LS] = subproblem.sp_4(k1, p2_nrm, k2, dot(k1,p1_nrm));
 
-theta2 = flip(theta2); % Make sure solutions correspond
+% Make sure solutions correspond by flipping theta2
+% Also make sure in the edge case that one angle has one solution and the
+% other angle has two solutions that we duplicate the single solution
+if numel(theta1)>1 || numel(theta2)>1
+    theta1 = [theta1(1) theta1(end)];
+    theta2 = [theta2(end) theta2(1)];
+end
 
 if nargout > 2
-    is_LS = abs(norm(p1) - norm(p2)) > 1e-8 | t1_is_LS;
+    is_LS = abs(norm(p1) - norm(p2)) > 1e-8 || t1_is_LS || t2_is_LS;
 end    
 
 end
