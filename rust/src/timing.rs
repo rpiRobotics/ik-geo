@@ -1,5 +1,3 @@
-use crate::ikfast::IkFast;
-
 use {
     std::{
         io::{ self, Lines, BufReader, BufRead, Write },
@@ -41,6 +39,9 @@ use {
         },
     },
 };
+
+#[cfg(link_ikfast)]
+use crate::ikfast::IkFast;
 
 #[test]
 fn time_separate() {
@@ -114,6 +115,7 @@ fn time_batch_hardcoded() {
     time_hardcoded_batched::<ThreeParallelBot>();
 }
 
+#[cfg(link_ikfast)]
 #[test]
 fn time_ikfast() {
     println!();
@@ -308,6 +310,7 @@ fn time_hardcoded_separate<S: SetupStatic + SetupIk>() {
     file.write(&results.join("\n").as_bytes()).unwrap();
 }
 
+#[cfg(link_ikfast)]
 fn time_ikfast_batched(name: &str) {
     let input_path = "data/Hc".to_owned() + &name.replace(' ', "") + ".csv";
     let output_path = "data/out/Hc".to_owned() + &name.replace(' ', "") + "_batched.csv";
@@ -338,6 +341,7 @@ fn time_ikfast_batched(name: &str) {
     file.write(&results.join("\n").as_bytes()).unwrap();
 }
 
+#[cfg(link_ikfast)]
 fn time_ikfast_separate(name: &str) {
     let input_path = "data/Hc".to_owned() + &name.replace(' ', "") + ".csv";
     let output_path = "data/out/Hc".to_owned() + &name.replace(' ', "") + "_separate.csv";

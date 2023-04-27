@@ -63,6 +63,22 @@ impl<T: Copy> SolutionSet2<T> {
             (0.0, DELTA),
         ]
     }
+
+    pub fn duplicated(&self) -> Self {
+        match &self {
+            SolutionSet2::One(s) => SolutionSet2::Two(*s, *s),
+            SolutionSet2::Two(s1, s2) => SolutionSet2::Two(*s1, *s2),
+            SolutionSet2::Zero => SolutionSet2::Zero,
+        }
+    }
+
+    pub fn size(&self) -> usize {
+        match self {
+            SolutionSet2::Zero => 0,
+            SolutionSet2::One(_) => 1,
+            SolutionSet2::Two(..) => 2,
+        }
+    }
 }
 
 impl<T: Copy + Debug> SolutionSet2<T> {

@@ -31,7 +31,7 @@
 | Subproblem | Separate Time (ns) | Batched Time (ns) |
 | :--------- | -----------------: | ----------------: |
 | 1          |                 34 |                62 |
-| 2          |                152 |               182 |
+| 2          |                204 |               169 |
 | 2 Ex       |                108 |               138 |
 | 3          |                 78 |               107 |
 | 4          |                 71 |               101 |
@@ -43,8 +43,8 @@
 | Spherical                       |               1691 |              1661 |
 | Spherical Two Intersecting      |               2064 |              2067 |
 | Spherical Two Parallel          |               2265 |              2245 |
-| Three Parallel                  |               2918 |              2844 |
-| Three Parallel Two Intersecting |               2250 |              2212 |
+| Three Parallel                  |               6103 |              6091 |
+| Three Parallel Two Intersecting |               2146 |              2098 |
 | Two Parallel                    |             328937 |            328445 |
 | Two Intersecting                |             212851 |            210588 |
 

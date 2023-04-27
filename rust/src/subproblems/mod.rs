@@ -18,7 +18,7 @@ use {
 
     nalgebra::{
         Vector2, Vector3, Vector4, Vector5,
-        Matrix, Matrix3, Matrix4, Matrix2x4, Matrix3x2, Matrix3x4, Matrix4x1, Matrix4x3,
+        Matrix, Matrix3, Matrix4, Matrix2x4, Matrix3x2, Matrix3x4, Matrix4x3,
         ArrayStorage, U1, U7, U8,
         Complex, DVector, Matrix2,
     },
@@ -46,55 +46,31 @@ pub fn subproblem1(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>) -> (f
 // Also returns a boolean of whether or not `{ theta1, theta2 }` is a least-squares solution.
 // There may be 1 or 2 solutions for `theta1` and `theta2`.
 pub fn subproblem2(p1: &Vector3<f64>, p2: &Vector3<f64>, k1: &Vector3<f64>, k2: &Vector3<f64>) -> (SolutionSet2<(f64, f64)>, bool) {
-    let is_ls = (p1.norm() - p2.norm()).abs() >= 1e-8;
+    let p1_norm = p1.normalize();
+    let p2_norm = p2.normalize();
 
-    let p1 = p1.normalize();
-    let p2 = p2.normalize();
+    let (theta1, theta1_is_ls) = subproblem4(k2, &p1_norm, k1, k2.dot(&p2_norm));
+    let (theta2, theta2_is_ls) = subproblem4(k1, &p2_norm, k2, k1.dot(&p1_norm));
 
-    let kxp1 = k1.cross(&p1);
-    let kxp2 = k2.cross(&p2);
-    let a1  = Matrix3x2::from_columns(&[kxp1, -k1.cross(&kxp1)]);
-    let a2  = Matrix3x2::from_columns(&[kxp2, -k2.cross(&kxp2)]);
+    let is_ls = (p1.norm() - p2.norm()).abs() > 1e-8 || theta1_is_ls || theta2_is_ls;
 
-    let radius_1_sq = kxp1.dot(&kxp1);
-    let radius_2_sq = kxp2.dot(&kxp2);
+    // Reverse theta2 and duplicate any angle with less solutions
+    let solution = if theta1.size() > 1 || theta2.size() > 1 {
+        let (theta1_first, theta1_second) = theta1.duplicated().expect_two();
+        let (theta2_first, theta2_second) = theta2.duplicated().expect_two();
 
-    let k1_d_p1 = k1.dot(&p1);
-    let k2_d_p2 = k2.dot(&p2);
-    let k1_d_k2 = k1.dot(&k2);
-    let ls_frac = 1.0 / (1.0 - k1_d_k2 * k1_d_k2);
-    let alpha_1 = ls_frac * (k1_d_p1 - k1_d_k2 * k2_d_p2);
-    let alpha_2 = ls_frac * (k2_d_p2 - k1_d_k2 * k1_d_p1);
-    let x_ls_1 = alpha_2 * a1.transpose() * k2 / radius_1_sq;
-    let x_ls_2 = alpha_1 * a2.transpose() * k1 / radius_2_sq;
-    let x_ls = Matrix4x1::new(x_ls_1[0], x_ls_1[1], x_ls_2[0], x_ls_2[1]);
-
-    let n_sym = k1.cross(&k2);
-    let pinv_a1 = a1.transpose() / radius_1_sq;
-    let pinv_a2 = a2.transpose() / radius_2_sq;
-
-    let a_perp_tilde = Matrix4x3::from_rows(&[pinv_a1.row(0), pinv_a1.row(1), pinv_a2.row(0), pinv_a2.row(1)]) * n_sym;
-
-    let x_ls_2_norm = x_ls.fixed_rows::<2>(0).norm();
-
-    if x_ls_2_norm < 1.0 {
-        let xi = (1.0 - x_ls_2_norm * x_ls_2_norm).sqrt() / a_perp_tilde.fixed_slice::<2, 1>(0, 0).norm();
-        let sc_1 = x_ls + xi * a_perp_tilde;
-        let sc_2 = x_ls - xi * a_perp_tilde;
-
-        let theta = SolutionSet2::Two(
-            (sc_1[0].atan2(sc_1[1]), sc_1[2].atan2(sc_1[3])),
-            (sc_2[0].atan2(sc_2[1]), sc_2[2].atan2(sc_2[3])),
-        );
-
-        (theta, is_ls)
+        SolutionSet2::Two(
+            (theta1_first, theta2_second),
+            (theta1_second, theta2_first),
+        )
     }
     else {
-        let theta1 = x_ls[0].atan2(x_ls[1]);
-        let theta2 = x_ls[2].atan2(x_ls[3]);
+        SolutionSet2::One(
+            (theta1.expect_one(), theta2.expect_one()),
+        )
+    };
 
-        (SolutionSet2::One((theta1, theta2)), true)
-    }
+    (solution, is_ls)
 }
 
 // Solves for `theta1` and `theta2` where `p0 + rot(k1, theta1) * p1 = rot(k2, theta2) * p2`.
