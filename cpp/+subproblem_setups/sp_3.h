@@ -7,10 +7,8 @@
 #ifndef __sp_3_h_
 #define __sp_3_h_
 
-#include <iostream>
 #include <vector>
 #include <eigen3/Eigen/Dense>
-#include "../rand_cpp.h"
 
 void sp_3_setup(Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &k, double &d);
 

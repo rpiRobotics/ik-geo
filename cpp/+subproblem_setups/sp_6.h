@@ -8,10 +8,8 @@
 #ifndef __sp_6_h_
 #define __sp_6_h_
 
+#include <vector>
 #include <eigen3/Eigen/Dense>
-#include <eigen3/unsupported/Eigen/Polynomials>
-#include <iostream>
-#include "../rand_cpp.h"
 
 void sp6_setup(Eigen::Matrix<double, 3, 4>& h, Eigen::Matrix<double, 3, 4>& k, 
                Eigen::Matrix<double, 3, 4>& p, double& d1, double& d2, 

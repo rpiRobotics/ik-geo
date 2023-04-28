@@ -8,9 +8,8 @@
 #ifndef __sp_4_h_
 #define __sp_4_h_
 
+#include <vector>
 #include <eigen3/Eigen/Dense>
-#include <iostream>
-#include "../rand_cpp.h"
 
 void sp4_setup(Eigen::Vector3d& p, Eigen::Vector3d& k, 
                Eigen::Vector3d& h, double& d, Eigen::Vector2d& theta);

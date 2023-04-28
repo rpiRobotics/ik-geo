@@ -7,9 +7,7 @@
 #ifndef __sp_2E_h_
 #define __sp_2E_h_
 
-#include <iostream>
 #include <eigen3/Eigen/Dense>
-#include "../rand_cpp.h"
 
 void sp_2E_setup(Eigen::Vector3d &p0, Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &k1, Eigen::Vector3d &k2, 
 		  double &theta1, double &theta2);
