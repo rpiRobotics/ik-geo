@@ -33,6 +33,8 @@ $$\begin{cases}
 \end{cases}$$
 
 ## Folder breakdown
+Make sure to switch to the right branch to see the most recent progress.
+
 `matlab`: MATLAB implementation
 
 `cpp`: C++ implementation (Work in progress)

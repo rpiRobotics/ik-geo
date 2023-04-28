@@ -20,11 +20,17 @@ e.g. `subproblem.sp_1(p1, p2, k)`.
 
 `general-robotics-toolbox`: Helper functions from [rpiRobotics/general-robotics-toolbox](https://github.com/rpiRobotics/general-robotics-toolbox)
 
+`ikfast`: Generate robot XML files for use with IKFast
+
+`matlab_robotics_toolbox_analytical`: Evaluation of MATLAB's Robotics Toolbox analytical inverse kinematics solver
+
 `rand_helpers`: Functions to help generate random test cases
 
 `robot_IK_helpers`: Functions to help with robot IK (and forward kinematics)
 
 `robot_examples`: Inverse kinematics solutions for specific robots
+
+`tan_half_angle`: Demonstration of singularity issues arising from $x = \tan(\theta/2)$
 
 `timing_tests`: Measures the runtime of subproblem and IK solutions
 

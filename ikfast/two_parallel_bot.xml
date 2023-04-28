@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Robot name="two_parallel_bot">
+    <KinBody>
+        <Body name="base" type="dynamic">
+            <Translation>0 0 0</Translation>
+        </Body>
+        <Body name="link_1" type="dynamic">
+            <offsetfrom>base</offsetfrom>
+            <Translation>0 0 1</Translation>
+        </Body>
+        <Body name="link_2" type="dynamic">
+            <offsetfrom>link_1</offsetfrom>
+            <Translation>0 1 0</Translation>
+        </Body>
+        <Body name="link_3" type="dynamic">
+            <offsetfrom>link_2</offsetfrom>
+            <Translation>0 1 0</Translation>
+        </Body>
+        <Body name="link_4" type="dynamic">
+            <offsetfrom>link_3</offsetfrom>
+            <Translation>0 1 0</Translation>
+        </Body>
+        <Body name="link_5" type="dynamic">
+            <offsetfrom>link_4</offsetfrom>
+            <Translation>0 1 0</Translation>
+        </Body>
+        <Body name="link_6" type="dynamic">
+            <offsetfrom>link_5</offsetfrom>
+            <Translation>0 1 0</Translation>
+        </Body>
+        <Body name="EE" type="dynamic">
+            <offsetfrom>link_6</offsetfrom>
+            <Translation>0 0 1</Translation>
+        </Body>
+        <Joint circular="true" name="joint_1" type="hinge">
+            <body>base</body>
+            <body>link_1</body>
+            <offsetfrom>link_1</offsetfrom>
+            <axis>0 0 1</axis>
+        </Joint>
+        <Joint circular="true" name="joint_2" type="hinge">
+            <body>link_1</body>
+            <body>link_2</body>
+            <offsetfrom>link_2</offsetfrom>
+            <axis>1 0 0</axis>
+        </Joint>
+        <Joint circular="true" name="joint_3" type="hinge">
+            <body>link_2</body>
+            <body>link_3</body>
+            <offsetfrom>link_3</offsetfrom>
+            <axis>1 0 0</axis>
+        </Joint>
+        <Joint circular="true" name="joint_4" type="hinge">
+            <body>link_3</body>
+            <body>link_4</body>
+            <offsetfrom>link_4</offsetfrom>
+            <axis>0 0 1</axis>
+        </Joint>
+        <Joint circular="true" name="joint_5" type="hinge">
+            <body>link_4</body>
+            <body>link_5</body>
+            <offsetfrom>link_5</offsetfrom>
+            <axis>1 0 0</axis>
+        </Joint>
+        <Joint circular="true" name="joint_6" type="hinge">
+            <body>link_5</body>
+            <body>link_6</body>
+            <offsetfrom>link_6</offsetfrom>
+            <axis>0.70711 0 0.70711</axis>
+        </Joint>
+        <Joint name="joint_EE" enable="false">
+            <body>link_6</body>
+            <body>EE</body>
+            <limits>0 0</limits>
+        </Joint>
+        <Manipulator>
+            <effector>EE</effector>
+            <base>base</base>
+            <joints>joint_1 joint_2 joint_3 joint_4 joint_5 joint_6 joint_EE</joints>
+        </Manipulator>
+    </KinBody>
+</Robot>
