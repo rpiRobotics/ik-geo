@@ -24,6 +24,7 @@ int main(int argc, char * argv[])
 
 
 	// subproblem 1
+	std::cout << "subproblem 1:\n";
 	data = read_csv("sp_1.csv");
   	if (data.size() != 10) {
 	    std::cerr << "Invalid input data for subproblem 1. \n";
@@ -47,10 +48,11 @@ int main(int argc, char * argv[])
 	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   	}
   	time_avg /= (int)data[0].second.size();
-  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl << std::endl;
 
 
   	// subproblem 2
+	std::cout << "subproblem 2:\n";
   	data = read_csv("sp_2.csv");
   	if (data.size() != 14) {
 	    std::cerr << "Invalid data for sp2.\n";
@@ -76,10 +78,11 @@ int main(int argc, char * argv[])
 	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
   	}
   	time_avg /= (int)data[0].second.size();
-  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl << std::endl;
 
 
   	// subproblem 2E
+	std::cout << "subproblem 2E:\n";
   	data = read_csv("sp_2E.csv");
   	if (data.size() != 17) {
     	std::cerr << "Invalid input data. \n";
@@ -106,10 +109,11 @@ int main(int argc, char * argv[])
 	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     }
   	time_avg /= (int)data[0].second.size();
-  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl << std::endl;
 
 
   	// subproblem 3
+	std::cout << "subproblem 3:\n";
   	data = read_csv("sp_3.csv");
   	if (data.size() != 11) {
     	std::cerr << "Invalid input data for subproblem 3. \n";
@@ -135,10 +139,11 @@ int main(int argc, char * argv[])
 	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     }
   	time_avg /= (int)data[0].second.size();
-  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl << std::endl;
 
 
   	// subproblem 4
+	std::cout << "subproblem 4:\n";
   	data = read_csv("sp_4.csv");
 	if (data.size() != 11) {
 		std::cerr << "Invalid data for sp4.\n";
@@ -164,10 +169,11 @@ int main(int argc, char * argv[])
 		time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 	}
 	time_avg /= (int)data[0].second.size();
-	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl << std::endl;
 
 
 	// subproblem 5
+	std::cout << "subproblem 5:\n";
 	data = read_csv("sp_5.csv");
   	if (data.size() != 24) {
     	std::cerr << "Invalid input data for subproblem 5. \n";
@@ -197,11 +203,12 @@ int main(int argc, char * argv[])
 	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     }
   	time_avg /= (int)data[0].second.size();
-  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl << std::endl;
 
 
 
   	// subproblem 6
+	std::cout << "subproblem 6:\n";
   	data = read_csv("sp_6.csv");
 	if (data.size() != 40) {
 		std::cerr << "Invalid data for sp6.\n";
@@ -235,7 +242,7 @@ int main(int argc, char * argv[])
 		time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
 	}
 	time_avg /= (int)data[0].second.size();
-	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
+	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl << std::endl;
 
 
   	return 0;
