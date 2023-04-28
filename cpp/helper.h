@@ -3,6 +3,9 @@
 #include <eigen3/unsupported/Eigen/Polynomials>
 #include <vector>
 
+#ifndef __helper_h_
+#define __helper_h_
+
 using namespace std::complex_literals;
 
 void cone_polynomials(const Eigen::Vector3d &p0_i, const Eigen::Vector3d &k_i, const Eigen::Vector3d &p_i, const Eigen::Vector3d &p_i_s, const Eigen::Vector3d &k2, 
@@ -158,3 +161,4 @@ void solve_2_ellipse_numeric(Eigen::Vector2d& xm1, Eigen::Matrix<double, 2, 2>& 
 }
 
 
+#endif

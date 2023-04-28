@@ -49,36 +49,3 @@ double sp1_error(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2,
                  const Eigen::Vector3d& k, double& theta){
   return (p2 - rot(k, theta)*p1).norm();
 }
-
-int main(int argc, char* argv[]) {
-  std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("sp_1.csv");
-  if (data.size() != 10) {
-    std::cerr << "Invalid input data for subproblem 1. \n";
-    return 0;
-  }
-
-  double time_avg = 0;
-
-  for (int i = 0; i < (int)data[0].second.size(); i ++ ) {
-    Eigen::Vector3d p1, k, p2;
-    double theta;
-    p1 << data[0].second[i], data[1].second[i], data[2].second[i];
-    k << data[3].second[i], data[4].second[i], data[5].second[i];
-    p2 << data[6].second[i], data[7].second[i], data[8].second[i];
-    theta = data[9].second[i];
-
-    auto start = std::chrono::steady_clock::now();
-
-    sp1_run(p1, p2, k, theta);
-
-    auto end = std::chrono::steady_clock::now();
-
-    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-  }
-
-  time_avg /= (int)data[0].second.size();
-
-  std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
-
-  return 0;
-}

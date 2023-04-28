@@ -13,7 +13,7 @@
 #include "../rand_cpp.h"
 
 void sp4_setup(Eigen::Vector3d& p, Eigen::Vector3d& k, 
-               Eigen::Vector3d& h, double& d, Eigen::Vector2d& theta);
+               Eigen::Vector3d& h, double& d, std::vector<double>& theta);
 
 void sp4_setup_LS(Eigen::Vector3d& p, Eigen::Vector3d& k, 
                   Eigen::Vector3d& h, double& d, Eigen::Vector2d& theta);
