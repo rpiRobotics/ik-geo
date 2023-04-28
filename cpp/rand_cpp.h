@@ -7,9 +7,6 @@
 #include <eigen3/Eigen/Core>
 #include <vector>
 
-//Global variables for functions
-double pi = 2 * acos(0.0);
-
 //Create number from 0.0000 to 1.0000
 double rand_0to1(){
 	srand(time(NULL));
