@@ -1,3 +1,6 @@
+#ifndef _HELPER_H_
+#define _HELPER_H_
+
 #include <complex>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/unsupported/Eigen/Polynomials>
