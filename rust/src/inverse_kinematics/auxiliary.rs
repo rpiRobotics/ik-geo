@@ -257,9 +257,10 @@ pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (
         }
     }
 
-    if minima.len() >= N_MAX_MINIMA {
+    if dbg!(minima.len()) >= N_MAX_MINIMA {
         panic!("Too many minima found");
     }
+
 
     let offset0 = delta0 / 2.0;
     let offset1: f64 = delta1 / 2.0;

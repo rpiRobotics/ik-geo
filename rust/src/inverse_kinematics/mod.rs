@@ -492,7 +492,7 @@ pub fn two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinemati
 }
 
 pub fn gen_six_dof(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
-    fn q_given_q12_k(q1: f64, q2: f64, k: usize, p16: &Vector3<f64>, r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vector6<f64>, bool) {
+    fn q_given_q12_k(q1: f64, q2: f64, k: usize, p16: &Vector3<f64>, r_06: &Matrix3<f64>, kin: &Kinematics<6, 7>) -> (Vector6<f64>, bool) {
         let p63 = rot(&-kin.h.column(1), q2) * (rot(&-kin.h.column(0), q1) * p16 - kin.p.column(1)) - kin.p.column(2);
         let p = Vector3::z();
 
@@ -524,6 +524,8 @@ pub fn gen_six_dof(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6,
     let mut is_ls = Vec::with_capacity(8);
 
     let p16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
+
+    println!("p16{}", p16);
 
     let alignment_error_given_q12 = |q1: f64, q2: f64| {
         let mut error = Vector4::from_element(INFINITY);
@@ -557,7 +559,7 @@ pub fn gen_six_dof(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6,
     let minima = search_2d(alignment_error_given_q12, (-PI, PI), (-PI, PI), 100);
 
     for (x0, x1, k) in minima {
-        let (q_i, q_is_ls) = q_given_q12_k(x0, x1, k, &p16, r_06, p_0t, kin);
+        let (q_i, q_is_ls) = q_given_q12_k(x0, x1, k, &p16, r_06, kin);
 
         q.push(q_i);
         is_ls.push(q_is_ls);
