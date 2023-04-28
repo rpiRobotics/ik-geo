@@ -1,3 +1,8 @@
+use std::f64::{NAN, INFINITY};
+
+use argmin::{core::{CostFunction, Error, Executor}, solver::neldermead::NelderMead};
+use nalgebra::Vector2;
+
 use {
     nalgebra::{
         Const,
@@ -147,4 +152,134 @@ pub fn search_1d<const N: usize, F: Fn(f64) -> Vector<f64, N>>(f: F, left: f64, 
     }
 
     zeros
+}
+
+struct ProblemParams<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>> {
+    f: F,
+    k: usize
+}
+
+impl<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>> CostFunction for ProblemParams<N, F> {
+    type Param = Vector2<f64>;
+    type Output = f64;
+
+    fn cost(&self, param: &Self::Param) -> Result<Self::Output, Error> {
+        Ok((self.f)(param.x, param.y)[self.k])
+    }
+}
+
+pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (f64, f64), max: (f64, f64), n: usize) -> Vec<(f64, f64, usize)> {
+    fn minimum<const N: usize>(mesh: &Vec<Vector<f64, N>>, n: usize) -> Option<(usize, usize, usize)> {
+        let mut min_v = INFINITY;
+        let mut min_i = 0;
+        let mut min_j = 0;
+        let mut min_k = 0;
+
+        for i in 0..n {
+            for j in 0..n {
+                for k in 0..N {
+                    let v = mesh[i + j * n][k];
+
+                    if v < min_v {
+                        min_v = v;
+                        min_i = i;
+                        min_j = j;
+                        min_k = k;
+                    }
+                }
+            }
+        }
+
+        if min_v.is_finite() {
+            Some((min_i, min_j, min_k))
+        }
+        else {
+            None
+        }
+    }
+
+    fn clear_blob<const N: usize>(mesh: &mut Vec<Vector<f64, N>>, i: isize, j: isize, k: usize, n: usize) {
+        let i = i.rem_euclid(n as isize);
+        let j = j.rem_euclid(n as isize);
+
+        if mesh[i as usize + j as usize * n][k].is_nan() {
+            return;
+        }
+
+        mesh[i as usize + j as usize * n][k] = NAN;
+
+        clear_blob(mesh, i + 1, j, k, n);
+        clear_blob(mesh, i - 1, j, k, n);
+        clear_blob(mesh, i, j + 1, k, n);
+        clear_blob(mesh, i, j - 1, k, n);
+    }
+
+    fn debug_mesh<const N: usize>(mesh: &Vec<Vector<f64, N>>, n: usize) {
+        let scale: Vec<char> = ".:-=+*#%@$".chars().rev().collect();
+
+        for i in 0..n {
+            for j in 0..n {
+                let v = mesh[i + j * n][0];
+                print!("{}", if v.is_nan() { ' ' } else { scale[(v * 100.0) as usize] });
+            }
+            println!();
+        }
+    }
+
+    const N_MAX_MINIMA: usize = 1000;
+    const MIN_THRESHOLD: f64 = 1e-1;
+
+    let delta0 = (max.0 - min.0) / n as f64;
+    let delta1 = (max.1 - min.1) / n as f64;
+
+    let x0_vals: Vec<f64> = (0..n).map(|m| m as f64 * delta0 + min.0).collect();
+    let x1_vals: Vec<f64> = (0..n).map(|m| m as f64 * delta1 + min.1).collect();
+
+    let mut mesh = vec![Vector::zeros(); n * n * N];
+    let mut minima: Vec<(f64, f64, usize)> = Vec::with_capacity(N_MAX_MINIMA);
+
+    for i in 0..n {
+        for j in 0..n {
+            mesh[i + j * n] = f(x0_vals[i], x1_vals[j]).map(|v| if v > MIN_THRESHOLD { NAN } else { v });
+        }
+    }
+
+    // debug_mesh(&mesh, n);
+
+    for _ in 0..N_MAX_MINIMA {
+        if let Some((i, j, k)) = minimum(&mesh, n) {
+            minima.push((x0_vals[i], x1_vals[j], k));
+            clear_blob(&mut mesh, i as isize, j as isize, k, n);
+            // debug_mesh(&mesh, n);
+        }
+        else {
+            break;
+        }
+    }
+
+    if minima.len() >= N_MAX_MINIMA {
+        panic!("Too many minima found");
+    }
+
+    let offset0 = delta0 / 2.0;
+    let offset1: f64 = delta1 / 2.0;
+
+    let get_initial_simplex = |x0: f64, x1: f64| vec![
+        Vector2::new(x0, x1 + offset1),
+        Vector2::new(x0 + offset0, x1 - offset1),
+        Vector2::new(x0 - offset0, x1 - offset1),
+    ];
+
+    for (x0, x1, k) in &mut minima {
+        let params = ProblemParams { f: &f, k: *k };
+        let solver = NelderMead::new(get_initial_simplex(*x0, *x1)).with_sd_tolerance(1e-4).unwrap();
+        let result = Executor::new(params, solver).run().expect("Failed to optimize");
+
+        let best = result.state().best_param.unwrap();
+
+        *x0 = best[0];
+        *x1 = best[1];
+    }
+
+    minima
 }

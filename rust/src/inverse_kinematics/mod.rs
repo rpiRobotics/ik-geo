@@ -1,3 +1,7 @@
+use crate::inverse_kinematics::auxiliary::Vector;
+
+use self::auxiliary::search_2d;
+
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
@@ -287,49 +291,6 @@ pub fn three_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics
     (q, is_ls)
 }
 
-pub fn three_parallel2(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
-    let mut q = Vec::with_capacity(8);
-    let mut is_ls = Vec::with_capacity(8);
-
-    let p_16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
-
-    let h_sp: [Vector3<f64>; 4] = [kin.h.column(1).into(), kin.h.column(1).into(), kin.h.column(1).into(), kin.h.column(1).into()];
-    let k_sp: [Vector3<f64>; 4] = [-kin.h.column(0), kin.h.column(4).into(), -kin.h.column(0), kin.h.column(4).into()];
-    let p_sp: [Vector3<f64>; 4] = [p_16, -kin.p.column(5), r_06 * kin.h.column(5), -kin.h.column(5)];
-    let d1 = (kin.h.column(1).transpose() * (kin.p.column(2) + kin.p.column(3) + kin.p.column(4) + kin.p.column(1)))[0];
-    let d2 = 0.0;
-
-    let theta15 = subproblem6(&h_sp, &k_sp, &p_sp, d1, d2);
-
-    for (q1, q5) in theta15.get_all() {
-        let (theta14, theta14_is_ls) = subproblem1(&(rot(&kin.h.column(4).into(), q5) * kin.h.column(5)), &(rot(&kin.h.column(0).into(), -q1) * r_06 * kin.h.column(5)), &kin.h.column(1).into());
-
-        let r_01 = rot(&kin.h.column(0).into(), q1);
-        let r_45 = rot(&kin.h.column(4).into(), q5);
-        let r_14 = rot(&kin.h.column(1).into(), theta14);
-        let p_12 = kin.p.column(1);
-        let p_23 = kin.p.column(2);
-        let p_34 = kin.p.column(3);
-        let p_45 = kin.p.column(4);
-        let p_56 = kin.p.column(5);
-        let d_inner = r_01.transpose() * p_16 - p_12 - r_14 * r_45 * p_56 - r_14 * p_45;
-        let d = d_inner.norm();
-        let (theta3, theta3_is_ls) = subproblem3(&-p_34, &p_23.into(), &kin.h.column(1).into(), d);
-
-        for q3 in theta3.get_all() {
-            let (q2, q2_is_ls) = subproblem1(&(p_23 + rot(&kin.h.column(1).into(), q3) * p_34), &d_inner, &kin.h.column(1).into());
-            let q4 = wrap_to_pi(theta14 - q2 - q3);
-
-            let (q6, q6_is_ls) = subproblem1(&kin.h.column(4).into(), &(r_45.transpose() * r_14.transpose() * r_01.transpose() * r_06 * kin.h.column(4)), &kin.h.column(5).into());
-
-            q.push(Vector6::new(q1, q2, q3, q4, q5, q6));
-            is_ls.push(theta14_is_ls || theta3_is_ls || q2_is_ls || q6_is_ls);
-        }
-    }
-
-    (q, is_ls)
-}
-
 pub fn two_parallel(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
     let mut q = Vec::with_capacity(8);
     let mut is_ls = Vec::with_capacity(8);
@@ -526,6 +487,81 @@ pub fn two_intersecting(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinemati
         is_ls.push(q5_is_ls || q6_is_ls);
     }
 
+
+    (q, is_ls)
+}
+
+pub fn gen_six_dof(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
+    fn q_given_q12_k(q1: f64, q2: f64, k: usize, p16: &Vector3<f64>, r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vector6<f64>, bool) {
+        let p63 = rot(&-kin.h.column(1), q2) * (rot(&-kin.h.column(0), q1) * p16 - kin.p.column(1)) - kin.p.column(2);
+        let p = Vector3::z();
+
+        let t345 = subproblem5(
+            &-kin.p.column(3),
+            &p63,
+            &kin.p.column(4).into(),
+            &kin.p.column(5).into(),
+            &-kin.h.column(2),
+            &kin.h.column(3).into(),
+            &kin.h.column(4).into()
+        ).get_all();
+
+        let (q3, q4, q5) = t345[k];
+
+        let r05 =
+            rot(&kin.h.column(0).into(), q1) *
+            rot(&kin.h.column(1).into(), q2) *
+            rot(&kin.h.column(2).into(), q3) *
+            rot(&kin.h.column(3).into(), q4) *
+            rot(&kin.h.column(4).into(), q5);
+
+        let (q6, q6_is_ls) = subproblem1(&p, &(r05.transpose() * r_06 * p), &kin.h.column(5).into());
+
+        (Vector6::new(q1, q2, q3, q4, q5, q6), q6_is_ls)
+    }
+
+    let mut q = Vec::with_capacity(8);
+    let mut is_ls = Vec::with_capacity(8);
+
+    let p16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
+
+    let alignment_error_given_q12 = |q1: f64, q2: f64| {
+        let mut error = Vector4::from_element(INFINITY);
+
+        let p63 = rot(&-kin.h.column(1), q2) * (rot(&-kin.h.column(0), q1) * p16 - kin.p.column(1)) - kin.p.column(2);
+
+        let t345 = subproblem5(
+            &-kin.p.column(3),
+            &p63,
+            &kin.p.column(4).into(),
+            &kin.p.column(5).into(),
+            &-kin.h.column(2),
+            &kin.h.column(3).into(),
+            &kin.h.column(4).into()
+        );
+
+        for (i, (q3, q4, q5)) in t345.get_all().into_iter().enumerate() {
+            let r05 =
+                rot(&kin.h.column(0).into(), q1) *
+                rot(&kin.h.column(1).into(), q2) *
+                rot(&kin.h.column(2).into(), q3) *
+                rot(&kin.h.column(3).into(), q4) *
+                rot(&kin.h.column(4).into(), q5);
+
+            error[i] = (r05 * kin.h.column(5) - r_06 * kin.h.column(5)).norm();
+        }
+
+        error
+    };
+
+    let minima = search_2d(alignment_error_given_q12, (-PI, PI), (-PI, PI), 100);
+
+    for (x0, x1, k) in minima {
+        let (q_i, q_is_ls) = q_given_q12_k(x0, x1, k, &p16, r_06, p_0t, kin);
+
+        q.push(q_i);
+        is_ls.push(q_is_ls);
+    }
 
     (q, is_ls)
 }
