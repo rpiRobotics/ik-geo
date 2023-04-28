@@ -160,4 +160,5 @@ void solve_2_ellipse_numeric(Eigen::Vector2d& xm1, Eigen::Matrix<double, 2, 2>& 
   }
 }
 
+
 #endif

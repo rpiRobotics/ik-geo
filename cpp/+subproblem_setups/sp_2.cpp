@@ -12,14 +12,14 @@
 
 void sp2_setup(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
                Eigen::Vector3d& k1, Eigen::Vector3d& k2, 
-               double& theta1, double& theta2){
+               std::vector<double>& theta1, std::vector<double>& theta2){
   p1 = rand_vec();
   k1 = rand_normal_vec();
   k2 = rand_normal_vec();
-  theta1 = rand_angle();
-  theta2 = rand_angle();
+  theta1.push_back(rand_angle());
+  theta2.push_back(rand_angle());
 
-  p2 = rot(k2, theta2) * rot(k1, theta1) * p1;
+  p2 = rot(k2, theta2[0]) * rot(k1, theta1[0]) * p1;
 }
 
 void sp2_setup_LS(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
@@ -99,39 +99,4 @@ double sp2_error(Eigen::Vector3d& p1, Eigen::Vector3d& p2,
                  Eigen::Vector3d& k1, Eigen::Vector3d& k2, 
                  std::vector<double>& theta1, std::vector<double>& theta2){
   return (rot(k2, theta2[0]) * p2 - rot(k1, theta1[0]) * p1).norm();
-}
-
-int main(int argc, char* argv[]) {
-  std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("sp_2.csv");
-  if (data.size() != 14) {
-    std::cerr << "Invalid data for sp2.\n";
-    return 0;
-  }
-
-  double time_avg = 0;
-
-  for (int i = 0; i < (int)data[0].second.size(); i ++ ) {
-    Eigen::Vector3d p1, p2, k1, k2;
-    std::vector<double> theta1, theta2;
-    p1 << data[0].second[i], data[1].second[i], data[2].second[i];
-    k1 << data[3].second[i], data[4].second[i], data[5].second[i];
-    k2 << data[6].second[i], data[7].second[i], data[8].second[i];
-    p2 << data[9].second[i], data[10].second[i], data[11].second[i];
-    theta1.push_back(data[12].second[i]);
-    theta2.push_back(data[13].second[i]);
-
-    auto start = std::chrono::steady_clock::now();
-
-    sp2_run(p1, p2, k1, k2, theta1, theta2);
-
-    auto end = std::chrono::steady_clock::now();
-
-    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-  }
-
-  time_avg /= (int)data[0].second.size();
-
-  std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
-
-  return 0;
 }

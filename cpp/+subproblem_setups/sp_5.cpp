@@ -7,13 +7,14 @@
 #pragma GCC optimize(3)
 
 #include <chrono>
+#include "sp_1.h"
 #include "sp_5.h"
 #include "../read_csv.h"
 #include "../helper.h"
 
 using namespace std::complex_literals;
 
-const double ZERO_THRESH = 1e-8;
+// const double ZERO_THRESH = 1e-8;
 
 void sp_5_setup(Eigen::Vector3d &p0, Eigen::Vector3d &p1, Eigen::Vector3d &p2, Eigen::Vector3d &p3, Eigen::Vector3d &k1, Eigen::Vector3d &k2, Eigen::Vector3d &k3) {
 	p0 = rand_vec();
@@ -26,19 +27,19 @@ void sp_5_setup(Eigen::Vector3d &p0, Eigen::Vector3d &p1, Eigen::Vector3d &p2, E
 }
 
 // return is_LS
-bool sp1_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
-             const Eigen::Vector3d& k, double& theta){
+// bool sp1_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
+//              const Eigen::Vector3d& k, double& theta){
 
-	Eigen::Matrix<double, 3, 1> KxP = k.cross(p1);
-	Eigen::Matrix<double, 3, 2> A;
-	A << KxP, -k.cross(KxP);
+// 	Eigen::Matrix<double, 3, 1> KxP = k.cross(p1);
+// 	Eigen::Matrix<double, 3, 2> A;
+// 	A << KxP, -k.cross(KxP);
 
-	Eigen::Vector2d x = A.transpose() * p2;
+// 	Eigen::Vector2d x = A.transpose() * p2;
 
-	theta = atan2(x(0), x(1));
+// 	theta = atan2(x(0), x(1));
 
-	return fabs(p1.norm() - p2.norm()) > ZERO_THRESH || fabs(k.dot(p1) - k.dot(p2)) > ZERO_THRESH;
-}
+// 	return fabs(p1.norm() - p2.norm()) > ZERO_THRESH || fabs(k.dot(p1) - k.dot(p2)) > ZERO_THRESH;
+// }
 
 void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3, 
 		  const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, const Eigen::Vector3d &k3, 
@@ -120,43 +121,4 @@ void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vec
 		}
 
 	}
-}
-
-int main(int argc, char* argv[]) {
-	std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("sp_5.csv");
-  	if (data.size() != 24) {
-    	std::cerr << "Invalid input data for subproblem 5. \n";
-    	return 0;
-  	}
-
-  	double time_avg = 0;
-
-  	for (int i = 0; i < (int)data[0].second.size(); i ++ ) {
-	  	Eigen::Vector3d p0, p1, p2, p3, k1, k2, k3;
-	   	std::vector<double> theta1, theta2, theta3;
-		p1 << data[0].second[i], data[1].second[i], data[2].second[i];
-		p2 << data[3].second[i], data[4].second[i], data[5].second[i];
-		p3 << data[6].second[i], data[7].second[i], data[8].second[i];
-		k1 << data[9].second[i], data[10].second[i], data[11].second[i];
-	    k2 << data[12].second[i], data[13].second[i], data[14].second[i];
-	    k3 << data[15].second[i], data[16].second[i], data[17].second[i];
-		p0 << data[18].second[i], data[19].second[i], data[20].second[i];
-		theta1.push_back(data[21].second[i]);
-		theta2.push_back(data[22].second[i]);
-		theta3.push_back(data[23].second[i]);
-
-	    auto start = std::chrono::steady_clock::now();
-
-	    sp_5(p0, p1, p2, p3, k1, k2, k3, theta1, theta2, theta3);
-
-	    auto end = std::chrono::steady_clock::now();
-
-	    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-    }
-
-  	time_avg /= (int)data[0].second.size();
-
-  	std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
-
-	return 0;
 }

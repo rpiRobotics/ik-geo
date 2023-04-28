@@ -2,29 +2,29 @@ Timing test results:
 
 subproblem 1: 
 ===== 
- time (nanoseconds): 141.899
+ time (nanoseconds): 224.118
 
 subproblem 2: 
 ===== 
- time (nanoseconds): 449.214
+ time (nanoseconds): 614.855
 
 subproblem 2 Extended: 
 ===== 
- time (nanoseconds): 263.743
+ time (nanoseconds): 312.166
 
 subproblem 3: 
 ===== 
- time (nanoseconds): 177.911
+ time (nanoseconds): 211.308
 
 subproblem 4: 
 ===== 
- time (nanoseconds): 215.409
+ time (nanoseconds): 318.853
 
 subproblem 5: 
 ===== 
- time (nanoseconds): 2696.82
+ time (nanoseconds): 3167.59
 
 subproblem 6: 
 ===== 
- time (nanoseconds): 3009.93
+ time (nanoseconds): 3545.48
 
