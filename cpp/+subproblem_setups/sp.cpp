@@ -1,3 +1,8 @@
+//---------------------------------------------------------------//
+// Name: sp_1.cpp
+// Author: Runbin Chen and Amar Maksumic
+// Purpose: Port of the subproblem files functionality
+//---------------------------------------------------------------//
 #include "sp.h"
 #include "../rand_cpp.h"
 
@@ -155,10 +160,11 @@ void solve_2_ellipse_numeric(Eigen::Vector2d& xm1, Eigen::Matrix<double, 2, 2>& 
 	}
 }
 
-
+// ===== SUBPROBLEMS ===== //
 
 bool sp1_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
-	const Eigen::Vector3d& k, double& theta){
+						 const Eigen::Vector3d& k, 
+						 double& theta) {
 
 	Eigen::Matrix<double, 3, 1> KxP = k.cross(p1);
 	Eigen::Matrix<double, 3, 2> A;
@@ -172,8 +178,8 @@ bool sp1_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2,
 }
 
 bool sp2_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
-	const Eigen::Vector3d& k1, const Eigen::Vector3d& k2, 
-	std::vector<double>& theta1, std::vector<double>& theta2){
+						 const Eigen::Vector3d& k1, const Eigen::Vector3d& k2, 
+						 std::vector<double>& theta1, std::vector<double>& theta2) {
 
 	Eigen::Vector3d p_1 = p1/p1.norm();
 	Eigen::Vector3d p_2 = p2/p2.norm();
@@ -228,8 +234,10 @@ bool sp2_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2,
 	}
 }
 
-void sp_2E(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, 
-	const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, double &theta1, double &theta2) {
+void sp2E_run(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, 
+							const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, 
+							double &theta1, double &theta2) {
+
 	Eigen::Matrix<double, 3, 1> KxP1 = k1.cross(p1);
 	Eigen::Matrix<double, 3, 1> KxP2 = k2.cross(p2);
 
@@ -275,8 +283,11 @@ void sp_2E(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Ve
 	theta2 = atan2(sc(2, 0), sc(3, 0));
 }
 
-bool sp_3(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vector3d &k, const double &d, 
-	std::vector<double> &theta) {
+bool sp3_run(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, 
+						 const Eigen::Vector3d &k, 
+						 const double &d, 
+						 std::vector<double> &theta) {
+
 	Eigen::Matrix<double, 3, 1> KxP = k.cross(p1);
 
 	Eigen::Matrix<double, 3, 2> A_1;
@@ -312,8 +323,12 @@ bool sp_3(const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vec
 	return false;
 }
 
-bool sp4_run(const Eigen::Vector3d& p, const Eigen::Vector3d& k, 
-	const Eigen::Vector3d& h, const double& d, std::vector<double>& theta){
+bool sp4_run(const Eigen::Vector3d& p, 
+						 const Eigen::Vector3d& k, 
+						 const Eigen::Vector3d& h, 
+						 const double& d, 
+						 std::vector<double>& theta) {
+
 	Eigen::Matrix<double, 3, 1> A_11 = k.cross(p);
 	Eigen::Matrix<double, 3, 2> A_1;
 	A_1 << A_11, -k.cross(A_11);
@@ -347,9 +362,10 @@ bool sp4_run(const Eigen::Vector3d& p, const Eigen::Vector3d& k,
 	}
 }
 
-void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3, 
-		const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, const Eigen::Vector3d &k3, 
-		std::vector<double> &theta1, std::vector<double> &theta2, std::vector<double> &theta3) {
+void sp5_run(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3, 
+					const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, const Eigen::Vector3d &k3, 
+					std::vector<double> &theta1, std::vector<double> &theta2, std::vector<double> &theta3) {
+
 		theta1 = std::vector<double>(0);
 		theta2 = std::vector<double>(0);
 		theta3 = std::vector<double>(0);
@@ -429,9 +445,12 @@ void sp_5(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vec
 		}
 }
 
-void sp6_run(Eigen::Matrix<double, 3, 4>& h, Eigen::Matrix<double, 3, 4>& k, 
-             Eigen::Matrix<double, 3, 4>& p, double& d1, double& d2,
+void sp6_run(Eigen::Matrix<double, 3, 4>& p, 
+						 Eigen::Matrix<double, 3, 4>& k, 
+             Eigen::Matrix<double, 3, 4>& h, 
+						 double& d1, double& d2,
              std::vector<double> &theta1, std::vector<double> &theta2) {
+
 	Eigen::Vector3d k1Xp1 = k.col(0).cross(p.col(0));
 	Eigen::Vector3d k2Xp2 = k.col(1).cross(p.col(1));
 	Eigen::Vector3d k3Xp3 = k.col(2).cross(p.col(2));
