@@ -2,26 +2,39 @@ function [Q, is_LS_vec] = IK_gen_6_dof(R_06, p_0T, kin)
 
 p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
-[q1_vec, q2_vec, soln_num_vec] = search_2D( ...
-    @(q1,q2)(alignment_err_given_q12(q1, q2, p_16, R_06, kin)), ...
-    -pi, pi, -pi, pi, 100, true);
+q1_vec = linspace(-pi, pi, 50);
+q2_vec = linspace(-pi, pi, 50);
 
-Q = [];
-is_LS_vec = [];
+[q1_mesh, q2_mesh] = meshgrid(q1_vec, q2_vec);
 
-for i = 1:length(q1_vec)
-    [~, Q_i, is_LS_vec_i] = alignment_err_given_q12(q1_vec(i), q2_vec(i), p_16, R_06, kin);
-%     Q = [Q Q_i];
-%     is_LS_vec = [is_LS_vec is_LS_vec_i];
-    Q = [Q Q_i(:,soln_num_vec(i))];
-    is_LS_vec = [is_LS_vec is_LS_vec_i(:,soln_num_vec(i))];
+e_mesh = NaN(size(q1_mesh));
+
+for i = 1:numel(e_mesh)
+    q1 = q1_mesh(i);
+    q2 = q2_mesh(i);
+    e_mesh(i) = alignment_err_given_q12(q1, q2, p_16, R_06, kin);
 end
 
 
-function [e_vec, Q, is_LS_vec] = alignment_err_given_q12(q1, q2, p_16, R_06, kin)
-    e_vec = NaN([1 4]);
-    Q = NaN([6 4]);
-    is_LS_vec = NaN([2 4]);
+[~, q12_guess_idx] = min(e_mesh(:));
+q1_guess = q1_mesh(q12_guess_idx);
+q2_guess = q2_mesh(q12_guess_idx);
+
+% mesh(q1_mesh, q2_mesh, e_mesh); hold on
+% plot3([q1_star q1_star], [q2_star q2_star], [0 max(e_mesh(:))], 'r', LineWidth=2); hold off
+
+% optimize further
+options = optimset('TolFun',1e-5);
+q12_star = fminsearch(@(x)alignment_err_given_q12(x(1), x(2), p_16, R_06, kin),[q1_guess;q2_guess], options);
+q1_star = q12_star(1);
+q2_star = q12_star(2);
+
+[~, Q, is_LS_vec] = alignment_err_given_q12(q1_star, q2_star, p_16, R_06, kin);
+
+function [e, Q, is_LS_vec] = alignment_err_given_q12(q1, q2, p_16, R_06, kin)
+    e_vec = NaN;
+    Q = [];
+    is_LS_vec = [];
     % find up to 4 solutions of (q3, q4, q5) using Subproblem 5
     p_63 = rot(-kin.H(:,2),q2) * (rot(-kin.H(:,1),q1)*p_16 - kin.P(:,2)) - kin.P(:,3);
     [t3, t4, t5] = subproblem.sp_5( ...
@@ -37,7 +50,8 @@ function [e_vec, Q, is_LS_vec] = alignment_err_given_q12(q1, q2, p_16, R_06, kin
             * rot(kin.H(:,3),q3)*rot(kin.H(:,4),q4) ...
             * rot(kin.H(:,5),q5);
 
-        e_vec(i_q345) = norm(R_05*kin.H(:,6)-R_06*kin.H(:,6));
+        e_i = norm(R_05*kin.H(:,6)-R_06*kin.H(:,6));
+        e_vec = [e_vec e_i];
 
         if nargout > 1
             % Find q6 with subproblem 1
@@ -45,10 +59,13 @@ function [e_vec, Q, is_LS_vec] = alignment_err_given_q12(q1, q2, p_16, R_06, kin
             [q6, q6_is_ls] = subproblem.sp_1(p, R_05'*R_06*p, kin.H(:,6));
             % TODO: q6_is_ls will tend to be true since e_i isn't exactly 0
 
-            Q(:,i_q345) = [q1; q2; q3; q4; q5; q6];
-            is_LS_vec(:,i_q345) = [q6_is_ls; e_vec(i_q345)];
+            q_i = [q1; q2; q3; q4; q5; q6];
+            Q = [Q q_i];
+            is_LS_vec = [is_LS_vec [q6_is_ls; e_i] ];
         end
     end
+                    
+    e = min(e_vec);
 
 end
 

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
+N = 100e3;
+% N = 10;
+=======
 N = 10e3;
 %N = 10;
+>>>>>>> main
 
 setups = {
     subproblem_setups.sp_1
@@ -9,7 +14,11 @@ setups = {
     subproblem_setups.sp_4
     subproblem_setups.sp_5
     subproblem_setups.sp_6
+<<<<<<< HEAD
+    };
+=======
 };
+>>>>>>> main
 
 for i = 1:length(setups)
     setup = setups{i};
@@ -20,7 +29,11 @@ for i = 1:length(setups)
     class_name = string(class(setup)).split(".");
     file_name = class_name(end) + ".csv";
     
+<<<<<<< HEAD
+    writetable(T, file_name);
+=======
     %writetable(T, file_name);
+>>>>>>> main
     save(class_name(end)+".mat", "P_list", "S_list");
 end
 %%
