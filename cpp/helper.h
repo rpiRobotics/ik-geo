@@ -1,3 +1,6 @@
+#ifndef _HELPER_H_
+#define _HELPER_H_
+
 #include <complex>
 #include <eigen3/Eigen/Dense>
 #include <eigen3/unsupported/Eigen/Polynomials>
@@ -158,3 +161,4 @@ void solve_2_ellipse_numeric(Eigen::Vector2d& xm1, Eigen::Matrix<double, 2, 2>& 
 }
 
 
+#endif

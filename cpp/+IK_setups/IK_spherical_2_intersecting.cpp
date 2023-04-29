@@ -7,13 +7,12 @@
 
 #pragma GCC optimize(3)
 
+#include <chrono>
 #include <eigen3/Eigen/Dense>
+#include <iostream>
 #include "IK_spherical_2_intersecting.h"
 #include "../rand_cpp.h"
-#include "../+subproblem_setups/sp_1.cpp"
-#include "../+subproblem_setups/sp_2.cpp"
-#include "../+subproblem_setups/sp_3.cpp"
-#include "../+subproblem_setups/sp_4.cpp"
+#include "../+subproblem_setups/sp.cpp"
 
 void fwdkin(const Kin& kin, const Soln& soln, 
             Eigen::Matrix<double, 3, 1>& p, Eigen::Matrix<double, 3, 3>& R) {
@@ -107,9 +106,7 @@ void IK_spherical_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_0T, const 
 
   theta.push_back(0);
 
-  bool t3_is_ls = sp_3(kin.P.col(3), -kin.P.col(2), kin.H.col(2), p_16.norm(), theta);
-
-
+  bool t3_is_ls = sp3_run(kin.P.col(3), -kin.P.col(2), kin.H.col(2), p_16.norm(), theta);
 
   for (unsigned int i = 0; i < theta.size(); i++) {
 
@@ -172,35 +169,3 @@ void IK_spherical_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_0T, const 
   }
 }
 
-
-int main(int argc, char** argv) {
-  
-  double time_avg = 0;
-
-  for (int i = 0; i < 100000; i ++ ) {
-    Kin kin;
-    Soln soln;
-    Eigen::Matrix<double, 3, 1> T;
-    Eigen::Matrix<double, 3, 3> R;
-
-    setup(kin, soln, T, R);
-
-    Eigen::Matrix<double, 6, Eigen::Dynamic> Q;
-    Eigen::Matrix<double, 5, Eigen::Dynamic> Q_LS;
-
-    auto start = std::chrono::steady_clock::now();
-
-    IK_spherical_2_intersecting(R, T, kin, Q, Q_LS);
-
-    auto end = std::chrono::steady_clock::now();
-
-    time_avg += std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
-  }
-
-  time_avg /= 100000;
-
-  std::cout << "===== \n time (nanoseconds): " << time_avg << std::endl;
-
-  // std::cout << "Q: " << Q << std::endl;
-  // std::cout << "Q_LS: " << Q_LS << std::endl;
-}

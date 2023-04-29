@@ -8,17 +8,8 @@
 #ifndef __sp_2_h_
 #define __sp_2_h_
 
+#include <vector>
 #include <eigen3/Eigen/Dense>
-#include <iostream>
-#include "../rand_cpp.h"
-
-void sp2_setup(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
-               Eigen::Vector3d& k1, Eigen::Vector3d& k2, 
-               double& theta1, double& theta2);
-
-void sp2_setup_LS(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
-                  Eigen::Vector3d& k1, Eigen::Vector3d& k2, 
-                  double& theta1, double& theta2);
 
 bool sp2_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
              const Eigen::Vector3d& k1, const Eigen::Vector3d& k2, 

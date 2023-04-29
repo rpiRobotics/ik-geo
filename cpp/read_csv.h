@@ -1,11 +1,12 @@
+#ifndef __read_csv_h__
+#define __read_csv_h__
+
 #include <string>
 #include <fstream>
 #include <vector>
 #include <utility>
 #include <sstream>
 
-#ifndef __read_csv_h__
-#define __read_csv_h__
 
 std::vector<std::pair<std::string, std::vector<double>>> read_csv(const std::string &filename){
     std::vector<std::pair<std::string, std::vector<double>>> result;

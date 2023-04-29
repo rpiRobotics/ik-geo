@@ -16,7 +16,7 @@ Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eige
 	soln.is_LS_vec.clear();
 
 	// Use subproblem 4 to find up to two solutions for q1
-	Eigen::Vector2d t1;
+	std::vector<double> t1;
 	bool q1_is_LS = sp4_run(
 		kin.H.block<3, 1>(0, 1), 
 		p_0T - R_0T * kin.P.block<3, 1>(0, 6) - kin.P.block<3, 1>(0, 0), 
@@ -27,10 +27,10 @@ Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eige
 
 	// Use subproblem 3 to find up to two solutions for q3
 	// for q1 = t1
-	for (unsigned int q1_i = 0; q1_i < t1.size() && t1(q1_i, 0) != 0; q1_i ++ ) {
-		double q1 = t1(q1_i, 0);
+	for (unsigned int q1_i = 0; q1_i < t1.size(); q1_i ++ ) {
+		double q1 = t1[q1_i];
 		std::vector<double> t3;
-		bool q3_is_LS = sp_3(
+		bool q3_is_LS = sp3_run(
 			-kin.P.block<3, 1>(0, 3), 
 			kin.P.block<3, 1>(0, 2), 
 			kin.H.block<3, 1>(0, 2), 
@@ -54,7 +54,7 @@ Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eige
 											   rot(-kin.H.block<3, 1>(0, 0), q1) * R_0T; // R_T6 = 0
 
 			// Solve for q5 using subproblem 4
-			Eigen::Vector2d t5;
+			std::vector<double> t5;
 			bool q5_is_LS = sp4_run(
 				kin.H.block<3, 1>(0, 3), 
 				kin.H.block<3, 1>(0, 5), 
@@ -64,8 +64,8 @@ Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eige
 
 			// Solve for q4 using subproblem 1
 			// for q5 = t5
-			for (unsigned int q5_i = 0; q5_i < t5.size() && t5(q5_i, 0) != 0; q5_i ++ ) {
-				double q5 = t5(q5_i, 0);
+			for (unsigned int q5_i = 0; q5_i < t5.size(); q5_i ++ ) {
+				double q5 = t5[q5_i];
 				double q4;
 				bool q4_is_LS = sp1_run(
 					rot(kin.H.block<3, 1>(0, 4), q5) * kin.H.block<3, 1>(0, 5), 
@@ -92,8 +92,4 @@ Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eige
 		}
 	}
 	return soln; 
-}
-
-int main(int argc, char * argv[]) {
-	return 0;
 }

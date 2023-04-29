@@ -9,19 +9,13 @@
 #define __sp_1_h_
 
 #include <eigen3/Eigen/Dense>
-#include "../rand_cpp.h"
-
-const double ZERO_THRESH = 1e-8;
-
-void sp1_setup(Eigen::Vector3d& p1, Eigen::Vector3d& p2, Eigen::Vector3d& k, double& theta);
-
-void sp1_setup_LS(Eigen::Vector3d& p1, Eigen::Vector3d& p2, 
-                  Eigen::Vector3d& k, double& theta);
 
 bool sp1_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
-             const Eigen::Vector3d& k, double& theta);
+             const Eigen::Vector3d& k, 
+             double& theta);
 
 double sp1_error(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
-                 const Eigen::Vector3d& k, double& theta);
+                 const Eigen::Vector3d& k, 
+                 double& theta);
 
 #endif
