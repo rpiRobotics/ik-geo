@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Robot name="yumi_fixed_q3">
+    <KinBody>
+        <Body name="base" type="dynamic">
+            <Translation>0 0 0</Translation>
+        </Body>
+        <Body name="link_1" type="dynamic">
+            <offsetfrom>base</offsetfrom>
+            <Translation>0.0536 0.0725 0.4149</Translation>
+        </Body>
+        <Body name="link_2" type="dynamic">
+            <offsetfrom>link_1</offsetfrom>
+            <Translation>0.0642 0.0527 0.0632</Translation>
+        </Body>
+        <Body name="link_3" type="dynamic">
+            <offsetfrom>link_2</offsetfrom>
+            <Translation>0.24478 0.060012 0.067738</Translation>
+        </Body>
+        <Body name="link_4" type="dynamic">
+            <offsetfrom>link_3</offsetfrom>
+            <Translation>0.12303 -0.015779 -0.11548</Translation>
+        </Body>
+        <Body name="link_5" type="dynamic">
+            <offsetfrom>link_4</offsetfrom>
+            <Translation>0.032979 -0.02732 -0.09475</Translation>
+        </Body>
+        <Body name="link_6" type="dynamic">
+            <offsetfrom>link_5</offsetfrom>
+            <Translation>0.037811 0.0039649 -0.011026</Translation>
+        </Body>
+        <Body name="EE" type="dynamic">
+            <offsetfrom>link_6</offsetfrom>
+            <Translation>0.0038243 -0.0012381 -0.0057247</Translation>
+        </Body>
+        <Joint circular="true" name="joint_1" type="hinge">
+            <body>base</body>
+            <body>link_1</body>
+            <offsetfrom>link_1</offsetfrom>
+            <axis>0.81382 0.34201 0.46981</axis>
+        </Joint>
+        <Joint circular="true" name="joint_2" type="hinge">
+            <body>link_1</body>
+            <body>link_2</body>
+            <offsetfrom>link_2</offsetfrom>
+            <axis>0.1048 0.70879 -0.69759</axis>
+        </Joint>
+        <Joint circular="true" name="joint_3" type="hinge">
+            <body>link_2</body>
+            <body>link_3</body>
+            <offsetfrom>link_3</offsetfrom>
+            <axis>-0.19504 0.9223 -0.33364</axis>
+        </Joint>
+        <Joint circular="true" name="joint_4" type="hinge">
+            <body>link_3</body>
+            <body>link_4</body>
+            <offsetfrom>link_4</offsetfrom>
+            <axis>0.54742 -0.17992 -0.81729</axis>
+        </Joint>
+        <Joint circular="true" name="joint_5" type="hinge">
+            <body>link_4</body>
+            <body>link_5</body>
+            <offsetfrom>link_5</offsetfrom>
+            <axis>-0.19504 0.9223 -0.33364</axis>
+        </Joint>
+        <Joint circular="true" name="joint_6" type="hinge">
+            <body>link_5</body>
+            <body>link_6</body>
+            <offsetfrom>link_6</offsetfrom>
+            <axis>0.54742 -0.17992 -0.81729</axis>
+        </Joint>
+        <Joint name="joint_EE" enable="false">
+            <body>link_6</body>
+            <body>EE</body>
+            <limits>0 0</limits>
+        </Joint>
+        <Manipulator>
+            <effector>EE</effector>
+            <base>base</base>
+            <joints>joint_1 joint_2 joint_3 joint_4 joint_5 joint_6 joint_EE</joints>
+        </Manipulator>
+    </KinBody>
+</Robot>

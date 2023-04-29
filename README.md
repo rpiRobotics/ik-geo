@@ -33,6 +33,8 @@ $$\begin{cases}
 \end{cases}$$
 
 ## Folder breakdown
+Make sure to switch to the right branch to see the most recent progress.
+
 `matlab`: MATLAB implementation
 
 `cpp`: C++ implementation (Work in progress)
@@ -40,6 +42,8 @@ $$\begin{cases}
 `rust`: Rust implementation (Work in progress)
 
 `python`: Python implementation (Work in progress)
+
+`ikfast`: Comparison to Inverse Kinematics using IKFast (Work in progress)
 
 ## Contributing
 If you have any improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue.
