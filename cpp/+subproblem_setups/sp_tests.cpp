@@ -3,7 +3,7 @@
  * 
  * compile from terminal/shell as follows:
  * 
- *   bash$ g++ -Wall sp_tests.cpp sp.cpp -o sp_tests
+ *   bash$ g++ -Wall -O3 sp_tests.cpp sp.cpp -o sp_tests
  * 
  * run the executable:
  * 
@@ -102,7 +102,7 @@ int main(int argc, char * argv[])
 
 	    auto start = std::chrono::steady_clock::now();
 
-	    sp_2E(p0, p1, p2, k1, k2, theta1, theta2);
+	    sp2E_run(p0, p1, p2, k1, k2, theta1, theta2);
 
 	    auto end = std::chrono::steady_clock::now();
 
@@ -132,7 +132,7 @@ int main(int argc, char * argv[])
 
 	    auto start = std::chrono::steady_clock::now();
 
-	    sp_3(p1, p2, k, d, theta);
+	    sp3_run(p1, p2, k, d, theta);
 
 	    auto end = std::chrono::steady_clock::now();
 
@@ -196,7 +196,7 @@ int main(int argc, char * argv[])
 
 	    auto start = std::chrono::steady_clock::now();
 
-	    sp_5(p0, p1, p2, p3, k1, k2, k3, theta1, theta2, theta3);
+	    sp5_run(p0, p1, p2, p3, k1, k2, k3, theta1, theta2, theta3);
 
 	    auto end = std::chrono::steady_clock::now();
 
