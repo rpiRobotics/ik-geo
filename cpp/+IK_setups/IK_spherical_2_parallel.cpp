@@ -94,7 +94,22 @@ Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eige
 	return soln; 
 }
 
-// the main function will be removed later
+
+
+/**
+ * compile from terminal/shell as follows:
+ * 
+ *   bash$ g++ IK_spherical_2_parallel.cpp ../+subproblem_setups/sp.cpp -o IK_spherical_2_parallel.out -O3
+ * 
+ * run the executable:
+ * 
+ *   bash$ ./IK_spherical_2_parallel.out
+ * 
+ */
+
+// The main function is for debugging and it should be removed later.
+// Can put the timing test code here for quick checking 
+//  and later move all the timing test code to a single timing test cpp file.
 int main(int argc, char * argv[]) {
 	return 0;
 }
