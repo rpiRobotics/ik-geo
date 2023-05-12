@@ -93,3 +93,8 @@ Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eige
 	}
 	return soln; 
 }
+
+// the main function will be removed later
+int main(int argc, char * argv[]) {
+	return 0;
+}
