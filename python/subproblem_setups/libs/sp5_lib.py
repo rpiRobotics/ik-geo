@@ -150,26 +150,27 @@ def sp5_error(p0, p1, p2, p3, k1, k2, k3, theta1, theta2, theta3):
 
 #Test Code
 if __name__ == "__main__":
-   print("Starting arrays \r\n")
-   
-   p0 = np.array([1., 2., 3.])
-   p1 = np.array([1., 2., 3.])
-   p2 = np.array([1., 2., 3.])
-   p3 = np.array([1., 2., 3.])
-   k1 = np.array([1., 2., 3.])
-   k2 = np.array([1., 2., 3.])
-   k3 = np.array([1., 2., 3.])
-   
-   #Setup problem
-   sp5_setup(p0, p1, p2, p3, k1, k2, k3)
-   np.set_printoptions(precision = 20)
-   
-   print(("p1={}\r\np2={}\r\np3={}\r\nk1={}\r\nk2={}\r\nk3={}\r\n\np0={}\r\n".format(p1, p2, p3, k1, k2, k3, p0)))
-   #MATLAB friendly output is below
-   #print(" ".join(("p1=" + str(p1) + "!p2=" + str(p2) + "!p3=" + str(p3) + "!k1=" + str(k1) + "!k2=" + str(k2) + "!k3=" + str(k3) + "!p0=" + str(p0)).split()).replace(" ", ";").replace("!", "\n").replace(";]", "]"), "\r\n")
-   
-   t1, t2, t3 = sp5_run(p0, p1, p2, p3, k1, k2, k3) #Save values
+   for i in range(1000):
+      #print("Starting arrays \r\n")
+      
+      p0 = np.array([1., 2., 3.])
+      p1 = np.array([1., 2., 3.])
+      p2 = np.array([1., 2., 3.])
+      p3 = np.array([1., 2., 3.])
+      k1 = np.array([1., 2., 3.])
+      k2 = np.array([1., 2., 3.])
+      k3 = np.array([1., 2., 3.])
+      
+      #Setup problem
+      sp5_setup(p0, p1, p2, p3, k1, k2, k3)
+      np.set_printoptions(precision = 20)
+      
+      #print(("p1={}\r\np2={}\r\np3={}\r\nk1={}\r\nk2={}\r\nk3={}\r\n\np0={}\r\n".format(p1, p2, p3, k1, k2, k3, p0)))
+      #MATLAB friendly output is below
+      #print(" ".join(("p1=" + str(p1) + "!p2=" + str(p2) + "!p3=" + str(p3) + "!k1=" + str(k1) + "!k2=" + str(k2) + "!k3=" + str(k3) + "!p0=" + str(p0)).split()).replace(" ", ";").replace("!", "\n").replace(";]", "]"), "\r\n")
+      
+      t1, t2, t3 = sp5_run(p0, p1, p2, p3, k1, k2, k3) #Save values
 
-   #Printing out results
-   print("Results:\r\ntheta1:\n{}\r\ntheta2:\n{}\r\ntheta3:\n{}\r\n".format(t1, t2, t3))
-   print("Error:", sp5_error(p0, p1, p2, p3, k1, k2, k3, t1, t2, t3), "\r\n")
+      #Printing out results
+      #print("Results:\r\ntheta1:\n{}\r\ntheta2:\n{}\r\ntheta3:\n{}\r\n".format(t1, t2, t3))
+      #print("Error:", sp5_error(p0, p1, p2, p3, k1, k2, k3, t1, t2, t3), "\r\n")
