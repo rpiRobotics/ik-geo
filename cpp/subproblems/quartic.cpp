@@ -3,8 +3,6 @@
 #include <vector>
 #include <math.h>
 
-// using namespace std::complex_literals;
-
 const double ZERO_THRESH = 1e-8;
 
 const std::complex<double> i = std::complex<double>(0,0);

@@ -15,6 +15,8 @@
 
 ### Subproblems
 
+NOTE:: For subproblem_timing_tests.cpp to run successfully, you must compile CSV test files from the "generate_input_CSV.m" file in matlab/timing_tests and name them sp_X.csv for all subproblems, where X is the subproblem number.
+
 In the "tests_and_demos" folder, there exists the following files:
 - subproblem_demos.cpp
 - subproblem_timing_tests.cpp
