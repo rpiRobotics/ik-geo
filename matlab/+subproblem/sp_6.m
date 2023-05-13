@@ -2,8 +2,8 @@ function [theta1, theta2] = sp_6(H, K, P, d1, d2)
 % subproblem.sp_6  Subproblem 6: Four cones
 %   [theta1, theta2] = subproblem.sp_6(H, K, P, d1, d2) finds
 %   theta1, theta2 such that
-%       h1'*rot(k1,theta1) + h2'*rot(k2,theta2) = d1
-%       h3'*rot(k3,theta1) + h4'*rot(k4,theta2) = d2
+%       h1'*rot(k1,theta1)*p1 + h2'*rot(k2,theta2)*p2 = d1
+%       h3'*rot(k3,theta1)*p3 + h4'*rot(k4,theta2)*p4 = d2
 %   where
 %       H = [h1 h2 h3 h4]
 %       K = [k1 k2 k3 k4]
@@ -34,6 +34,10 @@ A = [H(:,1)'*A_1 H(:,2)'*A_2
 % Minimum norm solution
 % x_min = pinv(A)*[d1-h'*k1*k1'*p1-h'*k2*k2'*p2
 %                  d2-h'*k1*k1'*p3-h'*k2*k2'*p4];
+
+% Minimum norm solution, plus some vector from the null space (so Ax=b)
+% The \ operator is fast but doesn't necessarily give the least-squares solution
+% but we are adding in a vector from the null space anyways later on
 x_min = A\[d1-H(:,1)'*K(:,1)*K(:,1)'*P(:,1)-H(:,2)'*K(:,2)*K(:,2)'*P(:,2)
            d2-H(:,3)'*K(:,3)*K(:,3)'*P(:,3)-H(:,4)'*K(:,4)*K(:,4)'*P(:,4)];
 
@@ -45,7 +49,7 @@ x_null_2 = x_null(:,2);
 % solve intersection of 2 ellipses
 
 [xi_1, xi_2] = subproblem.solve_2_ellipse_numeric(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));
-%[xi_1, xi_2] = solve_2_ellipse_symb(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));
+%[xi_1, xi_2] = subproblem.solve_2_ellipse_symb(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));
 
 % solve_2_ellipse_symb(x_min(1:2), x_null(1:2,:), x_min(3:4), x_null(3:4,:));
 % hold on

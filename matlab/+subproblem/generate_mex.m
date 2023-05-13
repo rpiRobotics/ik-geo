@@ -1,3 +1,5 @@
+% Generate MEX files using MATLAB coder
+
 % TODO change path
 
 setups = {

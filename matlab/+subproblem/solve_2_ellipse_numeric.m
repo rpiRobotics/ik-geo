@@ -1,10 +1,11 @@
 function [xi_1, xi_2] = solve_2_ellipse_numeric(xm1, xn1, xm2, xn2)
-% solve for intersection of 2 ellipses defined by
-
+% subproblem.solve_2_ellipse_numeric Numeric Ellipse Intersection Solution
+% Solve for intersection of 2 ellipses defined by
+%
 % xm1'*xm1 + xi'*xn1'*xn1*xi  + xm1'*xn1*xi == 1
 % xm2'*xm2 + xi'*xn2'*xn2*xi  + xm2'*xn2*xi == 1
 % Where xi = [xi_1; xi_2]
-
+%
 % https://elliotnoma.wordpress.com/2013/04/10/a-closed-form-solution-for-the-intersections-of-two-ellipses/
 
 
@@ -44,10 +45,9 @@ e*a1*b1*b-c1*b1*a*d+2*e1*c1*a^2+2*e*c*a1^2-c*a1*d1*b+2*d1*b1*a*c-c1*d1*a*b;
 
 z4 = a^2*c1^2-2*a*c1*a1*c+a1^2*c^2-b*a*b1*c1-b*b1*a1*c+b^2*a1*c1+c*a*b1^2;
 
-
-y = roots([z4 z3 z2 z1 z0]);
-y = y(y==real(y));
-y = real(y); % for code gen
+y = subproblem.quartic_roots([z4 z3 z2 z1 z0]); %y = roots([z4 z3 z2 z1 z0]);
+y = y( abs(imag(y)) < 1e-6 ); %y = y(y==real(y));
+y = real(y);
 
 x = -(a*fq+a*c1*y.^2-a1*c*y.^2+a*e1*y-a1*e*y-a1*f)./(a*b1*y+a*d1-a1*b*y-a1*d);
 
