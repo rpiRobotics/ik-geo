@@ -6,7 +6,7 @@ classdef IK_2_intersecting
             S.Q = rand_angle([6 1]);
             P.kin.joint_type = zeros(1,6);
 
-            P.kin.H = rand_normal_vec(7);
+            P.kin.H = rand_normal_vec(6);
             P.kin.P = rand_vec(7);
             P.kin.P(:,6) = 0;
 
