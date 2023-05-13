@@ -14,12 +14,12 @@ def rand_mat(size = 1): #Make list of lists, then pass to numpy
    return np.array([[round(r.random(), 15) for x in range(3)] for y in range(size)])
 
 #Create random vector of size 3 x N
-def rand_vec(): #Make list of lists, then pass to numpy
-   return np.array([round(r.random(), 15) for y in range(3)])
+def rand_vec(size = 3): #Make list of lists, then pass to numpy
+   return np.array([round(r.random(), 15) for y in range(size)])
 
 #Create random normal vector
-def rand_normal_vec():
-   vec = rand_vec()
+def rand_normal_vec(size = 3):
+   vec = rand_vec(size)
    return vec/np.linalg.norm(vec, 2)
 
 #Create random normal matrix
