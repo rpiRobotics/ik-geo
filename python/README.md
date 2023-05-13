@@ -3,6 +3,7 @@
 - Summation of research: https://arxiv.org/pdf/2211.05737.pdf
 - Included here is the Python version of the MATLAB-based canonical subproblems for inverse kinematics on robots.
 - Additional MATLAB, C++, Rust, and Python files are located at https://github.com/rpiRobotics/linear-subproblem-solutions/.
+- See the project on PyPi: https://pypi.org/project/linearsubproblemsltns/
 ---
 # Python Branch Guide:
 ## Dependencies:
@@ -13,7 +14,8 @@
 ## To Use Example Code:
 - Clone the above repo
 - To see timing information and a simple demo, run each sp#.py file
-- Otherwise, just include yhe pip module in your applications as needed
+- Otherwise, just include the pip module in your applications as needed using pip install linearSubproblemSltns
+- 
 ---
 ## Advice:
 - NumPy vs MATLAB can be confusing at first, see [this article](https://numpy.org/doc/stable/user/numpy-for-matlab-users.html) for some clarity.
