@@ -32,3 +32,6 @@ octave-workspace
 
 # CSV test files
 *.csv
+
+# All compilation files
+*.out

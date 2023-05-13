@@ -5,7 +5,7 @@
 ---
 ## Usage:
 - Clone this repository
-- Include \\linear-subproblem-solutions\\python\\+subproblem_setups
+- Include \\linear-subproblem-solutions\\python\\subproblems
 - To see timing information and a simple demo, run each sp#.py file
 - Otherwise, include the desired sp#_lib.py files into your application
 ---

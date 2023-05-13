@@ -6,7 +6,8 @@
 #include <eigen3/unsupported/Eigen/Polynomials>
 #include <vector>
 
-using namespace std::complex_literals;
+
+const std::complex<double> i = std::complex<double>(0,0);
 
 void cone_polynomials(const Eigen::Vector3d &p0_i, const Eigen::Vector3d &k_i, const Eigen::Vector3d &p_i, const Eigen::Vector3d &p_i_s, const Eigen::Vector3d &k2, 
 					  Eigen::Matrix<double, 1, 2>& P, Eigen::Matrix<double, 1, 3>& R) {
@@ -53,17 +54,17 @@ std::vector<std::complex<double>> quartic_roots(const Eigen::Matrix<double, 1, 5
 	std::complex<double> gamma = -B*B*B*B*3./(A*A*A*A*256.) + C*B*B/(A*A*A*16.) - B*D/(A*A*4.) + E/A;
 
 	if (fabs(beta.real()) < 1e-12 && fabs(beta.imag()) < 1e-12) {
-		std::complex<double> tmp = sqrt(alpha*alpha - gamma*4. + 0i);
-		roots.push_back(-B/(A*4.) + sqrt((-alpha + tmp)/2. + 0i));
-		roots.push_back(-B/(A*4.) - sqrt((-alpha + tmp)/2. + 0i));
-		roots.push_back(-B/(A*4.) + sqrt((-alpha - tmp)/2. + 0i));
-		roots.push_back(-B/(A*4.) - sqrt((-alpha - tmp)/2. + 0i));
+		std::complex<double> tmp = sqrt(alpha*alpha - gamma*4. + i);
+		roots.push_back(-B/(A*4.) + sqrt((-alpha + tmp)/2. + i));
+		roots.push_back(-B/(A*4.) - sqrt((-alpha + tmp)/2. + i));
+		roots.push_back(-B/(A*4.) + sqrt((-alpha - tmp)/2. + i));
+		roots.push_back(-B/(A*4.) - sqrt((-alpha - tmp)/2. + i));
 		return roots;
 	}
 
 	std::complex<double> P = -alpha*alpha/12. - gamma;
 	std::complex<double> Q = -alpha*alpha*alpha/108. + alpha*gamma/3. - beta*beta*0.125;
-	std::complex<double> R = -Q*0.5 + sqrt(Q*Q*0.25 + P*P*P/27. + 0i);
+	std::complex<double> R = -Q*0.5 + sqrt(Q*Q*0.25 + P*P*P/27. + i);
 	std::complex<double> U = pow(R, 1./3);
 
 	std::complex<double> y;
@@ -74,7 +75,7 @@ std::vector<std::complex<double>> quartic_roots(const Eigen::Matrix<double, 1, 5
 		y = -alpha*5./6. + U - P/(3.*U);
 	}
 
-	std::complex<double> W = sqrt(alpha + 2.*y + 0i);
+	std::complex<double> W = sqrt(alpha + 2.*y + i);
 
 	roots.push_back(-B/(A*4.) + (W + sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
 	roots.push_back(-B/(A*4.) + (W - sqrt(-(alpha*3. + 2.*y + beta*2./W)))/2.);
