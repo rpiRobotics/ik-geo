@@ -177,12 +177,12 @@ void sp6_demo() {
   Eigen::Matrix<double, 3, 4> h, k, p;
   double d1, d2;
   std::vector<double> theta1, theta2;
-  sp6_setup(h, k, p, d1, d2, theta1, theta2);
-  IKS::sp6_run(h, k, p, d1, d2, theta1, theta2);
+  sp6_setup(p, k, h, d1, d2, theta1, theta2);
+  IKS::sp6_run(p, k, h, d1, d2, theta1, theta2);
   std::cout << "Subproblem 6" << std::endl;
-  std::cout << "p 3x1 Vector: \n" << p << std::endl;
-  std::cout << "k 3x1 Vector: \n" << k << std::endl;
-  std::cout << "h 3x1 Vector: \n" << h << std::endl;
+  std::cout << "p 3x4 Vector: \n" << p << std::endl;
+  std::cout << "k 3x4 Vector: \n" << k << std::endl;
+  std::cout << "h 3x4 Vector: \n" << h << std::endl;
   std::cout << "d1: " << d1 << std::endl;
   std::cout << "d2: " << d2 << std::endl;
   std::cout << "theta1: " << to_string(theta1) << std::endl;

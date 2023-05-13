@@ -9,12 +9,8 @@
 #ifndef __IK_spherical_2_intersecting_h__
 #define __IK_spherical_2_intersecting_h__
 
+#include <vector>
 #include <eigen3/Eigen/Dense>
-#include "../rand_cpp.h"
-#include "../subproblems/sp_1.h"
-#include "../subproblems/sp_2.h"
-#include "../subproblems/sp_3.h"
-#include "../subproblems/sp_4.h"
 
 struct Kin {
 	Eigen::Matrix<double, 3, 6> H;

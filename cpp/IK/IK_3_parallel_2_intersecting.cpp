@@ -12,8 +12,8 @@
 #include <iostream>
 #include <vector>
 #include "IK_3_parallel_2_intersecting.h"
-#include "../subproblems/sp.cpp"
 #include "../read_csv.h"
+#include "../subproblems/sp.cpp"
 
 namespace IKS {
   void IK_3_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3> &R_06, const Eigen::Vector3d &p_0T,

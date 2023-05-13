@@ -10,10 +10,8 @@
 #include <iostream>
 #include <vector>
 #include <eigen3/Eigen/Dense>
-#include "../rand_cpp.h"
-#include "../subproblems/sp_1.h"
-#include "../subproblems/sp_3.h"
-#include "../subproblems/sp_4.h"
+
+extern Eigen::Matrix<double, 3, Eigen::Dynamic> rot(Eigen::Matrix<double, 3, Eigen::Dynamic> k, double theta);
 
 struct Kin {
 	Eigen::Matrix<double, 3, 7> H;
