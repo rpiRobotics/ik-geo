@@ -15,7 +15,6 @@
 - Clone the above repo
 - To see timing information and a simple demo, run each sp#.py file
 - Otherwise, just include the pip module in your applications as needed using pip install linearSubproblemSltns
-- 
 ---
 ## Advice:
 - NumPy vs MATLAB can be confusing at first, see [this article](https://numpy.org/doc/stable/user/numpy-for-matlab-users.html) for some clarity.
