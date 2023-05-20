@@ -13,6 +13,3 @@ mod correctness;
 
 #[cfg(test)]
 mod timing;
-
-#[cfg(test)]
-mod search;

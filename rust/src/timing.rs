@@ -28,13 +28,16 @@ use {
                 ThreeParallelTwoIntersectingSetup,
                 TwoParallelSetup,
                 TwoIntersectingSetup,
+                GenSixDofSetup,
             },
 
             hardcoded::setups::{
                 Irb6640,
                 KukaR800FixedQ3,
+                RrcFixedQ6,
                 Ur5,
                 ThreeParallelBot,
+                TwoParallelBot,
             },
         },
     },
@@ -80,6 +83,7 @@ fn time_separate_ik() {
     time_ik_separate::<ThreeParallelTwoIntersectingSetup>();
     time_ik_separate::<TwoParallelSetup>();
     time_ik_separate::<TwoIntersectingSetup>();
+    time_ik_separate::<GenSixDofSetup>();
 }
 
 #[test]
@@ -93,6 +97,7 @@ fn time_batch_ik() {
     time_ik_batched::<ThreeParallelTwoIntersectingSetup>();
     time_ik_batched::<TwoParallelSetup>();
     time_ik_batched::<TwoIntersectingSetup>();
+    time_ik_batched::<GenSixDofSetup>();
 }
 
 #[test]
@@ -101,8 +106,10 @@ fn time_separate_hardcoded() {
 
     time_hardcoded_separate::<Irb6640>();
     time_hardcoded_separate::<KukaR800FixedQ3>();
+    time_hardcoded_separate::<RrcFixedQ6>();
     time_hardcoded_separate::<Ur5>();
     time_hardcoded_separate::<ThreeParallelBot>();
+    time_hardcoded_separate::<TwoParallelBot>();
 }
 
 #[test]
@@ -111,8 +118,10 @@ fn time_batch_hardcoded() {
 
     time_hardcoded_batched::<Irb6640>();
     time_hardcoded_batched::<KukaR800FixedQ3>();
+    time_hardcoded_batched::<RrcFixedQ6>();
     time_hardcoded_batched::<Ur5>();
     time_hardcoded_batched::<ThreeParallelBot>();
+    time_hardcoded_batched::<TwoParallelBot>();
 }
 
 #[cfg(link_ikfast)]

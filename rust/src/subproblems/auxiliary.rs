@@ -96,12 +96,16 @@ pub fn approximate_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f
 /// Solves the roots of a quartic equation using the quartic formula
 ///
 /// https://math.stackexchange.com/a/786
-pub fn solve_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
+pub fn solve_quartic_roots(p: &Vector5<Complex<f64>>) -> DVector<Complex<f64>> {
     let a = p[0];
     let b = p[1];
     let c = p[2];
     let d = p[3];
     let e = p[4];
+
+    if a.abs() < 1e-12 {
+        return solve_cubic_roots(&p.fixed_rows::<4>(1).into());
+    }
 
     let p1 = 2.0*c*c*c - 9.0*b*c*d + 27.0*a*d*d + 27.0*b*b*e - 72.0*a*c*e;
     let q1 = c*c - 3.0*b*d + 12.0*a*e;
@@ -112,12 +116,83 @@ pub fn solve_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
     let p5 = (b*b) / (2.0*a*a) - (4.0*c) / (3.0*a) - p3;
     let p6 = (-(b*b*b) / (a*a*a) + (4.0*b*c) / (a*a) - (8.0*d) / a) / (4.0*p4);
 
-    return Vector4::new(
+    return DVector::from_row_slice(&[
         -b / (4.0*a) - p4 / 2.0 - (p5 - p6).sqrt() / 2.0,
         -b / (4.0*a) - p4 / 2.0 + (p5 - p6).sqrt() / 2.0,
         -b / (4.0*a) + p4 / 2.0 - (p5 + p6).sqrt() / 2.0,
         -b / (4.0*a) + p4 / 2.0 + (p5 + p6).sqrt() / 2.0,
-    );
+    ]);
+}
+
+pub fn solve_cubic_roots(p: &Vector4<Complex<f64>>) -> DVector<Complex<f64>> {
+    let a = p[0];
+    let b = p[1];
+    let c = p[2];
+    let d = p[3];
+
+    if a.abs() < 1e-12 {
+        return solve_quadratic_roots(&p.fixed_rows::<3>(1).into());
+    }
+
+    let z = (Complex::from_real(-1.0) + Complex::from_real(-3.0).sqrt()) / 2.0;
+
+    let p1 = b*b - 3.0*a*c;
+    let p2 = 2.0*b*b*b - 9.0*a*b*c + 27.0*a*a*d;
+
+    let q1 = ((p2 + (p2*p2 - 4.0*p1*p1*p1).sqrt()) / 2.0).cbrt();
+    let q2 = ((p2 + (p2*p2 + 4.0*p1*p1*p1).sqrt()) / 2.0).cbrt();
+
+    if q1.abs() > 1e-12 {
+        let e0 = q1;
+        let e1 = e0 * z;
+        let e2 = e1 * z;
+
+        DVector::from_row_slice(&[
+            -1.0 / (3.0*a) * (b + e0 + p1 / e0),
+            -1.0 / (3.0*a) * (b + e1 + p1 / e1),
+            -1.0 / (3.0*a) * (b + e2 + p1 / e2),
+        ])
+    }
+    else if q2.abs() > 1e-12 {
+        let e0 = q2;
+        let e1 = e0 * z;
+        let e2 = e1 * z;
+
+        DVector::from_row_slice(&[
+            -1.0 / (3.0*a) * (b + e0 + p1 / e0),
+            -1.0 / (3.0*a) * (b + e1 + p1 / e1),
+            -1.0 / (3.0*a) * (b + e2 + p1 / e2),
+        ])
+    }
+    else {
+        DVector::from_row_slice(&[
+            -1.0 / (3.0 * a) * b,
+            -1.0 / (3.0 * a) * b,
+            -1.0 / (3.0 * a) * b,
+        ])
+    }
+}
+
+pub fn solve_quadratic_roots(p: &Vector3<Complex<f64>>) -> DVector<Complex<f64>> {
+    let a = p[0];
+    let b = p[1];
+    let c = p[2];
+
+    if a.abs() < 1e-12 {
+        return if b.abs() < 1e-12 {
+            DVector::from_row_slice(&[])
+        }
+        else {
+            DVector::from_row_slice(&[-c / b])
+        }
+    }
+
+    let p = (b*b - 4.0*a*c).sqrt();
+
+    return DVector::from_row_slice(&[
+        (-b + p) / (2.0 * a),
+        (-b - p) / (2.0 * a),
+    ])
 }
 
 /// Finds the null space of a 2x4 matrix given some `epsilon` using the eigenpairs of A'*A

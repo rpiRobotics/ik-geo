@@ -1,11 +1,9 @@
-use crate::{subproblems::setups::SetupStatic, inverse_kinematics::setups::ik_write_output};
-
 use {
     std::f64::{ NAN, consts::PI },
 
     nalgebra::{ Vector3, Vector6, Matrix3, Matrix3x6 },
 
-    super::{ irb6640, kuka_r800_fixed_q3, ur5, three_parallel_bot, two_parallel_bot },
+    super::{ irb6640, kuka_r800_fixed_q3, ur5, three_parallel_bot, two_parallel_bot, rrc_fixed_q6 },
 
     crate::{
         inverse_kinematics::{
@@ -15,10 +13,10 @@ use {
                 Matrix3x8,
             },
 
-            setups::{ SetupIk, calculate_ik_error },
+            setups::{ SetupIk, calculate_ik_error, ik_write_output },
         },
 
-        subproblems::{ Vector7, auxiliary::random_angle },
+        subproblems::{ Vector7, auxiliary::random_angle, setups::SetupStatic },
     },
 };
 
@@ -32,6 +30,15 @@ pub struct Irb6640 {
 }
 
 pub struct KukaR800FixedQ3 {
+    kin: Kinematics<7, 8>,
+    r: Matrix3<f64>,
+    t: Vector3<f64>,
+
+    q: Vec<Vector6<f64>>,
+    is_ls: Vec<bool>,
+}
+
+pub struct RrcFixedQ6 {
     kin: Kinematics<7, 8>,
     r: Matrix3<f64>,
     t: Vector3<f64>,
@@ -118,6 +125,49 @@ impl KukaR800FixedQ3 {
     pub fn get_kin_partial() -> (Kinematics<6, 7>, Matrix3<f64>) {
         let kin = Self::get_kin();
         kin.forward_kinematics_partial(Self::Q3, 2, &Matrix3::identity())
+    }
+}
+
+impl RrcFixedQ6 {
+    const Q6: f64 = PI / 6.0;
+
+    pub fn get_kin() -> Kinematics<7, 8> {
+        let mut kin = Kinematics::new();
+
+        let zv = Vector3::zeros();
+        let ex = Vector3::x();
+        let ey = Vector3::y();
+        let ez = Vector3::z();
+
+        let p01 = zv;
+        let p12 = 20.0 * ex - 4.0 * ey;
+        let p23 = 4.0 * ey;
+        let p34 = 21.5 * ex + 3.375 * ey;
+        let p45 = -3.375 * ey;
+        let p56 = 21.5 * ex + 3.325 * ey;
+        let p67 = -3.325 * ey;
+        let p7t = 7.0 * ex;
+
+        kin.p = 0.0254 * Matrix3x8::from_columns(&[p01, p12, p23, p34, p45, p56, p67, p7t]);
+        kin.h = Matrix3x7::from_columns(&[ex, ez, ex, ez, ex, ez, ex]);
+
+        kin
+    }
+
+    pub fn get_kin_partial() -> (Kinematics<6, 7>, Matrix3<f64>) {
+        let kin = Self::get_kin();
+        let (mut kin_partial, r_6t) = kin.forward_kinematics_partial(Self::Q6, 5, &Matrix3::identity());
+
+        let zv = Vector3::zeros();
+        let alpha = (kin_partial.h.fixed_columns::<2>(4)).pseudo_inverse(1e-12).unwrap() * kin_partial.p.column(5);
+        let delta_p_45 = alpha[0] * kin_partial.h.column(4);
+        let delta_p_6t = alpha[1] * kin_partial.h.column(5);
+
+        kin_partial.p.set_column(4, &(kin_partial.p.column(4) + delta_p_45));
+        kin_partial.p.set_column(5, &zv);
+        kin_partial.p.set_column(6, &(kin_partial.p.column(6) + delta_p_6t));
+
+        (kin_partial, r_6t)
     }
 }
 
@@ -237,6 +287,59 @@ impl SetupIk for KukaR800FixedQ3 {
                 q[2],
                 q[3],
                 q[4],
+                q[5],
+            ]);
+
+            let (r_t, t_t) = self.kin.forward_kinematics(&q_e);
+            (r_t - self.r).norm() + (t_t - self.t).norm()
+        }).reduce(f64::min).unwrap_or(NAN)
+    }
+
+    fn ls_count(&self) -> usize {
+        self.is_ls.iter().filter(|b| **b).count()
+    }
+
+    fn solution_count(&self) -> usize {
+        self.is_ls.len()
+    }
+
+    fn name(&self) -> &'static str {
+        <Self as SetupStatic>::name()
+    }
+
+    fn debug(&self, i: usize) {
+        println!("{i}{}{}", self.r, self.t);
+    }
+}
+
+impl SetupIk for RrcFixedQ6 {
+    fn setup(&mut self) {
+        let mut q = Vector7::zeros().map(|_: f64| random_angle());
+        q[5] = Self::Q6;
+        (self.r, self.t) = self.kin.forward_kinematics(&q);
+    }
+
+    fn setup_from_str(&mut self, raw: &str) {
+        hardcoded_setup_from_string(raw, &mut self.r, &mut self.t);
+    }
+
+    fn write_output(&self) -> String {
+        ik_write_output(&self.q)
+    }
+
+    fn run(&mut self) {
+        (self.q, self.is_ls) = rrc_fixed_q6(&self.r, &self.t);
+    }
+
+    fn error(&self) -> f64 {
+        self.q.iter().map(|q| {
+            let q_e = Vector7::from_column_slice(&[
+                q[0],
+                q[1],
+                q[2],
+                q[3],
+                q[4],
+                Self::Q6,
                 q[5],
             ]);
 
@@ -417,6 +520,24 @@ impl SetupStatic for KukaR800FixedQ3 {
 
     fn name() -> &'static str {
         "KUKA R800 Fixed Q3"
+    }
+}
+
+impl SetupStatic for RrcFixedQ6 {
+    fn new() -> Self {
+        Self {
+            kin: Self::get_kin(),
+
+            r: Matrix3::zeros(),
+            t: Vector3::zeros(),
+
+            q: Vec::new(),
+            is_ls: Vec::new(),
+        }
+    }
+
+    fn name() -> &'static str {
+        "RRC Fixed Q6"
     }
 }
 

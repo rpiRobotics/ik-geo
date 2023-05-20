@@ -12,8 +12,26 @@ use crate::{
     },
 
     inverse_kinematics::{
-        setups::{ SphericalTwoParallelSetup, SphericalTwoIntersectingSetup, SphericalSetup, ThreeParallelTwoIntersectingSetup, SetupIk, ThreeParallelSetup, TwoParallelSetup, TwoIntersectingSetup, },
-        hardcoded::setups::{ Irb6640, KukaR800FixedQ3, Ur5, ThreeParallelBot, TwoParallelBot },
+        setups::{
+            SphericalTwoParallelSetup,
+            SphericalTwoIntersectingSetup,
+            SphericalSetup,
+            ThreeParallelTwoIntersectingSetup,
+            SetupIk,
+            ThreeParallelSetup,
+            TwoParallelSetup,
+            TwoIntersectingSetup,
+            GenSixDofSetup,
+        },
+
+        hardcoded::setups::{
+            Irb6640,
+            KukaR800FixedQ3,
+            RrcFixedQ6,
+            Ur5,
+            ThreeParallelBot,
+            TwoParallelBot
+        },
     },
 };
 
@@ -75,9 +93,11 @@ fn run_tests() {
         Box::new(ThreeParallelSetup::new()),
         Box::new(TwoParallelSetup::new()),
         Box::new(TwoIntersectingSetup::new()),
+        Box::new(GenSixDofSetup::new()),
 
         Box::new(Irb6640::new()),
         Box::new(KukaR800FixedQ3::new()),
+        Box::new(RrcFixedQ6::new()),
         Box::new(Ur5::new()),
         Box::new(ThreeParallelBot::new()),
         Box::new(TwoParallelBot::new()),

@@ -15,6 +15,7 @@ use {
                 ThreeParallelSetup,
                 TwoParallelSetup,
                 TwoIntersectingSetup,
+                GenSixDofSetup,
             },
         },
 
@@ -150,6 +151,15 @@ pub fn two_intersecting_benchmark(c: &mut Criterion) {
     c.bench_function("Ik 2 Intersecting", |b| b.iter(|| setup.run()));
 }
 
+pub fn gen_six_dof_benchmark(c: &mut Criterion) {
+
+    let mut setup = GenSixDofSetup::new();
+
+    setup.setup();
+
+    c.bench_function("Gen 6 DOF", |b| b.iter(|| setup.run()));
+}
+
 pub fn irb6640_benchmark(c: &mut Criterion) {
     let mut setup = Irb6640::new();
 
@@ -184,7 +194,7 @@ criterion_group!(
     three_parallel_benchmark,
     two_parallel_benchmark,
     two_intersecting_benchmark,
-    spherical_benchmark,
+    gen_six_dof_benchmark,
     irb6640_benchmark,
     ikfast_benchmark,
 );
@@ -205,7 +215,7 @@ criterion_group!(
     three_parallel_benchmark,
     two_parallel_benchmark,
     two_intersecting_benchmark,
-    spherical_benchmark,
+    gen_six_dof_benchmark,
     irb6640_benchmark,
 );
 

@@ -1,7 +1,3 @@
-use crate::inverse_kinematics::auxiliary::Vector;
-
-use self::auxiliary::search_2d;
-
 pub mod auxiliary;
 pub mod setups;
 pub mod hardcoded;
@@ -29,6 +25,7 @@ use {
         Kinematics,
         wrap_to_pi,
         search_1d,
+        search_2d,
     },
 };
 
@@ -525,8 +522,6 @@ pub fn gen_six_dof(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6,
 
     let p16 = p_0t - kin.p.column(0) - r_06 * kin.p.column(6);
 
-    println!("p16{}", p16);
-
     let alignment_error_given_q12 = |q1: f64, q2: f64| {
         let mut error = Vector4::from_element(INFINITY);
 
@@ -556,7 +551,7 @@ pub fn gen_six_dof(r_06: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6,
         error
     };
 
-    let minima = search_2d(alignment_error_given_q12, (-PI, PI), (-PI, PI), 100);
+    let minima = search_2d(alignment_error_given_q12, (-PI, -PI), (PI, PI), 100);
 
     for (x0, x1, k) in minima {
         let (q_i, q_is_ls) = q_given_q12_k(x0, x1, k, &p16, r_06, kin);

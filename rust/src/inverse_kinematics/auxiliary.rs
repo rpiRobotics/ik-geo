@@ -1,18 +1,19 @@
-use std::f64::{NAN, INFINITY};
-
-use argmin::{core::{CostFunction, Error, Executor}, solver::neldermead::NelderMead};
-use nalgebra::Vector2;
-
 use {
     nalgebra::{
         Const,
         U1, U3, U7, U8,
+        Vector2,
         Vector3,
         Matrix, Matrix3,
         ArrayStorage,
     },
 
-    std::f64::consts::{ PI, TAU },
+    argmin::{
+        core::{ CostFunction, Error, Executor, OptimizationResult },
+        solver::neldermead::NelderMead,
+    },
+
+    std::f64::{ NAN, INFINITY, consts::{ PI, TAU } },
 
     crate::subproblems::auxiliary::rot,
 };
@@ -214,6 +215,7 @@ pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (
         clear_blob(mesh, i, j - 1, k, n);
     }
 
+    /*
     fn debug_mesh<const N: usize>(mesh: &Vec<Vector<f64, N>>, n: usize) {
         let scale: Vec<char> = ".:-=+*#%@$".chars().rev().collect();
 
@@ -225,6 +227,7 @@ pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (
             println!();
         }
     }
+    */
 
     const N_MAX_MINIMA: usize = 1000;
     const MIN_THRESHOLD: f64 = 1e-1;
@@ -235,7 +238,7 @@ pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (
     let x0_vals: Vec<f64> = (0..n).map(|m| m as f64 * delta0 + min.0).collect();
     let x1_vals: Vec<f64> = (0..n).map(|m| m as f64 * delta1 + min.1).collect();
 
-    let mut mesh = vec![Vector::zeros(); n * n * N];
+    let mut mesh = vec![Vector::zeros(); n * n];
     let mut minima: Vec<(f64, f64, usize)> = Vec::with_capacity(N_MAX_MINIMA);
 
     for i in 0..n {
@@ -244,37 +247,38 @@ pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (
         }
     }
 
-    // debug_mesh(&mesh, n);
-
     for _ in 0..N_MAX_MINIMA {
         if let Some((i, j, k)) = minimum(&mesh, n) {
             minima.push((x0_vals[i], x1_vals[j], k));
             clear_blob(&mut mesh, i as isize, j as isize, k, n);
-            // debug_mesh(&mesh, n);
         }
         else {
             break;
         }
     }
 
-    if dbg!(minima.len()) >= N_MAX_MINIMA {
+    if minima.len() >= N_MAX_MINIMA {
         panic!("Too many minima found");
     }
-
 
     let offset0 = delta0 / 2.0;
     let offset1: f64 = delta1 / 2.0;
 
     let get_initial_simplex = |x0: f64, x1: f64| vec![
-        Vector2::new(x0, x1 + offset1),
-        Vector2::new(x0 + offset0, x1 - offset1),
-        Vector2::new(x0 - offset0, x1 - offset1),
+        Vector2::new(x0, x1),
+        Vector2::new(x0 + offset0, x1),
+        Vector2::new(x0, x1 - offset1),
     ];
 
     for (x0, x1, k) in &mut minima {
         let params = ProblemParams { f: &f, k: *k };
         let solver = NelderMead::new(get_initial_simplex(*x0, *x1)).with_sd_tolerance(1e-4).unwrap();
-        let result = Executor::new(params, solver).run().expect("Failed to optimize");
+
+        let result: OptimizationResult<ProblemParams<N, &F>, NelderMead<Matrix<f64, Const<2>, Const<1>, ArrayStorage<f64, 2, 1>>, f64>, argmin::core::IterState<Matrix<f64, Const<2>, Const<1>, ArrayStorage<f64, 2, 1>>, (), (), (), f64>> = Executor::new(params, solver)
+            .configure(|state| state.max_iters(1000000))
+            .run()
+            .expect("Failed to optimize");
+
 
         let best = result.state().best_param.unwrap();
 
