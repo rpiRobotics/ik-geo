@@ -1,4 +1,4 @@
-pub mod setups;
+pub(crate) mod setups;
 
 use {
     self::setups::{ Irb6640, KukaR800FixedQ3, Ur5, ThreeParallelBot, TwoParallelBot, RrcFixedQ6, SphericalBot, YumiFixedQ3 },

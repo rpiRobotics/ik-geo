@@ -1,7 +1,7 @@
 use std::f64::INFINITY;
 
-pub mod auxiliary;
-pub mod setups;
+pub(crate) mod auxiliary;
+pub(crate) mod setups;
 
 use {
     super::solutionset::{ SolutionSet2, SolutionSet4 },
@@ -19,13 +19,12 @@ use {
     nalgebra::{
         Vector2, Vector3, Vector4, Vector5,
         Matrix, Matrix3, Matrix4, Matrix2x4, Matrix3x2, Matrix3x4, Matrix4x3,
-        ArrayStorage, U1, U7, U8,
+        ArrayStorage, U1, U7,
         Complex, DVector, Matrix2,
     },
 };
 
-pub type Vector7<T> = Matrix<T, U7, U1, ArrayStorage<T, 7, 1>>;
-pub type Vector8<T> = Matrix<T, U8, U1, ArrayStorage<T, 8, 1>>;
+pub(crate) type Vector7<T> = Matrix<T, U7, U1, ArrayStorage<T, 7, 1>>;
 
 /// Solves for `theta` where `rot(k, theta) * p1 = p2` if possible.
 /// If not, minimizes `|| rot(k, theta) * p1 - p2 ||`.

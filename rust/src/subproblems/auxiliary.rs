@@ -1,5 +1,5 @@
 use {
-    crate::solutionset::{ SolutionSet4, SolutionSet2 },
+    crate::solutionset::SolutionSet4,
 
     std::f64::consts::PI,
 
@@ -12,9 +12,7 @@ use {
         Vector4,
         Vector5,
         Matrix2,
-        Matrix2x4,
         Matrix3,
-        Matrix4
     },
 };
 
@@ -30,10 +28,6 @@ pub fn random_vector3() -> Vector3<f64> {
 
 pub fn random_norm_vector3() -> Vector3<f64> {
     Vector3::new(random(), random(), random()).normalize()
-}
-
-pub fn random_norm_perp_vector3(reference: &Vector3<f64>) -> Vector3<f64> {
-    random_vector3().cross(&reference).normalize()
 }
 
 pub fn random_angle() -> f64 {
@@ -82,15 +76,6 @@ pub fn vec_convolve_3(v1: &Vector3<f64>, v2: &Vector3<f64>) -> Vector5<f64> {
     let (a, b, c) = (v1[0], v1[1], v1[2]);
     let (x, y, z) = (v2[0], v2[1], v2[2]);
     Vector5::new(a * x, b * x + a * y, a * z + b * y + c * x, b * z + c * y, c * z)
-}
-
-pub fn approximate_quartic_roots(p: &Vector5<Complex<f64>>) -> Vector4<Complex<f64>> {
-    Matrix4::from_columns(&[
-        p.fixed_rows::<4>(1) / -p[0],
-        Vector4::new(Complex::new(1.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0)),
-        Vector4::new(Complex::new(0.0, 0.0), Complex::new(1.0, 0.0), Complex::new(0.0, 0.0), Complex::new(0.0, 0.0)),
-        Vector4::new(Complex::new(0.0, 0.0), Complex::new(0.0, 0.0), Complex::new(1.0, 0.0), Complex::new(0.0, 0.0)),
-    ]).transpose().eigenvalues().unwrap()
 }
 
 /// Solves the roots of a quartic equation using the quartic formula
@@ -196,41 +181,6 @@ pub fn solve_quadratic_roots(p: &Vector3<Complex<f64>>) -> DVector<Complex<f64>>
         (-b + p) / (2.0 * a),
         (-b - p) / (2.0 * a),
     ])
-}
-
-/// Finds the null space of a 2x4 matrix given some `epsilon` using the eigenpairs of A'*A
-pub fn null_space_matrix2x4(a: &Matrix2x4<f64>, epsilon: f64) -> SolutionSet2<Vector4<f64>> {
-    let eigen = (a.transpose() * a).symmetric_eigen();
-
-    let mut zero_indices = [0, 0];
-    let mut i = 0;
-
-    for (j, v) in eigen.eigenvalues.iter().enumerate() {
-        if v.abs() < epsilon {
-            zero_indices[i] = j;
-            i += 1;
-
-            if i >= zero_indices.len() {
-                break;
-            }
-        }
-    }
-
-    match i {
-        0 => SolutionSet2::Zero,
-        2 => SolutionSet2::Two(eigen.eigenvectors.column(zero_indices[0]).into() , eigen.eigenvectors.column(zero_indices[1]).into()),
-        _ => unreachable!(),
-    }
-}
-
-/// Finds the null space of a 2x4 matrix using qr decomposition
-pub fn null_space_matrix2x4_qr(a: &Matrix2x4<f64>) -> (Vector4<f64>, Vector4<f64>) {
-    let mut null_space = Matrix4::identity();
-    let qr = a.transpose().qr();
-
-    qr.q_tr_mul(&mut null_space); // small hack to get entire q matrix
-    null_space = null_space.transpose();
-    (null_space.column(2).into(), null_space.column(3).into())
 }
 
 pub fn solve_lower_triangular_system_2x2(l: &Matrix2<f64>, b_v: &Vector2<f64>) -> Vector2<f64> {

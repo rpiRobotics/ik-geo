@@ -1,6 +1,4 @@
-#[cfg(link_ikfast)]
-use linear_subproblem_solutions_rust::ikfast::IkFast;
-
+/*
 use {
     linear_subproblem_solutions_rust::{
         inverse_kinematics::{
@@ -177,43 +175,6 @@ pub fn spherical_bot_benchmark(c: &mut Criterion) {
     c.bench_function("Spherical Bot (hardcoded)", |b| b.iter(|| setup.run()));
 }
 
-#[cfg(link_ikfast)]
-pub fn ikfast_benchmark(c: &mut Criterion) {
-    let mut setup = IkFast::new();
-    setup.setup();
-    c.bench_function(setup.name(), |b| b.iter(|| setup.run()));
-}
-
-#[cfg(link_ikfast)]
-criterion_group!(
-    benches,
-    subproblem1benchmark,
-    subproblem2benchmark,
-    subproblem2extended_benchmark,
-    subproblem3benchmark,
-    subproblem4benchmark,
-    subproblem5benchmark,
-    subproblem6benchmark,
-    spherical_two_parallel_benchmark,
-    spherical_two_intersecting_benchmark,
-    spherical_benchmark,
-    three_parallel_two_intersecting_benchmark,
-    three_parallel_benchmark,
-    two_parallel_benchmark,
-    two_intersecting_benchmark,
-    gen_six_dof_benchmark,
-    irb6640_benchmark,
-    kuka_r800_fixed_q3_benchmark,
-    rrc_fixed_q6_benchmark,
-    yumi_fixed_q3_benchmark,
-    ur5_benchmark,
-    three_parallel_bot_benchmark,
-    two_parallel_bot_benchmark,
-    spherical_bot_benchmark,
-    ikfast_benchmark,
-);
-
-#[cfg(not(link_ikfast))]
 criterion_group!(
     benches,
     subproblem1benchmark,
@@ -241,3 +202,8 @@ criterion_group!(
 );
 
 criterion_main!(benches);
+ */
+
+fn main() {
+
+}
