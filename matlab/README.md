@@ -12,9 +12,9 @@ e.g. `subproblem.sp_1(p1, p2, k)`.
 
 `+hardcoded_IK_setups`: Test classes for hardcoded IK solutions
 
-`+subproblem`: Subproblem solutions
+`+subproblem_setups`: Subproblem solutions
 
-`+subproblem_setups`: Test classes for subproblem solutions
+`subproblems`: Test classes for subproblem solutions
 
 `correctness_tests`: Tests to verify the correctness of subproblem and IK solutions
 
