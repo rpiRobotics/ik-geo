@@ -6,7 +6,7 @@
 
 2. Add the following to your project's `Cargo.toml`
 
-    ```rust
+    ```conf
     [dependencies.linear-subproblem-solutions-rust]
         path = ".../linear-subproblem-solutions/rust"
     ```
@@ -19,6 +19,8 @@
     ```
 
 ### Running the Demo
+
+See demo.rs for example usage.
 
 ```
 $ cargo run

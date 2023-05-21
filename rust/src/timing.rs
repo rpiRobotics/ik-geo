@@ -38,6 +38,8 @@ use {
                 Ur5,
                 ThreeParallelBot,
                 TwoParallelBot,
+                SphericalBot,
+                YumiFixedQ3
             },
         },
     },
@@ -107,9 +109,11 @@ fn time_separate_hardcoded() {
     time_hardcoded_separate::<Irb6640>();
     time_hardcoded_separate::<KukaR800FixedQ3>();
     time_hardcoded_separate::<RrcFixedQ6>();
+    time_hardcoded_separate::<YumiFixedQ3>();
     time_hardcoded_separate::<Ur5>();
     time_hardcoded_separate::<ThreeParallelBot>();
     time_hardcoded_separate::<TwoParallelBot>();
+    time_hardcoded_separate::<SphericalBot>();
 }
 
 #[test]
@@ -119,9 +123,11 @@ fn time_batch_hardcoded() {
     time_hardcoded_batched::<Irb6640>();
     time_hardcoded_batched::<KukaR800FixedQ3>();
     time_hardcoded_batched::<RrcFixedQ6>();
+    time_hardcoded_batched::<YumiFixedQ3>();
     time_hardcoded_batched::<Ur5>();
     time_hardcoded_batched::<ThreeParallelBot>();
     time_hardcoded_batched::<TwoParallelBot>();
+    time_hardcoded_batched::<SphericalBot>();
 }
 
 #[cfg(link_ikfast)]

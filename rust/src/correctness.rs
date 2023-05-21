@@ -30,7 +30,9 @@ use crate::{
             RrcFixedQ6,
             Ur5,
             ThreeParallelBot,
-            TwoParallelBot
+            TwoParallelBot,
+            SphericalBot,
+            YumiFixedQ3
         },
     },
 };
@@ -101,6 +103,8 @@ fn run_tests() {
         Box::new(Ur5::new()),
         Box::new(ThreeParallelBot::new()),
         Box::new(TwoParallelBot::new()),
+        Box::new(SphericalBot::new()),
+        Box::new(YumiFixedQ3::new()),
     ];
 
     for mut setup in setups {
