@@ -9,7 +9,7 @@ use {
     },
 
     argmin::{
-        core::{ CostFunction, Error, Executor, OptimizationResult },
+        core::{ CostFunction, Error, Executor },
         solver::neldermead::NelderMead,
     },
 
@@ -216,16 +216,21 @@ pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (
     }
 
     /*
-    fn debug_mesh<const N: usize>(mesh: &Vec<Vector<f64, N>>, n: usize) {
+    fn debug_mesh<const N: usize>(mesh: &Vec<Vector<f64, N>>, n: usize, k: usize) {
+        let border = "=".repeat(n);
         let scale: Vec<char> = ".:-=+*#%@$".chars().rev().collect();
+
+        println!("{}", border);
 
         for i in 0..n {
             for j in 0..n {
-                let v = mesh[i + j * n][0];
+                let v = mesh[i + j * n][k];
                 print!("{}", if v.is_nan() { ' ' } else { scale[(v * 100.0) as usize] });
             }
             println!();
         }
+
+        println!("{}", border);
     }
     */
 
@@ -272,9 +277,14 @@ pub fn search_2d<const N: usize, F: Fn(f64, f64) -> Vector<f64, N>>(f: F, min: (
 
     for (x0, x1, k) in &mut minima {
         let params = ProblemParams { f: &f, k: *k };
-        let solver = NelderMead::new(get_initial_simplex(*x0, *x1)).with_sd_tolerance(1e-4).unwrap();
+        let solver = NelderMead::new(get_initial_simplex(*x0, *x1))
+            .with_sd_tolerance(1e-6).unwrap()
+            .with_alpha(1.0).unwrap()
+            .with_gamma(2.0).unwrap()
+            .with_sigma(0.5).unwrap()
+            .with_rho(0.5).unwrap();
 
-        let result: OptimizationResult<ProblemParams<N, &F>, NelderMead<Matrix<f64, Const<2>, Const<1>, ArrayStorage<f64, 2, 1>>, f64>, argmin::core::IterState<Matrix<f64, Const<2>, Const<1>, ArrayStorage<f64, 2, 1>>, (), (), (), f64>> = Executor::new(params, solver)
+        let result = Executor::new(params, solver)
             .configure(|state| state.max_iters(1000000))
             .run()
             .expect("Failed to optimize");

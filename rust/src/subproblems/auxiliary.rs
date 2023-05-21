@@ -124,6 +124,9 @@ pub fn solve_quartic_roots(p: &Vector5<Complex<f64>>) -> DVector<Complex<f64>> {
     ]);
 }
 
+/// Solves the roots of a cubic equation using the cubic formula
+///
+/// https://en.wikipedia.org/wiki/Cubic_equation#General_cubic_formula
 pub fn solve_cubic_roots(p: &Vector4<Complex<f64>>) -> DVector<Complex<f64>> {
     let a = p[0];
     let b = p[1];
