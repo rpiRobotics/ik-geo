@@ -1,5 +1,11 @@
 # Compilation directory
 target
 
-# Dependancy info
-Cargo.lock
+# Libraries
+lib_ikfast
+
+# IkFast config
+lib_ikfast.config
+
+# Testing data
+data

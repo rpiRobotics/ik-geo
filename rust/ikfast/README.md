@@ -1,0 +1,2 @@
+The code in this folder is part of ikfast by OpenRAVE and is licensed under the Apache License, Version 2.0 which can be found at:
+    [http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
