@@ -1,7 +1,7 @@
 use std::f64::INFINITY;
 
 pub(crate) mod auxiliary;
-pub(crate) mod setups;
+pub mod setups;
 
 use {
     super::solutionset::{ SolutionSet2, SolutionSet4 },

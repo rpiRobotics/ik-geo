@@ -1,5 +1,5 @@
 pub(crate) mod auxiliary;
-pub(crate) mod setups;
+pub mod setups;
 pub mod hardcoded;
 
 use {

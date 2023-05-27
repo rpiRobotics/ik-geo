@@ -1,4 +1,3 @@
-/*
 use {
     linear_subproblem_solutions_rust::{
         inverse_kinematics::{
@@ -202,8 +201,3 @@ criterion_group!(
 );
 
 criterion_main!(benches);
- */
-
-fn main() {
-
-}
