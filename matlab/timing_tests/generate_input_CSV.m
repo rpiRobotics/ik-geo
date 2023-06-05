@@ -1,40 +1,27 @@
-<<<<<<< HEAD
-N = 100e3;
-% N = 10;
-=======
 N = 10e3;
 %N = 10;
->>>>>>> main
+
+file_location = "../../test_cases/";
 
 setups = {
     subproblem_setups.sp_1
     subproblem_setups.sp_2
-    subproblem_setups.sp_2E
+    % subproblem_setups.sp_2E
     subproblem_setups.sp_3
     subproblem_setups.sp_4
     subproblem_setups.sp_5
     subproblem_setups.sp_6
-<<<<<<< HEAD
-    };
-=======
 };
->>>>>>> main
 
 for i = 1:length(setups)
     setup = setups{i};
     rng default
     [T, P_list, S_list] = get_table(setup, N);
     
-    
     class_name = string(class(setup)).split(".");
-    file_name = class_name(end) + ".csv";
     
-<<<<<<< HEAD
-    writetable(T, file_name);
-=======
-    %writetable(T, file_name);
->>>>>>> main
-    save(class_name(end)+".mat", "P_list", "S_list");
+    writetable(T, file_location + class_name(end) + ".csv");
+    save(file_location + class_name(end) + ".mat", "P_list", "S_list");
 end
 %%
 function [T, P_list, S_list] = get_table(setup, N)

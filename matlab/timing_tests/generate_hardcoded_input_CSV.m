@@ -1,5 +1,8 @@
-% N = 10e3;
-N = 10;
+N = 10e3;
+% N = 10;
+% N=100;
+
+file_location = "../../test_cases/";
 
 setups = {
     hardcoded_IK_setups.ur5
@@ -19,10 +22,9 @@ for i = 1:length(setups)
     
     
     class_name = string(class(setup)).split(".");
-    file_name = class_name(end) + ".csv";
     
-    writetable(T, file_name);
-    save(class_name(end)+".mat", "P_list", "S_list");
+    % writetable(T,  file_location + class_name(end) + ".csv");
+    save(file_location + class_name(end) + ".mat", "P_list", "S_list");
 end
 
 %%
