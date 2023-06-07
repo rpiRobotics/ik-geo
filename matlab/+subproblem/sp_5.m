@@ -27,9 +27,9 @@ function [theta1, theta2, theta3] = sp_5(p0, p1, p2, p3, k1, k2, k3)
 %       theta2: 1xN angle (in radians)
 %       theta3: 1xN angle (in radians)
 
-theta1 = NaN([1 8]);
-theta2 = NaN([1 8]);
-theta3 = NaN([1 8]);
+theta1 = NaN([1 4]);
+theta2 = NaN([1 4]);
+theta3 = NaN([1 4]);
 i_soln = 0;
 
 p1_s = p0+k1*k1'*p1;
@@ -41,7 +41,7 @@ delta3 = dot(k2,p3_s);
 [P_1, R_1] = cone_polynomials(p0, k1, p1, p1_s, k2);
 [P_3, R_3] = cone_polynomials(p2, k3, p3, p3_s, k2);
 
-% -H^2 + P(H) +- sqrt(R(H))
+% P(H) +- sqrt(R(H))
 % E1_p = poly2sym(P_1) + sqrt(poly2sym(R_1));
 % E1_n = poly2sym(P_1) - sqrt(poly2sym(R_1));
 % E3_p = poly2sym(P_3) + sqrt(poly2sym(R_3));
@@ -64,6 +64,7 @@ all_roots = subproblem.quartic_roots(EQN)'; %all_roots = roots(EQN)';
 
 H_vec = all_roots( abs(imag(all_roots)) < 1e-6 ); %H_vec = all_roots(real(all_roots) == all_roots);
 H_vec = real(H_vec);
+H_vec = uniquetol(H_vec);
 
 % Find v_1(H_star) and v_3(H_star) for each branch
 % and use subproblem 1
@@ -77,44 +78,44 @@ signs = [+1 +1 -1 -1
          +1 -1 +1 -1];
 J = [0 1; -1 0];
 
-%for H = H_vec
 for i_H = 1:length(H_vec)
-H = H_vec(i_H);
-
-const_1 = A_1'*k2*(H-delta1);
-const_3 = A_3'*k2*(H-delta3);
-if (norm(A_1'*k2)^2 - (H-delta1)^2) < 0
-    continue
-end
-if(norm(A_3'*k2)^2 - (H-delta3)^2) < 0
-    continue
-end
-
-pm_1 = J*A_1'*k2*sqrt(norm(A_1'*k2)^2 - (H-delta1)^2);
-pm_3 = J*A_3'*k2*sqrt(norm(A_3'*k2)^2 - (H-delta3)^2);
-
-for i_sign = 1:4
-    sign_1 = signs(1,i_sign);
-    sign_3 = signs(2,i_sign);
-
-
-    sc1 =const_1+sign_1*pm_1;
-    sc1 = sc1/norm(A_1'*k2)^2;
-
-    sc3 = const_3+sign_3*pm_3;
-    sc3 = sc3/norm(A_3'*k2)^2;
-
-    v1 = A_1*sc1+p1_s;
-    v3 = A_3*sc3+p3_s;
-
-    if abs(norm(v1-H*k2) - norm(v3-H*k2)) < 1E-6
-        i_soln = 1 + i_soln;
-        theta1(i_soln) = atan2(sc1(1), sc1(2));
-        theta2(i_soln) = subproblem.sp_1(v3, v1, k2);
-        theta3(i_soln) = atan2(sc3(1), sc3(2));     
+    if i_soln == 4; break; end
+    H = H_vec(i_H);
+    
+    const_1 = A_1'*k2*(H-delta1);
+    const_3 = A_3'*k2*(H-delta3);
+    if (norm(A_1'*k2)^2 - (H-delta1)^2) < 0
+        continue
     end
-
-end
+    if(norm(A_3'*k2)^2 - (H-delta3)^2) < 0
+        continue
+    end
+    
+    pm_1 = J*A_1'*k2*sqrt(norm(A_1'*k2)^2 - (H-delta1)^2);
+    pm_3 = J*A_3'*k2*sqrt(norm(A_3'*k2)^2 - (H-delta3)^2);
+    
+    for i_sign = 1:4
+        if i_soln == 4; break; end
+        sign_1 = signs(1,i_sign);
+        sign_3 = signs(2,i_sign);
+    
+        sc1 = const_1+sign_1*pm_1;
+        sc1 = sc1/norm(A_1'*k2)^2;
+    
+        sc3 = const_3+sign_3*pm_3;
+        sc3 = sc3/norm(A_3'*k2)^2;
+    
+        v1 = A_1*sc1+p1_s;
+        v3 = A_3*sc3+p3_s;
+    
+        if abs(norm(v1) - norm(v3)) < 1E-6
+            i_soln = 1 + i_soln;
+            theta1(i_soln) = atan2(sc1(1), sc1(2));
+            theta2(i_soln) = subproblem.sp_1(v3, v1, k2);
+            theta3(i_soln) = atan2(sc3(1), sc3(2));
+            if i_soln == 4; break; end
+        end
+    end
 end
 
 theta1 = theta1(1:i_soln);

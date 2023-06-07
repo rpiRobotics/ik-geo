@@ -48,6 +48,7 @@ z4 = a^2*c1^2-2*a*c1*a1*c+a1^2*c^2-b*a*b1*c1-b*b1*a1*c+b^2*a1*c1+c*a*b1^2;
 y = subproblem.quartic_roots([z4 z3 z2 z1 z0]); %y = roots([z4 z3 z2 z1 z0]);
 y = y( abs(imag(y)) < 1e-6 ); %y = y(y==real(y));
 y = real(y);
+y = uniquetol(y);
 
 x = -(a*fq+a*c1*y.^2-a1*c*y.^2+a*e1*y-a1*e*y-a1*f)./(a*b1*y+a*d1-a1*b*y-a1*d);
 
