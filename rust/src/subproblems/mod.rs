@@ -114,32 +114,7 @@ pub fn subproblem2extended(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f6
 // If not, minimizes `| || rot(k, theta)*p1 - p2 || - d |`.
 // Also returns a boolean of whether or not `theta` is a least-squares solution.
 pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
-    let kxp = k.cross(p1);
-    let a_1 = Matrix3x2::from_columns(&[kxp, -k.cross(&kxp)]);
-    let a = -2.0 * p2.transpose() * a_1;
-    let norm_a_sq = a.norm_squared();
-    let norm_a = a.norm();
-
-    let b = d * d - (p2 - k * k.transpose() * p1).norm_squared() - kxp.norm_squared();
-
-    let x_ls = a_1.transpose() * (-2.0 * p2 * b / norm_a_sq);
-
-    if x_ls.norm_squared() > 1.0 {
-        return (SolutionSet2::One(x_ls[0].atan2(x_ls[1])), true);
-    }
-
-    let xi = (1.0 - b * b / norm_a_sq).sqrt();
-
-    let a_perp_tilde = Vector2::new(a[1], -a[0]);
-    let a_perp = a_perp_tilde / norm_a;
-
-    let sc_1 = x_ls + xi * a_perp;
-    let sc_2 = x_ls - xi * a_perp;
-
-    (SolutionSet2::Two(
-        sc_1[0].atan2(sc_1[1]),
-        sc_2[0].atan2(sc_2[1]),
-    ), false)
+    subproblem4(p2, p1, k, 0.5 * (p1.norm_squared() + p2.norm_squared() - d * d))
 }
 
 /// Solves for `theta` where `h' * rot(k, theta) * p = d` if possible.

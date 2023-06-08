@@ -17,6 +17,7 @@ use {
 };
 
 /// Creates a 3x3 rotation matrix about `k` by `theta`
+#[inline(always)]
 pub fn rot(k: &Vector3<f64>, theta: f64) -> Matrix3<f64> {
     let k = k.normalize();
     Matrix3::identity() + hat(&k) * theta.sin() + hat(&k) * hat(&k) * (1.0 - theta.cos())
