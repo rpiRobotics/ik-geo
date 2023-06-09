@@ -7,7 +7,7 @@ methods (Static)
         ey = [0;1;0];
         ez = [0;0;1];
         kin.H = [ez ey ey ey -ez ey];
-        kin.P = [0.089159*ez, 0.1358*ey, -0.1197*ey+0.425*ex, 0.3922*ex, 0.093*ey, -0.0946*ez, 0.0823*ey];
+        kin.P = [0.089159*ez, 0.1358*ey, -0.1197*ey+0.425*ex, 0.3922*ex, 0.093*ey-0.0946*ez, zv, 0.0823*ey];
         kin.joint_type = zeros([6 1]);
     end
 
