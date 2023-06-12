@@ -132,11 +132,15 @@ fn time_batch_hardcoded() {
 
 #[cfg(link_ikfast)]
 #[test]
-fn time_ikfast() {
+fn time_ikfast() { // Can only test 1 IKFast robot at a time
     println!();
 
     time_ikfast_separate(<Irb6640 as SetupStatic>::name());
     time_ikfast_batched(<Irb6640 as SetupStatic>::name());
+    // time_ikfast_separate(<SphericalBot as SetupStatic>::name());
+    // time_ikfast_batched(<SphericalBot as SetupStatic>::name());
+    // time_ikfast_separate(<Ur5 as SetupStatic>::name());
+    // time_ikfast_batched(<Ur5 as SetupStatic>::name());
 }
 
 fn time_subproblem_batched<S: SetupStatic + SetupDynamic>() {

@@ -100,14 +100,19 @@ cargo bench
     lib lib_ikfast/[NAME].obj lib_ikfast/ikfast_proxy.obj /out:lib_ikfast/[NAME].lib
     ```
 
-    Example compilation for the gnu toolchain:
-
+    Compilation for the gnu toolchain:
     ```
-    g++ -O3 -o lib_ikfast/[NAME].obj -DIKFAST_NO_MAIN .../[NAME].cpp
-    g++ -O3 -o lib_ikfast/ikfast_proxy.obj ikfast/ikfast_proxy.cpp
-    ar rcs lib_ikfast/[NAME].a lib_ikfast/kuka_kr30l16.obj lib_ikfast/ikfast_proxy.obj
-    ```
+    g++ -O3 -o lib_ikfast/ikfast_proxy.obj ikfast/ikfast_proxy.cpp -c
 
+    g++ -O3 -o lib_ikfast/IRB6640.obj -DIKFAST_NO_MAIN ../ikfast/generated/IRB_6640.cpp -c
+    ar rcs lib_ikfast/libIRB6640.a lib_ikfast/IRB6640.obj lib_ikfast/ikfast_proxy.obj
+
+    g++ -O3 -o lib_ikfast/SphericalBot.obj -DIKFAST_NO_MAIN ../ikfast/generated/spherical_bot.cpp -c
+    ar rcs lib_ikfast/libSphericalBot.a lib_ikfast/SphericalBot.obj lib_ikfast/ikfast_proxy.obj
+
+    g++ -O3 -o lib_ikfast/UR5.obj -DIKFAST_NO_MAIN ../ikfast/generated/ur5.cpp -llapack -c
+    ar rcs lib_ikfast/libUR5.a lib_ikfast/UR5.obj lib_ikfast/ikfast_proxy.obj
+    ```
     Make sure IKFAST_NO_MAIN is defined.
 
 2. Create a file in the project directory called `lib_ikfast.config` and place the following contents into it.
