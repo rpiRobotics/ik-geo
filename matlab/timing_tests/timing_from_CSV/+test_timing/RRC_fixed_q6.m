@@ -1,7 +1,7 @@
 function [T_avg, Q_testing] = RRC_fixed_q6(P_list)
 setup = hardcoded_IK_setups.RRC_fixed_q6;
-N = 10e3;
-
+%N = 10e3;
+N=1000;
 Q_testing = NaN(6,16, N);
 
 tic

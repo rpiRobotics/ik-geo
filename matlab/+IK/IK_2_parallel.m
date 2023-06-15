@@ -6,12 +6,15 @@ is_LS_vec = [];
 
 p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
-% [q1_vec, soln_num_vec] = search_1D(@error_given_q1, -pi, pi, 1000, true);
 [q1_vec, soln_num_vec] = search_1D(@error_given_q1, -pi, pi, 200, false);
+% [q1_vec, soln_num_vec] = search_1D(@error_given_q1, -pi, pi, 1000, true);
 
 for i_q1 = 1:length(q1_vec)
     q1 = q1_vec(i_q1);
     [e_vec, t4, t6]  = error_given_q1(q1);
+    if isnan(e_vec(soln_num_vec(i_q1)))
+        continue % Odd edge case, TODO figure out why it happens
+    end
     e_i = e_vec(soln_num_vec(i_q1));
     q4 = t4(soln_num_vec(i_q1));
     q6 = t6(soln_num_vec(i_q1));

@@ -4,7 +4,7 @@ p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
 [q1_vec, q2_vec, soln_num_vec] = search_2D( ...
     @(q1,q2)(alignment_err_given_q12(q1, q2, p_16, R_06, kin)), ...
-    -pi, pi, -pi, pi, 100, true);
+    -pi, pi, -pi, pi, 100, false);
 
 Q = [];
 is_LS_vec = [];

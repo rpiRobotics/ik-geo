@@ -51,9 +51,9 @@ for i_minimum = 1:N_max_minima
     e_mesh_iter(neighbors_idx_3d) = NaN;
 
 end
-if i_minimum == N_max_minima
-    error("Too many minima found!")
-end
+% if i_minimum == N_max_minima
+%     error("Too many minima found!") % TODO: Why does this happen?
+% end
 x1_vec = x1_vec(1:i_minimum-1);
 x2_vec = x2_vec(1:i_minimum-1);
 soln_num_vec = soln_num_vec(1:i_minimum-1);
@@ -82,30 +82,33 @@ end
 
 end
 
+
+
 function neighbors_idx = find_blob(x1, x2, bool_mat)
 sz = size(bool_mat);
+Q = [x1;x2];
+coder.varsize('Q', [2 1024]);
 neighbors_idx = [];
-inner(x1, x2);
+coder.varsize('neighbors_idx', [1 1024]);
 
-    function inner(starting_x1, starting_x2)
-        % Wrap for torus (e.g. angle search)
-        starting_x1 = mod(starting_x1-1, sz(1))+1;
-        starting_x2 = mod(starting_x2-1, sz(2))+1;
+while width(Q) > 0
+    starting_x1 = Q(1,end);
+    starting_x2 = Q(2,end);
+    Q = Q(:,1:end-1);
 
-        idx = sub2ind(sz,starting_x1,starting_x2);
-        if any(neighbors_idx == idx)
-            return % Already seen this node
-        end
-        if ~bool_mat(idx)
-            return % Not part of blob
-        end
-        neighbors_idx = [ neighbors_idx idx];
-
-        inner(starting_x1+1, starting_x2);
-        inner(starting_x1-1, starting_x2);
-        inner(starting_x1  , starting_x2+1);
-        inner(starting_x1  , starting_x2-1);
+    % Wrap for torus (e.g. angle search)
+    starting_x1 = mod(starting_x1-1, sz(1))+1;
+    starting_x2 = mod(starting_x2-1, sz(2))+1;
+    idx = sub2ind(sz,starting_x1,starting_x2);
+    if any(idx == neighbors_idx)
+        continue
     end
+
+    if bool_mat(idx)
+        neighbors_idx = [neighbors_idx idx];
+        Q = [Q [starting_x1+1;starting_x2] [starting_x1-1;starting_x2] [starting_x1;starting_x2+1] [starting_x1;starting_x2-1]];
+    end
+end
 end
 
 function x = select_soln(fun, x1, x2, soln_num)

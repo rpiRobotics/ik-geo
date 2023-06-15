@@ -64,7 +64,7 @@ all_roots = subproblem.quartic_roots(EQN)'; %all_roots = roots(EQN)';
 
 H_vec = all_roots( abs(imag(all_roots)) < 1e-6 ); %H_vec = all_roots(real(all_roots) == all_roots);
 H_vec = real(H_vec);
-H_vec = uniquetol(H_vec);
+H_vec = subproblem.uniquetol_manual(H_vec);
 
 % Find v_1(H_star) and v_3(H_star) for each branch
 % and use subproblem 1

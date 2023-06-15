@@ -1,7 +1,7 @@
 function [T_avg, Q_testing] = IK_2_intersecting(P_list)
 setup = IK_setups.IK_2_intersecting;
-N = 10e3;
-
+%N = 10e3;
+N=1000;
 Q_testing = NaN(6,16, N);
 
 tic

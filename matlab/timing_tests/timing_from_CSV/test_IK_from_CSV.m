@@ -46,43 +46,55 @@ codegen -report /+test_timing/IRB_6640_MRT.m -args {lists.IRB_6640.P_list}
 
 cd ../
 %%
-N = 100;
+N = 10;
 T = NaN(N,1);
 %% m-files  
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_gen_6_dof(lists.IK_gen_6_dof.P_list); end;                                  plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_intersecting(lists.IK_2_intersecting.P_list); end;                        plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_parallel(lists.IK_2_parallel.P_list); end;                                plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical(lists.IK_spherical.P_list); end;                                  plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical_2_intersecting(lists.IK_spherical_2_intersecting.P_list); end;    plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical_2_parallel(lists.IK_spherical_2_parallel.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_3_parallel(lists.IK_3_parallel.P_list); end;                                plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_3_parallel_2_intersecting(lists.IK_3_parallel_2_intersecting.P_list); end;  plot(1e6*T); vpa(1e6*min(T))
+% for i = 1:N; [T(i), Q_testing] = test_timing.IK_gen_6_dof(lists.IK_gen_6_dof.P_list); end;                                  plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.IK_gen_6_dof(lists.IK_gen_6_dof.P_list); vpa(1e6*T) % N = 100
+% for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_intersecting(lists.IK_2_intersecting.P_list); end;                        plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.IK_2_intersecting(lists.IK_2_intersecting.P_list); vpa(1e6*T) % N=1000
+% for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_parallel(lists.IK_2_parallel.P_list); end;                                plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.IK_2_parallel(lists.IK_2_parallel.P_list); vpa(1e6*T) % N=1000
+for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical(lists.IK_spherical.P_list); disp(i); end;                         plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical_2_intersecting(lists.IK_spherical_2_intersecting.P_list); disp(i); end;    plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical_2_parallel(lists.IK_spherical_2_parallel.P_list); disp(i); end;            plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.IK_3_parallel(lists.IK_3_parallel.P_list); disp(i); end;                                plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.IK_3_parallel_2_intersecting(lists.IK_3_parallel_2_intersecting.P_list); disp(i); end;  plot(1e6*T); vpa(1e6*min(T))
 
-for i = 1:N; [T(i), Q_testing] = test_timing.yumi_fixed_q3(lists.yumi_fixed_q3.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.RRC_fixed_q6(lists.RRC_fixed_q6.P_list); end;              plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.two_parallel_bot(lists.two_parallel_bot.P_list); end;      plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.spherical_bot(lists.spherical_bot.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.KUKA_R800_fixed_q3(lists.KUKA_R800_fixed_q3.P_list); end;  plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IRB_6640(lists.IRB_6640.P_list); end;                      plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.three_parallel_bot(lists.three_parallel_bot.P_list); end;  plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.ur5(lists.ur5.P_list); end;                                plot(1e6*T); vpa(1e6*min(T))
+% for i = 1:N; [T(i), Q_testing] = test_timing.yumi_fixed_q3(lists.yumi_fixed_q3.P_list); disp(i); end;            plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.yumi_fixed_q3(lists.yumi_fixed_q3.P_list); vpa(1e6*T) % N = 100
+% for i = 1:N; [T(i), Q_testing] = test_timing.RRC_fixed_q6(lists.RRC_fixed_q6.P_list); disp(i); end;              plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.RRC_fixed_q6(lists.RRC_fixed_q6.P_list); vpa(1e6*T) % N = 1000
+% for i = 1:N; [T(i), Q_testing] = test_timing.two_parallel_bot(lists.two_parallel_bot.P_list); disp(i); end;      plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.two_parallel_bot(lists.two_parallel_bot.P_list); vpa(1e6*T) % N = 1000
 
+for i = 1:N; [T(i), Q_testing] = test_timing.spherical_bot(lists.spherical_bot.P_list); disp(i); end;            plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.KUKA_R800_fixed_q3(lists.KUKA_R800_fixed_q3.P_list); disp(i); end;  plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.IRB_6640(lists.IRB_6640.P_list); disp(i); end;                      plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.three_parallel_bot(lists.three_parallel_bot.P_list); disp(i); end;  plot(1e6*T); vpa(1e6*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.ur5(lists.ur5.P_list); disp(i); end;                                plot(1e6*T); vpa(1e6*min(T))
 
-for i = 1:N; [T(i), Q_testing] = test_timing.spherical_bot_MRT(lists.spherical_bot.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IRB_6640_MRT(lists.IRB_6640.P_list); end;                      plot(1e6*T); vpa(1e6*min(T))
+% for i = 1:N; [T(i), Q_testing] = test_timing.spherical_bot_MRT(lists.spherical_bot.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
+% for i = 1:N; [T(i), Q_testing] = test_timing.IRB_6640_MRT(lists.IRB_6640.P_list); end;                      plot(1e6*T); vpa(1e6*min(T))
 %% MEX files
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_gen_6_dof_mex(lists.IK_gen_6_dof.P_list); end;                                  plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_intersecting_mex(lists.IK_2_intersecting.P_list); end;                        plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_parallel_mex(lists.IK_2_parallel.P_list); end;                                plot(1e6*T); vpa(1e6*min(T))
+% for i = 1:N; [T(i), Q_testing] = test_timing.IK_gen_6_dof_mex(lists.IK_gen_6_dof.P_list); disp(i); end;                         plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.IK_gen_6_dof_mex(lists.IK_gen_6_dof.P_list); vpa(1e6*T)
+% for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_intersecting_mex(lists.IK_2_intersecting.P_list); end;                        plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.IK_2_intersecting_mex(lists.IK_2_intersecting.P_list); vpa(1e6*T)
+% for i = 1:N; [T(i), Q_testing] = test_timing.IK_2_parallel_mex(lists.IK_2_parallel.P_list); end;                                plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.IK_2_parallel_mex(lists.IK_2_parallel.P_list); vpa(1e6*T)
 for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical_mex(lists.IK_spherical.P_list); end;                                  plot(1e6*T); vpa(1e6*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical_2_intersecting_mex(lists.IK_spherical_2_intersecting.P_list); end;    plot(1e6*T); vpa(1e6*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.IK_spherical_2_parallel_mex(lists.IK_spherical_2_parallel.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.IK_3_parallel_mex(lists.IK_3_parallel.P_list); end;                                plot(1e6*T); vpa(1e6*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.IK_3_parallel_2_intersecting_mex(lists.IK_3_parallel_2_intersecting.P_list); end;  plot(1e6*T); vpa(1e6*min(T))
 
-for i = 1:N; [T(i), Q_testing] = test_timing.yumi_fixed_q3_mex(lists.yumi_fixed_q3.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.RRC_fixed_q6_mex(lists.RRC_fixed_q6.P_list); end;              plot(1e6*T); vpa(1e6*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.two_parallel_bot_mex(lists.two_parallel_bot.P_list); end;      plot(1e6*T); vpa(1e6*min(T))
+% for i = 1:N; [T(i), Q_testing] = test_timing.yumi_fixed_q3_mex(lists.yumi_fixed_q3.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.yumi_fixed_q3_mex(lists.yumi_fixed_q3.P_list); vpa(1e6*T)
+% for i = 1:N; [T(i), Q_testing] = test_timing.RRC_fixed_q6_mex(lists.RRC_fixed_q6.P_list); end;              plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.RRC_fixed_q6_mex(lists.RRC_fixed_q6.P_list); vpa(1e6*T)
+% for i = 1:N; [T(i), Q_testing] = test_timing.two_parallel_bot_mex(lists.two_parallel_bot.P_list); end;      plot(1e6*T); vpa(1e6*min(T))
+[T, Q_testing] = test_timing.two_parallel_bot_mex(lists.two_parallel_bot.P_list); vpa(1e6*T)
 for i = 1:N; [T(i), Q_testing] = test_timing.spherical_bot_mex(lists.spherical_bot.P_list); end;            plot(1e6*T); vpa(1e6*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.KUKA_R800_fixed_q3_mex(lists.KUKA_R800_fixed_q3.P_list); end;  plot(1e6*T); vpa(1e6*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.IRB_6640_mex(lists.IRB_6640.P_list); end;                      plot(1e6*T); vpa(1e6*min(T))

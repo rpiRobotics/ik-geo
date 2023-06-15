@@ -29,8 +29,8 @@ for i = 1:N; [T(i), Q_testing] = test_timing.sp_1(lists.sp_1.P_list); end; plot(
 for i = 1:N; [T(i), Q_testing] = test_timing.sp_2(lists.sp_2.P_list); end; plot(1e9*T); vpa(1e9*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.sp_3(lists.sp_3.P_list); end; plot(1e9*T); vpa(1e9*min(T))
 for i = 1:N; [T(i), Q_testing] = test_timing.sp_4(lists.sp_4.P_list); end; plot(1e9*T); vpa(1e9*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.sp_5(lists.sp_5.P_list); end; plot(1e9*T); vpa(1e9*min(T))
-for i = 1:N; [T(i), Q_testing] = test_timing.sp_6(lists.sp_6.P_list); end; plot(1e9*T); vpa(1e9*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.sp_5(lists.sp_5.P_list); disp(i); end; plot(1e9*T); vpa(1e9*min(T))
+for i = 1:N; [T(i), Q_testing] = test_timing.sp_6(lists.sp_6.P_list); disp(i); end; plot(1e9*T); vpa(1e9*min(T))
 
 %% MEX files
 for i = 1:N; [T(i), Q_testing] = test_timing.sp_1_mex(lists.sp_1.P_list); end; plot(1e9*T); vpa(1e9*min(T))

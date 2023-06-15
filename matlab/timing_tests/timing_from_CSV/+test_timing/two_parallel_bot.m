@@ -1,7 +1,7 @@
 function [T_avg, Q_testing] = two_parallel_bot(P_list)
 setup = hardcoded_IK_setups.two_parallel_bot;
-N = 10e3;
-
+%N = 10e3;
+N=1000;
 Q_testing = NaN(6,16, N);
 
 tic

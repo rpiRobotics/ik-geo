@@ -23,7 +23,7 @@ for i = 1:length(setups)
     
     class_name = string(class(setup)).split(".");
     
-    % writetable(T,  file_location + class_name(end) + ".csv");
+    writetable(T,  file_location + class_name(end) + ".csv");
     save(file_location + class_name(end) + ".mat", "P_list", "S_list");
 end
 
