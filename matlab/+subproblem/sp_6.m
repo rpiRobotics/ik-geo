@@ -1,5 +1,5 @@
     function [theta1, theta2] = sp_6(H, K, P, d1, d2)
-% subproblem.sp_6  Subproblem 6: Four cones
+% subproblem.sp_6  Subproblem 6: Four circles
 %   [theta1, theta2] = subproblem.sp_6(H, K, P, d1, d2) finds
 %   theta1, theta2 such that
 %       h1'*rot(k1,theta1)*p1 + h2'*rot(k2,theta2)*p2 = d1

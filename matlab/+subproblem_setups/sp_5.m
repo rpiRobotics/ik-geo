@@ -22,16 +22,6 @@ classdef sp_5
                 subproblem.sp_5(P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3);
         end
 
-        function S = run_mex(P)
-            [S.theta1, S.theta2, S.theta3] = ...
-                subproblem.sp_5_mex(P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3);
-        end
-
-        function generate_mex()
-            P = subproblem_setups.sp_5.setup();
-            codegen -report +subproblem/sp_5.m -args {P.p0,P.p1,P.p2,P.p3,P.k1,P.k2,P.k3}
-        end
-
         function e = error(P, S)
             e = NaN;
             for i = 1:length(S.theta1)

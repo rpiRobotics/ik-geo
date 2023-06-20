@@ -1,5 +1,6 @@
 function C = uniquetol_manual(A)
-% Reimplementation of uniquetol since it's not supported by MATLAB coder
+% subproblem.uniquetol_manual Reimplementation of uniquetol
+%   Reimplementation of uniquetol since it's not supported by MATLAB coder
 
 if isempty(A)
     C = A;

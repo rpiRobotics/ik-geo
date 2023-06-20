@@ -1,5 +1,5 @@
 function [theta, is_LS] = sp_3(p1, p2, k, d)
-% subproblem.sp_3  Subproblem 3: Cone and Sphere
+% subproblem.sp_3  Subproblem 3: Circle and sphere
 %   theta = subproblem.sp_3(p1, p2, k, d) finds theta such that
 %       || rot(k, theta)*p1 - p2 || = d
 %   If there's no solution, minimize the least-squares residual

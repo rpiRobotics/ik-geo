@@ -1,5 +1,5 @@
 function [theta, is_LS] = sp_1(p1, p2, k)
-% subproblem.sp_1  Subproblem 1: Cone and Point
+% subproblem.sp_1  Subproblem 1: Circle and point
 %   theta = subproblem.sp_1(p1, p2, k) finds theta such that
 %           rot(k, theta)*p1 = p2
 %   If there's no solution, theta minimizes the least-squares residual
@@ -8,7 +8,7 @@ function [theta, is_LS] = sp_1(p1, p2, k)
 %   [theta, is_LS] = subproblem.sp_1(p1, p2, k) also produces a flag is_LS
 %   is_LS is true if theta is a least-squares solution
 %
-%   The problem is ill-posed if p1 or p2 are parallel to k
+%   The problem is ill-posed if p1 or p2 is parallel to k
 %
 %   Inputs:
 %       p1: 3x1 vector

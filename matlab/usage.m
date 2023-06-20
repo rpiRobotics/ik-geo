@@ -14,13 +14,6 @@ help subproblem.sp_2
 [S_t.theta1, S_t.theta2] = subproblem.sp_2(P.p1,P.p2,P.k1,P.k2);
 subproblem_setups.sp_2.error(P,S_t)
 
-%% Subproblem 2 Extension
-
-help subproblem.sp_2E
-[P, S] = subproblem_setups.sp_2E.setup();
-[S_t.theta1,S_t.theta2] = subproblem.sp_2E(P.p0,P.p1,P.p2,P.k1,P.k2);
-subproblem_setups.sp_2E.error(P, S_t)
-
 %% Subproblem 3
 
 help subproblem.sp_3

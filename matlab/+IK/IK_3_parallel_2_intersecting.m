@@ -6,11 +6,11 @@ H = kin.H;
 Q = [];
 is_LS_vec = [];
 
-p_16 = p_0T - P(:,1) - R_06*P(:,7);
+p_06 = p_0T - P(:,1) - R_06*P(:,7);
 
 % Find q1 using Subproblem 4
 % h_2' R_01' p_16 = h2' (p_12 + p_23 + p_34 + p_45)
-[theta1, theta1_is_ls] = subproblem.sp_4(H(:,2), p_16, -H(:,1), H(:,2)'*sum(P(:,2:5), 2));
+[theta1, theta1_is_ls] = subproblem.sp_4(H(:,2), p_06, -H(:,1), H(:,2)'*sum(P(:,2:5), 2));
 
 for i_t1 = 1:length(theta1)
     q_1 = theta1(i_t1);
@@ -32,7 +32,7 @@ for i_t1 = 1:length(theta1)
         [q_6, q_6_is_LS] = subproblem.sp_1(R_45'*H(:,2), R_06'*R_01*H(:,2), -H(:,6));
     
         % solve for q3
-        d_inner = R_01'*p_16-P(:,2) - rot(H(:,2), theta_14)*P(:,5); % Recall p_56 = 0
+        d_inner = R_01'*p_06-P(:,2) - rot(H(:,2), theta_14)*P(:,5); % Recall p_56 = 0
         d = norm(d_inner);
         [theta_3, theta_3_is_LS] = subproblem.sp_3(-P(:,4), P(:,3), H(:,2), d);
     

@@ -3,7 +3,7 @@ function [Q, is_LS_vec] = IK_spherical(R_06, p_0T, kin)
 Q = [];
 is_LS_vec = [];
 
-p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
+p_06 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
 
 % Use subproblem 5 to find (q1, q2, q3)
@@ -11,7 +11,7 @@ p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 % -p_12 + R_01^T p_16 = R_12 (p_23 + R_23(p_34))
 
 [t1, t2, t3] = subproblem.sp_5( ...
-    -kin.P(:,2), p_16, kin.P(:,3), kin.P(:,4), ...
+    -kin.P(:,2), p_06, kin.P(:,3), kin.P(:,4), ...
     -kin.H(:,1), kin.H(:,2), kin.H(:,3));
 
 
@@ -31,7 +31,6 @@ for i_q123 = 1:length(t1)
         kin.H(:,4)'*R_36*kin.H(:,6));
     
     % Solve for q4 using subproblem 1
-    %for q5 = t5  
     for i_q5 = 1:length(t5)
         q5 = t5(i_q5);
         [q4, q4_is_LS] = subproblem.sp_1( ...

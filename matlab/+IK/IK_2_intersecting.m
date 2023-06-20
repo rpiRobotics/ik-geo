@@ -3,14 +3,14 @@ function [Q, is_LS_vec] = IK_2_intersecting(R_06, p_0T, kin)
 Q = [];
 is_LS_vec = [];
 
-p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
+p_06 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
 [q4_vec, soln_num_vec] = search_1D( ...
-    @(q4)(alignment_err_given_q4(q4, p_16, R_06, kin)), ...
+    @(q4)(alignment_err_given_q4(q4, p_06, R_06, kin)), ...
     -pi, pi, 200, false);
 
 for i_q4 = 1:length(q4_vec)
-    [e, Q_partial] = alignment_err_given_q4(q4_vec(i_q4), p_16, R_06, kin);
+    [e, Q_partial] = alignment_err_given_q4(q4_vec(i_q4), p_06, R_06, kin);
     q_partial = Q_partial(:,soln_num_vec(:,i_q4));
 
     R_04 = rot(kin.H(:,1),q_partial(1)) * rot(kin.H(:,2),q_partial(2)) ...

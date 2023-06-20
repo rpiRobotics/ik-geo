@@ -9,30 +9,16 @@ classdef sp_3
             P.d = norm(P.p2-rot(P.k,S.theta)*P.p1);
         end
 
-        function [P, S] = setup_LS()
+        function P = setup_LS()
             P.p1 = rand_vec;
             P.p2 = rand_vec;
             P.k = rand_normal_vec;
-            S.theta = rand_angle;
             
             P.d = rand;
         end
 
         function S = run(P)
             S.theta = subproblem.sp_3(P.p1,P.p2,P.k,P.d);
-        end
-
-        function S = run_grt(P)
-            S = fixed_subproblem3(P.p1,P.p2,P.k,P.d); % TODO
-        end
-
-        function S = run_mex(P)
-            S.theta = subproblem.sp_3_mex(P.p1,P.p2,P.k,P.d);
-        end
-
-        function generate_mex()
-            P = subproblem_setups.sp_3.setup();
-            codegen -report +subproblem/sp_3.m -args {P.p1,P.p2,P.k,P.d}
         end
 
         function e = error(P, S)

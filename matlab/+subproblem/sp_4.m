@@ -1,5 +1,5 @@
 function [theta, is_LS] = sp_4(h, p, k, d)
-% subproblem.sp_4  Subproblem 4: Cone and Plane
+% subproblem.sp_4  Subproblem 4: Circle and plane
 %   theta = = subproblem.sp_4(h, p, k, d) finds theta such that
 %       h'*rot(k,theta)*p = d
 %   If there's no solution, minimize the least-squares residual
@@ -32,19 +32,19 @@ b = d - h'*k*(k'*p);
 
 norm_A_2 = dot(A,A);
 
-x_ls = A_1'*(h*b);
+x_ls_tilde = A_1'*(h*b);
 
 if norm_A_2 > b^2
     xi = sqrt(norm_A_2-b^2);
-    A_perp_tilde = [A(2); -A(1)];
+    x_N_prime_tilde = [A(2); -A(1)];
 
-    sc_1 = x_ls + xi*A_perp_tilde;
-    sc_2 = x_ls - xi*A_perp_tilde;
+    sc_1 = x_ls_tilde + xi*x_N_prime_tilde;
+    sc_2 = x_ls_tilde - xi*x_N_prime_tilde;
 
     theta = [atan2(sc_1(1), sc_1(2)) atan2(sc_2(1), sc_2(2))];
     is_LS = false;
 else
-    theta = atan2(x_ls(1), x_ls(2));
+    theta = atan2(x_ls_tilde(1), x_ls_tilde(2));
     is_LS = true;
 end
 

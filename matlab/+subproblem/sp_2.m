@@ -1,5 +1,5 @@
 function [theta1, theta2, is_LS] = sp_2(p1, p2, k1, k2)
-% subproblem.sp_2  Subproblem 2: Two Cones
+% subproblem.sp_2  Subproblem 2: Two circles
 %   [theta1, theta2] = subproblem.sp_2(p1, p2, k1, k2) finds theta1, theta2
 %   such that
 %       rot(k1, theta1)*p1 = rot(k2, theta2)*p2

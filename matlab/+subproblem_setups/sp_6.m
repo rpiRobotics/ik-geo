@@ -19,15 +19,6 @@ classdef sp_6
         [S.theta1, S.theta2] = subproblem.sp_6(P.H, P.K, P.P, P.d1, P.d2);
         end
 
-        function S = run_mex(P)
-        [S.theta1, S.theta2] = subproblem.sp_6_mex(P.H, P.K, P.P, P.d1, P.d2);
-        end
-
-        function generate_mex()
-            P = subproblem_setups.sp_6.setup();
-            codegen -report +subproblem/sp_6.m -args {P.H, P.K, P.P, P.d1, P.d2}
-        end
-
         function e = error(P, S)  
             for i = 1:length(S.theta1)
                 e_i = norm([P.H(:,1)'* rot(P.K(:,1), S.theta1(i)) * P.P(:,1) ...

@@ -1,16 +1,16 @@
 function [Q, is_LS_vec] = IK_gen_6_dof(R_06, p_0T, kin)
 
-p_16 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
+p_06 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
 [q1_vec, q2_vec, soln_num_vec] = search_2D( ...
-    @(q1,q2)(alignment_err_given_q12(q1, q2, p_16, R_06, kin)), ...
+    @(q1,q2)(alignment_err_given_q12(q1, q2, p_06, R_06, kin)), ...
     -pi, pi, -pi, pi, 100, false);
 
 Q = [];
 is_LS_vec = [];
 
 for i = 1:length(q1_vec)
-    [~, Q_i, is_LS_vec_i] = alignment_err_given_q12(q1_vec(i), q2_vec(i), p_16, R_06, kin);
+    [~, Q_i, is_LS_vec_i] = alignment_err_given_q12(q1_vec(i), q2_vec(i), p_06, R_06, kin);
 %     Q = [Q Q_i];
 %     is_LS_vec = [is_LS_vec is_LS_vec_i];
     Q = [Q Q_i(:,soln_num_vec(i))];

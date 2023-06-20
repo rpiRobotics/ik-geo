@@ -3,7 +3,6 @@
 setups = {
     subproblem_setups.sp_1
     subproblem_setups.sp_2
-    subproblem_setups.sp_2E
     subproblem_setups.sp_3
     subproblem_setups.sp_4
     subproblem_setups.sp_5
@@ -36,9 +35,20 @@ histogram(errors(2,:));
 histogram(errors(3,:));
 histogram(errors(4,:));
 histogram(errors(5,:));
-histogram(errors(6,:));
-histogram(errors(7,:));hold off
+histogram(errors(6,:));hold off
 set(gca,'XScale','log')
+legend("SP " + string(1:6));
+
+%%
+plot(sort(errors(1,:))); hold on
+plot(sort(errors(2,:)));
+plot(sort(errors(3,:)));
+plot(sort(errors(4,:)));
+plot(sort(errors(5,:)));
+plot(sort(errors(6,:))); hold off
+set(gca,'YScale','log')
+legend("SP " + string(1:6));
+
 
 function e = correctness_test(prob_setup)
 P  = prob_setup.setup();

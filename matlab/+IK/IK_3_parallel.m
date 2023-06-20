@@ -4,12 +4,12 @@ function [Q, is_LS_vec] = IK_3_parallel(R_06, p_0T, kin)
 P = kin.P;
 H = kin.H;
 
-p_16 = p_0T - P(:,1) - R_06*P(:,7);
+p_06 = p_0T - P(:,1) - R_06*P(:,7);
 
 % Sove for (q1, q5) using Subproblem 6
 H_sp = [H(:,2) H(:,2) H(:,2) H(:,2)];
 K_sp = [-H(:,1) H(:,5) -H(:,1) H(:,5)];
-P_sp = [p_16 -P(:,6) R_06*H(:,6) -H(:,6)];
+P_sp = [p_06 -P(:,6) R_06*H(:,6) -H(:,6)];
 d1 = H(:,2)'* (P(:,3)+P(:,4)+P(:,5) + P(:,2));
 d2 = 0;
 [theta1, theta5] = subproblem.sp_6(H_sp, K_sp, P_sp, d1, d2);
@@ -30,7 +30,7 @@ for i = 1:length(theta1)
 
     % solve for q3 using Subproblem 3
     R_14 = rot(H(:,2), theta_14);
-    d_inner = R_01'*p_16-P(:,2) - R_14*R_45*P(:,6)-R_14*P(:,5);
+    d_inner = R_01'*p_06-P(:,2) - R_14*R_45*P(:,6)-R_14*P(:,5);
     d = norm(d_inner);
     [theta_3, theta_3_is_LS] = subproblem.sp_3(-P(:,4), P(:,3), H(:,2), d);
 

@@ -11,26 +11,12 @@ classdef sp_1
         function P = setup_LS()
             P.p1 = rand_vec;
             P.k = rand_normal_vec;
-            S.theta = rand_angle;
 
             P.p2 = rand_vec;
         end
 
         function S = run(P)
             S.theta = subproblem.sp_1(P.p1,P.p2,P.k);
-        end
-
-        function S = run_grt(P)
-            S.theta = subproblem1(P.p1,P.p2,P.k);
-        end
-
-        function S = run_mex(P)
-            S.theta = subproblem.sp_1_mex(P.p1,P.p2,P.k);
-        end
-
-        function generate_mex()
-            P = subproblem_setups.sp_1.setup();
-            codegen -report +subproblem/sp_1.m -args {P.p1, P.p2, P.k}
         end
 
         function e = error(P, S)
