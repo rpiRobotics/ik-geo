@@ -1,4 +1,4 @@
-# Linear Subproblem Solutions
+# IK-Geo
 Implementation of subproblem solutions using a linear algebra approach from ["Canonical Subproblems for Robot Inverse Kinematics"](https://arxiv.org/abs/2211.05737). We also include inverse kinematics solutions to a number of 6-dof robot types, examples with specific robots, and timing tests.
 
 For 7-DOF inverse kinematics using the Shoulder-Elbow-Wrist (SEW) angle, please see the [stereo-sew](https://github.com/rpiRobotics/stereo-sew) repo.
