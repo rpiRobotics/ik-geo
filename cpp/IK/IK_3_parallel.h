@@ -12,7 +12,7 @@
 #include <vector>
 #include <eigen3/Eigen/Dense>
 
-extern double rand_0to1();
+// extern double rand_0to1();
 extern Eigen::Matrix<double, 3, 3> hat(const Eigen::Matrix<double, 3, Eigen::Dynamic>& vec);
 extern double rand_angle();
 extern Eigen::Matrix<double, Eigen::Dynamic, 1> rand_angle(int N);
@@ -28,8 +28,8 @@ struct Kin {
 };
 
 struct Soln {
-	std::vector<std::vector<double>> Q;
-	std::vector<std::vector<bool>> is_LS_vec;
+	std::vector<std::vector<double> > Q;
+	std::vector<std::vector<bool> > is_LS_vec;
 };
 
 struct P {

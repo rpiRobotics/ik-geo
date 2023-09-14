@@ -4,7 +4,7 @@
 int main(int argc, char **argv)
 {
 
-  std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("dat.csv");
+  std::vector<std::pair<std::string, std::vector<double> > > data = read_csv("dat.csv");
   if (data.size() != 57)
   {
     std::cerr << "Invalid input data for IK3P2I. \n";

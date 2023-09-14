@@ -42,11 +42,11 @@ namespace IKS {
 		return res;
 	}
 
-	std::vector<std::complex<double>> quartic_roots(const Eigen::Matrix<double, 1, 5> &poly) {
+	std::vector<std::complex<double> > quartic_roots(const Eigen::Matrix<double, 1, 5> &poly) {
 	
 		const std::complex<double> i = std::complex<double>(0,0);
 		
-		std::vector<std::complex<double>> roots;
+		std::vector<std::complex<double> > roots;
 
 		double A = poly(0, 0), B = poly(0, 1), C = poly(0, 2), D = poly(0, 3), E = poly(0, 4);
 
@@ -391,7 +391,7 @@ namespace IKS {
 
 			Eigen::Matrix<double, 1, 5> EQN = convolution_3(RHS, RHS) - 4*convolution_3(P_13_sq, R_1);
 
-			std::vector<std::complex<double>> all_roots = quartic_roots(EQN);
+			std::vector<std::complex<double> > all_roots = quartic_roots(EQN);
 			std::vector<double> H_vec;
 			for (int i = 0; i < (int)all_roots.size(); i ++ ) {
 				if (fabs(all_roots[i].imag()) < 1e-6)
@@ -405,7 +405,7 @@ namespace IKS {
 			Eigen::Matrix<double, 3, 2> A_3;
 			A_3 << KxP3, -k3.cross(KxP3);
 
-			std::vector<std::vector<int>> signs(2);
+			std::vector<std::vector<int> > signs(2);
 			signs[0] = {1, 1, -1, -1};
 			signs[1] = {1, -1, 1, -1};
 			Eigen::Matrix<double, 2, 2> J;
@@ -477,8 +477,7 @@ namespace IKS {
 				(d2 - h.col(2).transpose() * k.col(2) * k.col(2).transpose() * p.col(2) - h.col(3).transpose() * k.col(3) * k.col(3).transpose() * p.col(3));
 		x_min = A.colPivHouseholderQr().solve(den);
 
-		Eigen::CompleteOrthogonalDecomposition<
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> cod;
+		Eigen::CompleteOrthogonalDecomposition< Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> > cod;
 		cod.compute(A);
 		unsigned rk = cod.rank();
 		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> P =

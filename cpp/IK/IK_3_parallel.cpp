@@ -314,8 +314,8 @@ int main(int argc, char * argv[]) {
 	parallel_mode = true;
 #endif
 
-	// std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("IK_3_parallel.csv");
-	std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("../../test_cases/IK_3_parallel.csv");
+	// std::vector<std::pair<std::string, std::vector<double> > > data = read_csv("IK_3_parallel.csv");
+	std::vector<std::pair<std::string, std::vector<double> > > data = read_csv("../../test_cases/IK_3_parallel.csv");
   	if (data.size() != 57) {
     	std::cerr << "Invalid input data for IK_3_parallel. \n";
     	return 0;

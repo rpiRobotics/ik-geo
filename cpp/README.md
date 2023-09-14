@@ -5,6 +5,7 @@
 1. Clone this repo
 
 2. Download and include the eigen library here https://eigen.tuxfamily.org/dox/GettingStarted.html in your machines include directory
+- You may have to run the following line, too: sudo ln -s /usr/include/eigen3/Eigen /usr/include/Eigen
 
 3. Port over the contents of the cpp folder into the root/src directory of your project. Include "subproblems/sp.cpp" in your C++ file to use the individual subproblems. The namespace for this library is IKS, and the subproblem commands are spx_run. So, to run subproblem 2E in your code, you would do:
 - IKS::sp2E_run(...inputs...);

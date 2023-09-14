@@ -1,5 +1,5 @@
-#ifndef _SP_H_
-#define _SP_H_
+#ifndef _sp_h_
+#define _sp_h_
 
 #include <math.h>
 #include <vector>

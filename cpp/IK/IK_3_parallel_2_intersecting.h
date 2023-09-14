@@ -19,8 +19,8 @@ struct Kin {
 };
 
 struct Soln {
-	std::vector<std::vector<double>> Q;
-	std::vector<std::vector<bool>> is_LS_vec;
+	std::vector<std::vector<double> > Q;
+	std::vector<std::vector<bool> > is_LS_vec;
 };
 
 void IK_3_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06, const Eigen::Vector3d& p_0T, const Kin& kin, Soln& soln);

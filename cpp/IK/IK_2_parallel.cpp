@@ -137,7 +137,7 @@ Soln IK_2_parallel(const Eigen::Matrix<double, 3, 3>& R_06, const Eigen::Vector3
 }
 
 int main(int argc, char * argv[]) {
-	std::vector<std::pair<std::string, std::vector<double>>> data = read_csv("IK_2_parallel.csv");
+	std::vector<std::pair<std::string, std::vector<double> > > data = read_csv("IK_2_parallel.csv");
   	if (data.size() != 57) {
     	std::cerr << "Invalid input data for IK_2_parallel. \n";
     	return 0;

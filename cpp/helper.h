@@ -44,8 +44,8 @@ Eigen::Matrix<double, 1, 5> convolution_3(Eigen::Matrix<double, 1, 3> &v1, Eigen
 	return res;
 }
 
-std::vector<std::complex<double>> quartic_roots(const Eigen::Matrix<double, 1, 5> &poly) {
-	std::vector<std::complex<double>> roots;
+std::vector<std::complex<double> > quartic_roots(const Eigen::Matrix<double, 1, 5> &poly) {
+	std::vector<std::complex<double> > roots;
 
 	double A = poly(0, 0), B = poly(0, 1), C = poly(0, 2), D = poly(0, 3), E = poly(0, 4);
 

@@ -1,7 +1,7 @@
 N = 10e3;
 %N = 10;
 
-file_location = "../../test_cases/";
+file_location = "/test_cases/";
 
 setups = {
     subproblem_setups.sp_1

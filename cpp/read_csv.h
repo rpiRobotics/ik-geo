@@ -8,8 +8,8 @@
 #include <sstream>
 
 
-std::vector<std::pair<std::string, std::vector<double>>> read_csv(const std::string &filename){
-    std::vector<std::pair<std::string, std::vector<double>>> result;
+std::vector<std::pair<std::string, std::vector<double> > > read_csv(const std::string &filename){
+    std::vector<std::pair<std::string, std::vector<double> > > result;
     std::ifstream infile(filename);
     if (!infile.is_open()) {
     	std::cerr << "The file '" << filename << "' could not be opened!" << std::endl;
@@ -28,7 +28,7 @@ std::vector<std::pair<std::string, std::vector<double>>> read_csv(const std::str
     while (std::getline(infile, line)) {
         std::stringstream ss(line);
         for (int i = 0; i < (int)result.size(); i ++ ) {
-        	ss >> val;
+        	ss > > val;
         	result[i].second.push_back(val);
         	if (ss.peek() == ',') ss.ignore();
         }

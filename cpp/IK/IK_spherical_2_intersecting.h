@@ -19,7 +19,7 @@ struct Kin {
 };
 
 struct Soln {
-	std::vector<std::vector<double>> Q;
+	std::vector<std::vector<double> > Q;
 	std::vector<bool> is_LS_vec;
 };
 

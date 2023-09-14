@@ -22,7 +22,7 @@
 
 int main(int argc, char * argv[])
 {
-	std::vector<std::pair<std::string, std::vector<double>>> data;
+	std::vector<std::pair<std::string, std::vector<double> > > data;
 	double time_avg;
 
 
