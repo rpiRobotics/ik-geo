@@ -174,7 +174,7 @@ impl SetupStatic for SphericalTwoParallelSetup {
     }
 
     fn name() -> &'static str {
-        "Spherical two Parallel"
+        "Spherical Two Parallel"
     }
 }
 

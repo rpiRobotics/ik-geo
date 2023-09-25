@@ -1,13 +1,20 @@
-use nalgebra::{Matrix3x6, ArrayStorage};
-
-use super::auxiliary::{Matrix3x7, Kinematics};
-
 pub mod setups;
 
 use {
-    self::setups::{ Irb6640, KukaR800FixedQ3, Ur5, ThreeParallelBot, TwoParallelBot, RrcFixedQ6, SphericalBot, YumiFixedQ3 },
-    super::{ spherical_two_parallel, spherical_two_intersecting, three_parallel_two_intersecting, three_parallel, two_parallel, two_intersecting, spherical, gen_six_dof },
-    nalgebra::{ Matrix, Matrix3, Vector3, Vector6 },
+    self::setups::{ KukaR800FixedQ3, Ur5, ThreeParallelBot, TwoParallelBot, RrcFixedQ6, SphericalBot, YumiFixedQ3 },
+    nalgebra::{ Matrix, Matrix3, Vector3, Vector6, ArrayStorage },
+
+    super::{
+        auxiliary::Kinematics,
+        spherical_two_parallel,
+        spherical_two_intersecting,
+        three_parallel_two_intersecting,
+        three_parallel,
+        two_parallel,
+        two_intersecting,
+        spherical,
+        gen_six_dof
+    },
 };
 
 const IRB_6640_KINEMATICS: Kinematics<6, 7> = Kinematics {
