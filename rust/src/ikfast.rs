@@ -190,7 +190,7 @@ pub fn compute_ik(rotation: &Matrix3<f64>, translation: &Vector3<f64>) -> Vec<Ve
     let rotation = rotation_transposed.as_slice();
     let translation = translation.as_slice();
 
-    let mut q_data = [0.0; 6 * 8];
+    let mut q_data = [0.0; 6 * 16]; // UR5 gives 16 solutions rather than 8
     let mut q: Vec<Vector6<f64>> = Vec::new();
 
     let solutions = unsafe {

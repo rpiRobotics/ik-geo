@@ -60,6 +60,8 @@ fn main() -> Result<(), String> {
             println!("cargo:rustc-link-search={LIB_DIR}");
             println!("cargo:rustc-link-lib=static={link_lib}");
             println!("cargo:rustc-cfg=link_ikfast");
+            println!("cargo:rustc-link-lib=stdc++");
+            println!("cargo:rustc-link-lib=lapack"); // Only for UR5
 
             let name_path = format!("{LIB_DIR}/name.rs");
 

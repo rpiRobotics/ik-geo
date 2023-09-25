@@ -224,12 +224,13 @@ impl Ur5 {
     pub fn get_kin() -> Kinematics<6, 7> {
         let mut kin = Kinematics::new();
 
+        let zv = Vector3::zeros();
         let ex = Vector3::x();
         let ey = Vector3::y();
         let ez = Vector3::z();
 
         kin.h = Matrix3x6::from_columns(&[ez, ey, ey, ey, -ez, ey]);
-        kin.p = Matrix3x7::from_columns(&[0.089159*ez, 0.1358*ey, -0.1197*ey + 0.425*ex, 0.3922*ex, 0.093*ey, -0.0946*ez, 0.0823*ey]);
+        kin.p = Matrix3x7::from_columns(&[0.089159*ez, 0.1358*ey, -0.1197*ey + 0.425*ex, 0.3922*ex, 0.093*ey-0.0946*ez, zv, 0.0823*ey]);
 
         kin
     }

@@ -4,8 +4,5 @@ target
 # Libraries
 lib_ikfast
 
-# IkFast config
-lib_ikfast.config
-
 # Testing data
 data
