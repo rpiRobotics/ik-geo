@@ -1,13 +1,38 @@
+use nalgebra::{Matrix3x6, ArrayStorage};
+
+use super::auxiliary::{Matrix3x7, Kinematics};
+
 pub mod setups;
 
 use {
     self::setups::{ Irb6640, KukaR800FixedQ3, Ur5, ThreeParallelBot, TwoParallelBot, RrcFixedQ6, SphericalBot, YumiFixedQ3 },
     super::{ spherical_two_parallel, spherical_two_intersecting, three_parallel_two_intersecting, three_parallel, two_parallel, two_intersecting, spherical, gen_six_dof },
-    nalgebra::{ Matrix3, Vector3, Vector6 },
+    nalgebra::{ Matrix, Matrix3, Vector3, Vector6 },
+};
+
+const IRB_6640_KINEMATICS: Kinematics<6, 7> = Kinematics {
+    h: Matrix::from_array_storage(ArrayStorage([
+        [0.0, 0.0, 1.0],
+        [0.0, 1.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [1.0, 0.0, 0.0],
+        [0.0, 1.0, 0.0],
+        [1.0, 0.0, 0.0],
+    ])),
+
+    p: Matrix::from_array_storage(ArrayStorage([
+        [0.0, 0.0, 0.0],
+        [0.32, 0.0, 0.78],
+        [0.0, 0.0, 1.075],
+        [1.1425, 0.0, 0.2],
+        [0.0, 0.0, 0.0],
+        [0.0, 0.0, 0.0],
+        [0.2, 0.0, 0.0]
+    ]))
 };
 
 pub fn irb6640(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>) {
-    spherical_two_parallel(r, t, &Irb6640::get_kin())
+    spherical_two_parallel(r, t, &IRB_6640_KINEMATICS)
 }
 
 pub fn kuka_r800_fixed_q3(r: &Matrix3<f64>, t: &Vector3<f64>) -> (Vec<Vector6<f64>>, Vec<bool>) {

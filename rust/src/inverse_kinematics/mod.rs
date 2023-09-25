@@ -29,6 +29,7 @@ use {
     },
 };
 
+#[inline(always)]
 pub fn spherical_two_parallel(r_0t: &Matrix3<f64>, p_0t: &Vector3<f64>, kin: &Kinematics<6, 7>) -> (Vec<Vector6<f64>>, Vec<bool>) {
     let mut q = Vec::with_capacity(8);
     let mut is_ls = Vec::with_capacity(8);

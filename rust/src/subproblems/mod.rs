@@ -29,6 +29,7 @@ pub(crate) type Vector7<T> = Matrix<T, U7, U1, ArrayStorage<T, 7, 1>>;
 /// Solves for `theta` where `rot(k, theta) * p1 = p2` if possible.
 /// If not, minimizes `|| rot(k, theta) * p1 - p2 ||`.
 /// Also returns a boolean of whether or not `theta` is a least-squares solution.
+#[inline(always)]
 pub fn subproblem1(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>) -> (f64, bool) {
     let kxp = k.cross(p1);
     let a = Matrix3x2::from_columns(&[kxp, -k.cross(&kxp)]);
@@ -113,6 +114,7 @@ pub fn subproblem2extended(p0: &Vector3<f64>, p1: &Vector3<f64>, p2: &Vector3<f6
 // Solves for `theta` where `|| rot(k, theta) * p1 - p2 || = d` if possibble.
 // If not, minimizes `| || rot(k, theta)*p1 - p2 || - d |`.
 // Also returns a boolean of whether or not `theta` is a least-squares solution.
+#[inline(always)]
 pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
     subproblem4(p2, p1, k, 0.5 * (p1.norm_squared() + p2.norm_squared() - d * d))
 }
@@ -120,6 +122,7 @@ pub fn subproblem3(p1: &Vector3<f64>, p2: &Vector3<f64>, k: &Vector3<f64>, d: f6
 /// Solves for `theta` where `h' * rot(k, theta) * p = d` if possible.
 /// If not minimizes `| h' * rot(k, theta) * p - d |`.
 /// Also returns a boolean of whether or not `theta` is a least-squares solution.
+#[inline(always)]
 pub fn subproblem4(h: &Vector3<f64>, p: &Vector3<f64>, k: &Vector3<f64>, d: f64) -> (SolutionSet2<f64>, bool) {
     let a_11 = k.cross(p);
     let a_1 = Matrix3x2::from_columns(&[a_11, -k.cross(&a_11)]);
