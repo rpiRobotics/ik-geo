@@ -4,6 +4,7 @@
 #include "IK_correctness.h"
 #include "IK/IK_spherical_2_parallel.h"
 #include "utils.h"
+#include <chrono>
 
 void test(const char *data_path, Solution (*ik)(const Eigen::Matrix<double, 3, 3> &, const Eigen::Vector3d &, const Kinematics &)) {
     std::ifstream data_file(data_path);
@@ -18,9 +19,13 @@ void test(const char *data_path, Solution (*ik)(const Eigen::Matrix<double, 3, 3
         setups.emplace_back(line);
     }
 
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
     for (Setup &setup : setups) {
         setup.solve(ik);
     }
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
     double error_sum = 0.0;
     unsigned counted = 0;
@@ -34,7 +39,8 @@ void test(const char *data_path, Solution (*ik)(const Eigen::Matrix<double, 3, 3
     }
 
     std::cout << "Avg min error = " << error_sum / counted << std::endl
-              << "Out of " << counted << std::endl;
+              << counted << "/" << setups.size() << std::endl
+              << "Batch time = " << std::chrono::duration_cast<std::chrono::nanoseconds>(end - begin).count() / setups.size() << " ns" << std::endl;
 }
 
 int main() {

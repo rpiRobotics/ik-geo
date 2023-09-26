@@ -5,6 +5,7 @@
 #include <math.h>
 #include <random>
 #include <eigen3/Eigen/Core>
+#include <eigen3/Eigen/Geometry>
 #include <vector>
 
 struct Kinematics {
@@ -37,7 +38,7 @@ Eigen::Matrix<double, 3, Eigen::Dynamic> rand_vec(int N = 1);
 Eigen::Matrix<double, 3, Eigen::Dynamic> rand_normal_vec(int size = 1);
 
 // Only works with input vectors of size 1.  Same as MATLAB implementation
-Eigen::VectorXd rand_perp_normal_vec(const Eigen::Vector3d& vec);
+Eigen::Vector3d rand_perp_normal_vec(const Eigen::Vector3d& vec);
 
 //Create 3x3 rotation matrix using the Euler Rodrigues formula
 //TODO: Compare notes

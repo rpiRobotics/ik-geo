@@ -60,7 +60,7 @@ Eigen::Matrix<double, 3, Eigen::Dynamic> rand_normal_vec(int size){
 }
 
 // Only works with input vectors of size 1.  Same as MATLAB implementation
-Eigen::VectorXd rand_perp_normal_vec(const Eigen::Vector3d& vec){
+Eigen::Vector3d rand_perp_normal_vec(Eigen::Vector3d& vec){
    Eigen::Vector3d randCross = rand_vec();
    randCross = randCross.cross(vec);
    return randCross/randCross.norm();
