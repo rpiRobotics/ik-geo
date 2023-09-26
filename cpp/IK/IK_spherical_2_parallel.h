@@ -10,6 +10,7 @@
 #include <iostream>
 #include <vector>
 #include <eigen3/Eigen/Dense>
+#include "../utils.h"
 
 extern Eigen::Matrix<double, 3, Eigen::Dynamic> rot(Eigen::Matrix<double, 3, Eigen::Dynamic> k, double theta);
 
@@ -18,11 +19,6 @@ struct Kin {
 	Eigen::Matrix<double, 3, 7> P;
 };
 
-struct Soln {
-	std::vector<std::vector<double>> Q;
-	std::vector<bool> is_LS_vec;
-};
-
-Soln IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kin& kin);
+Solution IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics& kin);
 
 #endif
