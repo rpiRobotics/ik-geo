@@ -14,10 +14,8 @@ use {
     std::f64::NAN,
 
     super::{
-        auxiliary::{
-            Kinematics,
-            Matrix3x7,
-        },
+        Kinematics,
+        Matrix3x7,
 
         spherical_two_parallel,
         spherical_two_intersecting,

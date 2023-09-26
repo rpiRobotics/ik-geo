@@ -5,7 +5,8 @@ use {
     nalgebra::{ Matrix, Matrix3, Vector3, Vector6, ArrayStorage },
 
     super::{
-        auxiliary::Kinematics,
+        Kinematics,
+
         spherical_two_parallel,
         spherical_two_intersecting,
         three_parallel_two_intersecting,

@@ -7,11 +7,9 @@ use {
 
     crate::{
         inverse_kinematics::{
-            auxiliary::{
-                Kinematics,
-                Matrix3x7,
-                Matrix3x8,
-            },
+            Kinematics,
+            Matrix3x7,
+            Matrix3x8,
 
             setups::{ SetupIk, calculate_ik_error, ik_write_output },
         },
