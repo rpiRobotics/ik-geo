@@ -183,57 +183,30 @@ namespace IKS {
 							const Eigen::Vector3d& k1, const Eigen::Vector3d& k2, 
 							std::vector<double>& theta1, std::vector<double>& theta2) {
 
+	// bool sp4_run(const Eigen::Vector3d& p,
+	// 						const Eigen::Vector3d& k,
+	// 						const Eigen::Vector3d& h,
+	// 						const double& d,
+	// 						std::vector<double>& theta) {
+
 		Eigen::Vector3d p_1 = p1/p1.norm();
 		Eigen::Vector3d p_2 = p2/p2.norm();
 
-		Eigen::Matrix<double, 3, 1> KxP1 = k1.cross(p_1);
-		Eigen::Matrix<double, 3, 1> KxP2 = k2.cross(p_2);
+		bool theta1_is_ls = sp4_run(p_1, k1, k2, k2.dot(p_2), theta1);
+		bool theta2_is_ls = sp4_run(p_2, k2, k1, k1.dot(p_1), theta2);
 
-		Eigen::Matrix<double, 3, 2> A_1, A_2; 
-		A_1 << KxP1, -k1.cross(KxP1);
-		A_2 << KxP2, -k2.cross(KxP2);
+		bool is_ls = fabs(p1.norm() - p2.norm()) > 1e-8 || theta1_is_ls || theta2_is_ls;
 
-		double radius_1_sq = KxP1.dot(KxP1);
-		double radius_2_sq = KxP2.dot(KxP2);
+		if (theta1.size() > 1 || theta2.size() > 1) {
+			if (theta1.size() < 2) theta1.push_back(theta1[0]);
+			if (theta2.size() < 2) theta2.push_back(theta2[0]);
 
-		double k1_d_p1 = k1.dot(p_1);
-		double k2_d_p2 = k2.dot(p_2);
-		double k1_d_k2 = k1.dot(k2);
-
-		double ls_frac = 1/(1-(k1_d_k2*k1_d_k2));
-		double alpha_1 = ls_frac * (k1_d_p1 - k1_d_k2 * k2_d_p2);
-		double alpha_2 = ls_frac * (k2_d_p2 - k1_d_k2 * k1_d_p1);
-
-		Eigen::Matrix<double, 2, 1> x_ls_1 = (alpha_2 * A_1.transpose() * (k2)) / radius_1_sq;
-		Eigen::Matrix<double, 2, 1> x_ls_2 = (alpha_1 * A_2.transpose() * (k1)) / radius_2_sq;
-		Eigen::Matrix<double, 4, 1> x_ls;
-		x_ls << x_ls_1, x_ls_2; 
-
-		Eigen::Matrix<double, 3, 1> n_sym = k1.cross(k2);
-		Eigen::Matrix<double, 2, 3> pinv_A1, pinv_A2;
-		pinv_A1 = A_1.transpose() / radius_1_sq;
-		pinv_A2 = A_2.transpose() / radius_2_sq;
-
-		Eigen::Matrix<double, 4, 1> A_perp_tilde;
-		Eigen::Matrix<double, 4, 3> temp;
-		temp << pinv_A1, pinv_A2;
-		A_perp_tilde = temp * n_sym;
-
-		if (x_ls.block<2, 1>(0,0).norm() < 1) {
-			double xi = sqrt(1 - pow(x_ls.block<2, 1>(0,0).norm(), 2)) / A_perp_tilde.block<2, 1>(0, 0).norm();
-			Eigen::Matrix<double, 4, 1> sc_1 = x_ls + xi*A_perp_tilde;
-			Eigen::Matrix<double, 4, 1> sc_2 = x_ls - xi*A_perp_tilde;
-
-			theta1[0] = (atan2(sc_1(0, 0), sc_1(1, 0)));
-			theta1[0] = (atan2(sc_2(0, 0), sc_2(1, 0)));
-			theta2.push_back(atan2(sc_1(0, 0), sc_1(1, 0)));
-			theta2.push_back(atan2(sc_2(0, 0), sc_2(1, 0)));
-			return false;
-		} else {
-			theta1[0] = (atan2(x_ls(0, 0), x_ls(1, 0)));
-			theta2[0] = (atan2(x_ls(2, 0), x_ls(3, 0)));
-			return true;
+			double temp = theta2[0];
+			theta2[0] = theta2[1];
+			theta2[1] = temp;
 		}
+
+		return is_ls;
 	}
 
 	void sp2E_run(const Eigen::Vector3d &p0, const Eigen::Vector3d &p1, const Eigen::Vector3d &p2, 

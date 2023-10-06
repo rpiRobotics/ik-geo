@@ -3,6 +3,7 @@
 #include <iostream>
 #include "IK_correctness.h"
 #include "IK/IK_spherical_2_parallel.h"
+#include "IK/IK_spherical_2_intersecting.h"
 #include "utils.h"
 #include <chrono>
 
@@ -44,5 +45,8 @@ void test(const char *data_path, Solution (*ik)(const Eigen::Matrix<double, 3, 3
 }
 
 int main() {
+    std::cout << "Spherical Two Parallel" << std::endl;
     test("data/IkSphericalTwoParallel.csv", IK_spherical_2_parallel);
+    std::cout << "Spherical Two Intersecting" << std::endl;
+    test("data/IkSphericalTwoIntersecting.csv", IK_spherical_2_intersecting);
 }
