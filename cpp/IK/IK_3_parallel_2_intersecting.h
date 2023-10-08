@@ -10,20 +10,8 @@
 #define __IK_3_parallel_2_intersecting__
 
 #include <eigen3/Eigen/Dense>
-#include <vector>
+#include "../utils.h"
 
-struct Kin {
-	Eigen::Matrix<double, 3, 6> H;
-	Eigen::Matrix<double, 3, 7> P;
-	Eigen::Matrix<double, 1, 6> joint_type;
-};
-
-struct Soln {
-	std::vector<std::vector<double> > Q;
-	std::vector<std::vector<bool> > is_LS_vec;
-};
-
-void IK_3_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06, const Eigen::Vector3d& p_0T, const Kin& kin, Soln& soln);
-
+Solution IK_3_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06, const Eigen::Vector3d& p_0T, const Kinematics& kin);
 
 #endif
