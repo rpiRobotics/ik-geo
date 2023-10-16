@@ -44,4 +44,8 @@ Eigen::Vector3d rand_perp_normal_vec(const Eigen::Vector3d& vec);
 //TODO: Compare notes
 Eigen::Matrix<double, 3, Eigen::Dynamic> rot(Eigen::Matrix<double, 3, Eigen::Dynamic> k, double theta);
 
+double wrap_to_pi(double theta);
+
+Eigen::Vector2d solve_lower_triangular_2x2(const Eigen::Matrix2d &l, const Eigen::Vector2d &bv);
+
 #endif // UTILS_H_

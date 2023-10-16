@@ -7,7 +7,7 @@
 
 
 #ifndef __IK_3_parallel_2_intersecting_h__
-#define __IK_3_parallel_2_intersecting__
+#define __IK_3_parallel_2_intersecting_h__
 
 #include <eigen3/Eigen/Dense>
 #include "../utils.h"

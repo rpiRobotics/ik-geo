@@ -75,3 +75,22 @@ Eigen::Matrix<double, 3, Eigen::Dynamic> rot(Eigen::Matrix<double, 3, Eigen::Dyn
   k = k/k.norm();
   return eye + sin(theta)*hat(k)+(1-cos(theta))*hat(k)*hat(k);
 }
+
+double wrap_to_pi(double theta) {
+  return fmod(theta + M_PI, M_PI * 2) - M_PI;
+}
+
+Eigen::Vector2d solve_lower_triangular_2x2(const Eigen::Matrix2d &l, const Eigen::Vector2d &bv) {
+  Eigen::Vector2d result;
+
+  double a = l(0, 0);
+  double b = l(1, 0);
+  double c = l(1, 1);
+  double p = bv(0);
+  double q = bv(1);
+
+  double x = p / a;
+
+  result << x, (q - x * b) / c;
+  return result;
+}

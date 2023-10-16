@@ -86,6 +86,14 @@ namespace IKS {
 		return roots;
 	}
 
+	// https://stackoverflow.com/a/40447591/10372572
+	std::complex<double> principal_cbrt(std::complex<double> z) {
+		if (z.real() < 0)
+			return -pow(-z, 1.0/3.0);
+		else
+			return pow(z, 1.0/3.0);
+	}
+
 	void find_quartic_roots(Eigen::Matrix<double, 5, 1>& coeffs, 
 		Eigen::Matrix<std::complex<double>, 4, 1>& roots) {
 		/* Find the roots of a quartic polynomial */
@@ -98,7 +106,7 @@ namespace IKS {
 		std::complex<double> p1 = 2.0*c*c*c - 9.0*b*c*d + 27.0*a*d*d + 27.0*b*b*e - 72.0*a*c*e;
 		std::complex<double> q1 = c*c - 3.0*b*d + 12.0*a*e;
 		std::complex<double> p2 = p1 + sqrt(-4.0*q1*q1*q1 + p1*p1);
-		std::complex<double> q2 = cbrt(p2.real() / 2.0);
+		std::complex<double> q2 = principal_cbrt(p2 / 2.0);
 		std::complex<double> p3 = q1 / (3.0*a*q2) + q2 / (3.0*a);
 		std::complex<double> p4 = sqrt((b*b) / (4.0*a*a) - (2.0*c) / (3.0*a) + p3);
 		std::complex<double> p5 = (b*b) / (2.0*a*a) - (4.0*c) / (3.0*a) - p3;
@@ -111,8 +119,8 @@ namespace IKS {
 	}
 
 	void solve_2_ellipse_numeric(Eigen::Vector2d& xm1, Eigen::Matrix<double, 2, 2>& xn1, 
-		Eigen::Vector2d& xm2, Eigen::Matrix<double, 2, 2>& xn2,
-		Eigen::Matrix<double, 4, 1>& xi_1, Eigen::Matrix<double, 4, 1>& xi_2) {
+								 Eigen::Vector2d& xm2, Eigen::Matrix<double, 2, 2>& xn2,
+								 std::vector<double> &xi_1, std::vector<double> &xi_2) {
 		/* solve for intersection of 2 ellipses defined by
 
 		xm1'*xm1 + xi'*xn1'*xn1*xi  + xm1'*xn1*xi == 1
@@ -148,17 +156,20 @@ namespace IKS {
 		double z4 = a*a*c1*c1-2*a*c1*a1*c+a1*a1*c*c-b*a*b1*c1-b*b1*a1*c+b*b*a1*c1+c*a*b1*b1;
 
 		Eigen::Matrix<double, 5, 1> z;
-		z << z0, z1, z2, z3, z4;
+		z << z4, z3, z2, z1, z0;
 		Eigen::Matrix<std::complex<double>, 4, 1> roots;
 		find_quartic_roots(z, roots);
 
 		for (int i = 0; i < 4; i++) {
-			double y_r = roots.coeffRef(i, 0).real();
+			std::complex<double> r_i = roots.coeffRef(i, 0);
+			if (fabs(r_i.imag()) > 1e-12) continue;
+
+			double y_r = r_i.real();
 			double y_sq = y_r * y_r;
-			xi_2(i, 0) = y_r;
+			xi_2.push_back(y_r);
 
 			double x_r = -(a*fq+a*c1*y_sq-a1*c*y_sq+a*e1*y_r-a1*e*y_r-a1*f)/(a*b1*y_r+a*d1-a1*b*y_r-a1*d);
-			xi_1(i,0) = x_r;
+			xi_1.push_back(x_r);
 		}
 	}
 
@@ -182,13 +193,6 @@ namespace IKS {
 	bool sp2_run(const Eigen::Vector3d& p1, const Eigen::Vector3d& p2, 
 							const Eigen::Vector3d& k1, const Eigen::Vector3d& k2, 
 							std::vector<double>& theta1, std::vector<double>& theta2) {
-
-	// bool sp4_run(const Eigen::Vector3d& p,
-	// 						const Eigen::Vector3d& k,
-	// 						const Eigen::Vector3d& h,
-	// 						const double& d,
-	// 						std::vector<double>& theta) {
-
 		Eigen::Vector3d p_1 = p1/p1.norm();
 		Eigen::Vector3d p_2 = p2/p2.norm();
 
@@ -420,9 +424,9 @@ namespace IKS {
 			}
 	}
 
-	void sp6_run(Eigen::Matrix<double, 3, 4>& p, 
-							Eigen::Matrix<double, 3, 4>& k, 
-							Eigen::Matrix<double, 3, 4>& h, 
+	void sp6_run(Eigen::Matrix<double, 3, 4>& p,
+							Eigen::Matrix<double, 3, 4>& k,
+							Eigen::Matrix<double, 3, 4>& h,
 							double& d1, double& d2,
 							std::vector<double> &theta1, std::vector<double> &theta2) {
 
@@ -463,8 +467,8 @@ namespace IKS {
 		Eigen::Matrix<double, 4, 1> x_null_1 = x_null.col(0);
 		Eigen::Matrix<double, 4, 1> x_null_2 = x_null.col(1);
 
-		Eigen::Matrix<double, 4, 1> xi_1;
-		Eigen::Matrix<double, 4, 1> xi_2;
+		std::vector<double> xi_1;
+		std::vector<double> xi_2;
 
 		Eigen::Matrix<double, 2, 1> x_min_1 = x_min.block<2, 1>(0,0);
 		Eigen::Matrix<double, 2, 1> x_min_2 = x_min.block<2, 1>(2,0);
@@ -478,9 +482,70 @@ namespace IKS {
 		theta2.clear();
 
 		for (int i = 0; i < 4; i++) {
-			Eigen::Matrix<double, 4, 1> x = x_min + x_null_1 * xi_1(i, 0) + x_null_2 * xi_2(i, 0);
+			Eigen::Matrix<double, 4, 1> x = x_min + x_null_1 * xi_1[i] + x_null_2 * xi_2[i];
 			theta1.push_back(atan2(x(0, 0), x(1, 0)));
 			theta2.push_back(atan2(x(2, 0), x(3, 0)));
+		}
+	}
+
+	void sp6_temp(Eigen::Matrix<double, 3, 4>& p,
+				  Eigen::Matrix<double, 3, 4>& k,
+				  Eigen::Matrix<double, 3, 4>& h,
+				  double& d1, double& d2,
+				  std::vector<double> &theta1, std::vector<double> &theta2) {
+		Eigen::Vector3d k1Xp1 = k.col(0).cross(p.col(0));
+		Eigen::Vector3d k2Xp2 = k.col(1).cross(p.col(1));
+		Eigen::Vector3d k3Xp3 = k.col(2).cross(p.col(2));
+		Eigen::Vector3d k4Xp4 = k.col(3).cross(p.col(3));
+
+		Eigen::Matrix<double, 3, 2> A_1;
+		A_1 << k1Xp1, -k.col(0).cross(k1Xp1);
+		Eigen::Matrix<double, 3, 2> A_2;
+		A_2 << k2Xp2, -k.col(1).cross(k2Xp2);
+		Eigen::Matrix<double, 3, 2> A_3;
+		A_3 << k3Xp3, -k.col(2).cross(k3Xp3);
+		Eigen::Matrix<double, 3, 2> A_4;
+		A_4 << k4Xp4, -k.col(3).cross(k4Xp4);
+
+		Eigen::Matrix<double, 2, 4> A;
+        A << (h.col(0).transpose() * A_1), (h.col(1).transpose() * A_2),
+             (h.col(2).transpose() * A_3), (h.col(3).transpose() * A_4);
+
+        Eigen::Vector2d b;
+        b << d1 - h.col(0).transpose() * k.col(0) * k.col(0).transpose() * p.col(0) - h.col(1).transpose() * k.col(1) * k.col(1).transpose() * p.col(1),
+             d2 - h.col(2).transpose() * k.col(2) * k.col(2).transpose() * p.col(2) - h.col(3).transpose() * k.col(3) * k.col(3).transpose() * p.col(3);
+
+        auto QR = A.transpose().householderQr();
+
+		Eigen::Matrix<double, 4, 4> Q4 = QR.householderQ();
+		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> R4 = QR.matrixQR().triangularView<Eigen::Upper>();
+		Eigen::Matrix<double, 2, 2> R = R4.block<2, 2>(0, 0).transpose();
+
+		Eigen::Vector4d x_null_1 = Q4.col(2);
+		Eigen::Vector4d x_null_2 = Q4.col(3);
+
+		Eigen::Matrix<double, 4, 2> Q = Q4.block<4, 2>(0, 0);
+
+		Eigen::Vector4d x_min = Q * solve_lower_triangular_2x2(R, b);
+
+		std::vector<double> xi_1;
+		std::vector<double> xi_2;
+
+		Eigen::Matrix2d xn1;
+		Eigen::Matrix2d xn2;
+
+		Eigen::Vector2d xm1 = x_min.block<2, 1>(0, 0);
+		Eigen::Vector2d xm2 = x_min.block<2, 1>(2, 0);
+
+        xn1 << x_null_1(0), x_null_2(0), x_null_1(1), x_null_2(1);
+        xn2 << x_null_1(2), x_null_2(2), x_null_1(3), x_null_2(3);
+
+		solve_2_ellipse_numeric(xm1, xn1, xm2, xn2, xi_1, xi_2);
+
+		for (unsigned i = 0; i < xi_1.size(); ++i) {
+			Eigen::Vector4d x = x_min + x_null_1 * xi_1[i] + x_null_2 * xi_2[i];
+			theta1.push_back(atan2(x(0), x(1)));
+			theta2.push_back(atan2(x(2), x(3)));
 		}
 	}
 }
