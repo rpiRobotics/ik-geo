@@ -1,4 +1,5 @@
 CPU: AMD Ryzen 5 5625U with Radeon Graphics @ 2.3 GHz
+
 OS:  Ubuntu 22.04.3 LTS
 
 | Ik                              | Batched Time (ns) |
