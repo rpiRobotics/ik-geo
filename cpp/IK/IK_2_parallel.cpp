@@ -11,8 +11,6 @@
  *   2. implement search_1D function
  */
 
-#pragma GCC optimize(3)
-
 #include <chrono>
 #include "IK_2_parallel.h"
 #include "../read_csv.h"
