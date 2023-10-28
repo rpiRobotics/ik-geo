@@ -20,7 +20,7 @@ Solution IK_3_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vec
     std::vector<double> theta1;
     std::vector<double> theta5;
 
-    IKS::sp6_temp(p_sp, k_sp, h_sp, d1, d2, theta1, theta5);
+    IKS::sp6_run(p_sp, k_sp, h_sp, d1, d2, theta1, theta5);
 
     for (unsigned i = 0; i < theta1.size(); ++i) {
         double q1 = theta1[i];

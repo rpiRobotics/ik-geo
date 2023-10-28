@@ -7,6 +7,7 @@
 #include "IK/IK_spherical.h"
 #include "IK/IK_3_parallel_2_intersecting.h"
 #include "IK/IK_3_parallel.h"
+#include "IK/IK_2_parallel.h"
 #include "utils.h"
 #include <chrono>
 
@@ -62,4 +63,7 @@ int main() {
 
     std::cout << "Three Parallel" << std::endl;
     test("data/IkThreeParallel.csv", IK_3_parallel);
+
+    std::cout << "Two Parallel" << std::endl;
+    test("data/IkTwoParallel.csv", IK_2_parallel);
 }

@@ -47,12 +47,6 @@ namespace IKS {
               Eigen::Matrix<double, 3, 4>& h, 
               double& d1, double& d2, 
               std::vector<double> &theta1, std::vector<double> &theta2);
-
-  void sp6_temp(Eigen::Matrix<double, 3, 4>& p,
-                Eigen::Matrix<double, 3, 4>& k,
-                Eigen::Matrix<double, 3, 4>& h,
-                double& d1, double& d2,
-                std::vector<double> &theta1, std::vector<double> &theta2);
 }
 
 #endif

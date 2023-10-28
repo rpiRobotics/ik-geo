@@ -1,6 +1,7 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
+#include <cmath>
 #include <time.h>
 #include <math.h>
 #include <random>
@@ -49,7 +50,7 @@ double wrap_to_pi(double theta);
 Eigen::Vector2d solve_lower_triangular_2x2(const Eigen::Matrix2d &l, const Eigen::Vector2d &bv);
 
 template <int N>
-bool find_zero(Eigen::Matrix<double, N, 1> (*f)(double), double left, double right, unsigned i, double &result) {
+bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i, double &result) {
     const unsigned ITERATIONS = 100;
     const double EPSILON = 1e-5;
 
@@ -69,7 +70,7 @@ bool find_zero(Eigen::Matrix<double, N, 1> (*f)(double), double left, double rig
         double x_0 = x_left - y_left * (x_right - x_left) / delta;
         double y_0 = f(x_0)(i);
 
-        if (isinf(y_0)) {
+        if (std::isinf(y_0)) {
             return false;
         }
 
@@ -93,7 +94,7 @@ bool find_zero(Eigen::Matrix<double, N, 1> (*f)(double), double left, double rig
 }
 
 template<int N>
-std::vector<std::pair<double, unsigned>> search_1d(Eigen::Matrix<double, N, 1> (*f)(double), double left, double right, unsigned initial_samples) {
+std::vector<std::pair<double, unsigned>> search_1d(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned initial_samples) {
     const double CROSS_THRESHOLD = 0.1;
 
     double delta = (right - left) / (double)initial_samples;

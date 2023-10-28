@@ -3,6 +3,7 @@
 // Author: Runbin Chen and Amar Maksumic
 // Purpose: Port of the subproblem files functionality
 //---------------------------------------------------------------//
+
 #include "sp.h"
 #include "../utils.h"
 
@@ -472,7 +473,6 @@ namespace IKS {
 
 		Eigen::Matrix<double, 2, 1> x_min_1 = x_min.block<2, 1>(0,0);
 		Eigen::Matrix<double, 2, 1> x_min_2 = x_min.block<2, 1>(2,0);
-		// std::cout << x_null.rows() << " " << x_null.cols() << std::endl;
 		Eigen::Matrix<double, 2, 2> x_n_1 = x_null.block<2, 2>(0,0);
 		Eigen::Matrix<double, 2, 2> x_n_2 = x_null.block<2, 2>(2,0);
 
@@ -481,71 +481,10 @@ namespace IKS {
 		theta1.clear();
 		theta2.clear();
 
-		for (int i = 0; i < 4; i++) {
+		for (unsigned i = 0; i < xi_1.size(); i++) {
 			Eigen::Matrix<double, 4, 1> x = x_min + x_null_1 * xi_1[i] + x_null_2 * xi_2[i];
 			theta1.push_back(atan2(x(0, 0), x(1, 0)));
 			theta2.push_back(atan2(x(2, 0), x(3, 0)));
-		}
-	}
-
-	void sp6_temp(Eigen::Matrix<double, 3, 4>& p,
-				  Eigen::Matrix<double, 3, 4>& k,
-				  Eigen::Matrix<double, 3, 4>& h,
-				  double& d1, double& d2,
-				  std::vector<double> &theta1, std::vector<double> &theta2) {
-		Eigen::Vector3d k1Xp1 = k.col(0).cross(p.col(0));
-		Eigen::Vector3d k2Xp2 = k.col(1).cross(p.col(1));
-		Eigen::Vector3d k3Xp3 = k.col(2).cross(p.col(2));
-		Eigen::Vector3d k4Xp4 = k.col(3).cross(p.col(3));
-
-		Eigen::Matrix<double, 3, 2> A_1;
-		A_1 << k1Xp1, -k.col(0).cross(k1Xp1);
-		Eigen::Matrix<double, 3, 2> A_2;
-		A_2 << k2Xp2, -k.col(1).cross(k2Xp2);
-		Eigen::Matrix<double, 3, 2> A_3;
-		A_3 << k3Xp3, -k.col(2).cross(k3Xp3);
-		Eigen::Matrix<double, 3, 2> A_4;
-		A_4 << k4Xp4, -k.col(3).cross(k4Xp4);
-
-		Eigen::Matrix<double, 2, 4> A;
-        A << (h.col(0).transpose() * A_1), (h.col(1).transpose() * A_2),
-             (h.col(2).transpose() * A_3), (h.col(3).transpose() * A_4);
-
-        Eigen::Vector2d b;
-        b << d1 - h.col(0).transpose() * k.col(0) * k.col(0).transpose() * p.col(0) - h.col(1).transpose() * k.col(1) * k.col(1).transpose() * p.col(1),
-             d2 - h.col(2).transpose() * k.col(2) * k.col(2).transpose() * p.col(2) - h.col(3).transpose() * k.col(3) * k.col(3).transpose() * p.col(3);
-
-        auto QR = A.transpose().householderQr();
-
-		Eigen::Matrix<double, 4, 4> Q4 = QR.householderQ();
-		Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> R4 = QR.matrixQR().triangularView<Eigen::Upper>();
-		Eigen::Matrix<double, 2, 2> R = R4.block<2, 2>(0, 0).transpose();
-
-		Eigen::Vector4d x_null_1 = Q4.col(2);
-		Eigen::Vector4d x_null_2 = Q4.col(3);
-
-		Eigen::Matrix<double, 4, 2> Q = Q4.block<4, 2>(0, 0);
-
-		Eigen::Vector4d x_min = Q * solve_lower_triangular_2x2(R, b);
-
-		std::vector<double> xi_1;
-		std::vector<double> xi_2;
-
-		Eigen::Matrix2d xn1;
-		Eigen::Matrix2d xn2;
-
-		Eigen::Vector2d xm1 = x_min.block<2, 1>(0, 0);
-		Eigen::Vector2d xm2 = x_min.block<2, 1>(2, 0);
-
-        xn1 << x_null_1(0), x_null_2(0), x_null_1(1), x_null_2(1);
-        xn2 << x_null_1(2), x_null_2(2), x_null_1(3), x_null_2(3);
-
-		solve_2_ellipse_numeric(xm1, xn1, xm2, xn2, xi_1, xi_2);
-
-		for (unsigned i = 0; i < xi_1.size(); ++i) {
-			Eigen::Vector4d x = x_min + x_null_1 * xi_1[i] + x_null_2 * xi_2[i];
-			theta1.push_back(atan2(x(0), x(1)));
-			theta2.push_back(atan2(x(2), x(3)));
 		}
 	}
 }
