@@ -4,6 +4,9 @@
 // Date: 04/01/2023
 //---------------------------------------------------------------//
 
+#define _USE_MATH_DEFINES
+#include <cmath>
+
 #include "IK_2_parallel.h"
 #include "../subproblems/sp.h"
 #include <eigen3/Eigen/src/Core/Matrix.h>
@@ -42,7 +45,7 @@ Solution IK_2_parallel(const Eigen::Matrix<double, 3, 3> &R_06,
                 Eigen::Matrix<double, 3, 3> R_34 = rot(kin.H.col(3), t4[i_46]);
                 Eigen::Matrix<double, 3, 3> R_56 = rot(kin.H.col(5), t6[i_46]);
                 double t23;
-                bool t23_is_LS = IKS::sp1_run(
+                IKS::sp1_run(
                     R_34 * kin.H.col(4),
                     R_01.transpose() * R_06 * R_56.transpose() * kin.H.col(4),
                     kin.H.col(1), t23);
