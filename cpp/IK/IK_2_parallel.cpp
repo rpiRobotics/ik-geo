@@ -4,9 +4,6 @@
 // Date: 04/01/2023
 //---------------------------------------------------------------//
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 #include "IK_2_parallel.h"
 #include "../subproblems/sp.h"
 #include <eigen3/Eigen/src/Core/Matrix.h>
