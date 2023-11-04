@@ -9,6 +9,6 @@ OS:  Ubuntu 22.04.3 LTS
 | Spherical Two Parallel          |              2707 |
 | Three Parallel                  |              1943 |
 | Three Parallel Two Intersecting |              2559 |
-| Two Parallel                    |            370424 |
-| Two Intersecting                |                   |
+| Two Parallel                    |            222512 |
+| Two Intersecting                |            277708 |
 | Gen Six DOF                     |                   |
