@@ -2,8 +2,8 @@
 #include "../subproblems/sp.h"
 #include <vector>
 
-Solution IK_spherical(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics& kin) {
-    Solution sol;
+Solution<6> IK_spherical(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics<6, 7>& kin) {
+    Solution<6> sol;
 
     Eigen::Vector3d p_16 = p_0T - kin.P.col(0) - R_0T * kin.P.col(6);
 

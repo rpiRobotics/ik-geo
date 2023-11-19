@@ -79,8 +79,8 @@
   }
 */
 // TODO: Fix output for Q and LS to Soln
-Solution IK_spherical_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics& kin) {
-    Solution soln;
+Solution<6> IK_spherical_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics<6, 7>& kin) {
+    Solution<6> soln;
 
     Eigen::Matrix<double, 3, 1> p_16 = (p_0T - R_0T * kin.P.col(6) - kin.P.col(0));
     std::vector <double> theta;

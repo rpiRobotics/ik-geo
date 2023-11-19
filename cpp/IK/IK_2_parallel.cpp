@@ -8,9 +8,9 @@
 #include "../subproblems/sp.h"
 #include <eigen3/Eigen/src/Core/Matrix.h>
 
-Solution IK_2_parallel(const Eigen::Matrix<double, 3, 3> &R_06,
-                       const Eigen::Vector3d &p_0T, const Kinematics &kin) {
-    Solution soln;
+Solution<6> IK_2_parallel(const Eigen::Matrix<double, 3, 3> &R_06,
+                       const Eigen::Vector3d &p_0T, const Kinematics<6, 7> &kin) {
+    Solution<6> soln;
 
     std::vector<double> t4;
     std::vector<double> t6;

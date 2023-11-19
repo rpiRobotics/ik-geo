@@ -1,8 +1,8 @@
 #include "IK_3_parallel.h"
 #include "../subproblems/sp.h"
 
-Solution IK_3_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics& kin) {
-    Solution soln;
+Solution<6> IK_3_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics<6, 7>& kin) {
+    Solution<6> soln;
 
     Eigen::Vector3d p16 = p_0T - kin.P.col(0) - R_0T * kin.P.col(6);
 

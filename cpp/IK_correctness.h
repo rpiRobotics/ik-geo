@@ -6,7 +6,7 @@
 #include "utils.h"
 
 struct Setup {
-    Kinematics kin;
+    Kinematics<6, 7> kin;
     Eigen::Matrix<double, 3, 3> r;
     Eigen::Matrix<double, 3, 1> t;
 
@@ -15,7 +15,7 @@ struct Setup {
 
     Setup(const std::string &raw);
 
-    void solve(Solution (*ik)(const Eigen::Matrix<double, 3, 3> &, const Eigen::Vector3d &, const Kinematics &));
+    void solve(Solution<6> (*ik)(const Eigen::Matrix<double, 3, 3> &, const Eigen::Vector3d &, const Kinematics<6, 7> &));
     double error();
     void debug();
 };

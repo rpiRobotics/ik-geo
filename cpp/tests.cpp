@@ -12,7 +12,7 @@
 #include "utils.h"
 #include <chrono>
 
-void test(const char *data_path, Solution (*ik)(const Eigen::Matrix<double, 3, 3> &, const Eigen::Vector3d &, const Kinematics &)) {
+void test(const char *data_path, Solution<6> (*ik)(const Eigen::Matrix<double, 3, 3> &, const Eigen::Vector3d &, const Kinematics<6, 7> &)) {
     std::ifstream data_file(data_path);
     std::string line;
     std::vector<Setup> setups;

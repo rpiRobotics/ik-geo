@@ -11,16 +11,36 @@
 #include <eigen3/Eigen/Geometry>
 #include <vector>
 
+template <unsigned N1, unsigned N2>
 struct Kinematics {
-    Eigen::Matrix<double, 3, 6> H;
-    Eigen::Matrix<double, 3, 7> P;
+    Eigen::Matrix<double, 3, N1> H;
+    Eigen::Matrix<double, 3, N2> P;
 
-    void forward_kinematics(const Eigen::Matrix<double, 6, 1> &theta, Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p);
+    void forward_kinematics(const Eigen::Matrix<double, N1, 1> &theta, Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p);
+    void forward_kinematics_inter(const Eigen::Matrix<double, N1, 1> &theta, const std::vector<unsigned> &inter, Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p, std::vector<Eigen::Vector3d> &p_inter);
 };
 
+template <unsigned N>
 struct Solution {
-	std::vector<Eigen::Matrix<double, 6, 1>> q;
-	std::vector<bool> is_ls;
+    std::vector<Eigen::Matrix<double, N, 1>> q;
+    std::vector<bool> is_ls;
+};
+
+struct SEWConv {
+    Eigen::Vector3d e_r;
+
+    SEWConv(const Eigen::Vector3d &e_r) : e_r(e_r) {}
+
+    double fwd_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &E, const Eigen::Vector3d &W) const;
+    Eigen::Vector3d inv_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &W, double psi, Eigen::Vector3d &n_SEW) const;
+};
+
+class Setup {
+    public:
+        Setup();
+
+        virtual void run() = 0;
+        virtual double error() = 0;
 };
 
 //Create number from 0.0000 to 1.0000
@@ -127,6 +147,17 @@ std::vector<std::pair<double, unsigned>> search_1d(std::function<Eigen::Matrix<d
     }
 
     return zeros;
+}
+
+template <unsigned N1, unsigned N2>
+void Kinematics<N1, N2>::forward_kinematics(const Eigen::Matrix<double, N1, 1> &theta, Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p) {
+    p = P.col(0);
+    r = Eigen::Matrix<double, 3, 3>::Identity();
+
+    for (unsigned i = 0; i < N1; ++i) {
+        r = r * rot(H.col(i), theta(i));
+        p = p + r * P.col(i + 1);
+    }
 }
 
 #endif // UTILS_H_

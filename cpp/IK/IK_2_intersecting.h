@@ -3,6 +3,6 @@
 
 #include "../utils.h"
 
-Solution IK_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06, const Eigen::Vector3d& p_0T, const Kinematics& kin);
+Solution<6> IK_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06, const Eigen::Vector3d& p_0T, const Kinematics<6, 7>& kin);
 
 #endif // IK_2_INTERSECTING_H_

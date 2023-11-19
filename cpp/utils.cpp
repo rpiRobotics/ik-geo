@@ -2,7 +2,25 @@
 #include <cmath>
 
 #include "utils.h"
+#include "subproblems/sp.h"
 #include <utility>
+
+double SEWConv::fwd_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &E, const Eigen::Vector3d &W) const {
+    Eigen::Vector3d p_SE = E - S;
+    Eigen::Vector3d e_SW = (W - S).normalized();
+
+    double psi;
+    IKS::sp1_run(e_r, p_SE, e_SW, psi);
+    return psi;
+}
+
+Eigen::Vector3d SEWConv::inv_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &W, double psi, Eigen::Vector3d &n_SEW) const {
+    Eigen::Vector3d e_SW = (W - S).normalized();
+    Eigen::Vector3d e_y = e_SW.cross(e_r).normalized();
+
+    n_SEW = rot(e_SW, psi) * e_y;
+    return n_SEW.cross(e_SW);
+}
 
 //Create number from 0.0000 to 1.0000
 double rand_0to1(){

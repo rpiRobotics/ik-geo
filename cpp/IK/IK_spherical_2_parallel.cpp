@@ -7,8 +7,8 @@
 #include "IK_spherical_2_parallel.h"
 #include "../subproblems/sp.h"
 
-Solution IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics& kin) {
-	Solution soln;
+Solution<6> IK_spherical_2_parallel(const Eigen::Matrix<double, 3, 3>& R_0T, const Eigen::Vector3d& p_0T, const Kinematics<6, 7>& kin) {
+	Solution<6> soln;
 
 	// Use subproblem 4 to find up to two solutions for q1
 	std::vector<double> t1(1, 1.0);

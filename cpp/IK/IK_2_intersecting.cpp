@@ -3,7 +3,7 @@
 #include "../subproblems/sp.h"
 #include <eigen3/Eigen/src/Core/Matrix.h>
 
-Eigen::Matrix4d q_partial_given_q4(double q4, const Kinematics &kin,
+Eigen::Matrix4d q_partial_given_q4(double q4, const Kinematics<6, 7> &kin,
                                    const Eigen::Vector3d &p_16) {
     Eigen::Matrix4d q_partial;
     q_partial.setConstant(NAN);
@@ -25,9 +25,9 @@ Eigen::Matrix4d q_partial_given_q4(double q4, const Kinematics &kin,
     return q_partial;
 }
 
-Solution IK_2_intersecting(const Eigen::Matrix<double, 3, 3> &R_06,
-                           const Eigen::Vector3d &p_0T, const Kinematics &kin) {
-    Solution soln;
+Solution<6> IK_2_intersecting(const Eigen::Matrix<double, 3, 3> &R_06,
+                           const Eigen::Vector3d &p_0T, const Kinematics<6, 7> &kin) {
+    Solution<6> soln;
 
     Eigen::Vector3d p_16 = p_0T - kin.P.col(0) - R_06 * kin.P.col(6);
 

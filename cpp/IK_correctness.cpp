@@ -1,16 +1,6 @@
 #include "IK_correctness.h"
 #include <iostream>
 
-void Kinematics::forward_kinematics(const Eigen::Matrix<double, 6, 1> &theta, Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p) {
-    p = P.col(0);
-    r = Eigen::Matrix<double, 3, 3>::Identity();
-
-    for (int i = 0; i < 6; ++i) {
-        r = r * rot(H.col(i), theta(i));
-        p = p + r * P.col(i + 1);
-    }
-}
-
 Setup::Setup(const std::string &raw) {
     std::vector<double> data;
     std::stringstream stream(raw);
@@ -54,8 +44,8 @@ double Setup::error() {
     return min_error;
 }
 
-void Setup::solve(Solution (*ik)(const Eigen::Matrix<double, 3, 3> &, const Eigen::Vector3d &, const Kinematics &)) {
-    Solution s = ik(r, t, kin);
+void Setup::solve(Solution<6> (*ik)(const Eigen::Matrix<double, 3, 3> &, const Eigen::Vector3d &, const Kinematics<6, 7> &)) {
+    Solution<6> s = ik(r, t, kin);
     q = s.q;
     is_ls = s.is_ls;
 }
