@@ -1,5 +1,59 @@
+#include <iostream>
+
 #include "IK_R_2R_R_3R_SJ2.h"
 #include "../subproblems/sp.h"
+#include <ostream>
+
+IK_R_2R_R_3R_SJ2_Setup::IK_R_2R_R_3R_SJ2_Setup() : sew(rand_normal_vec()) {
+    Eigen::Vector3d zv;
+    Eigen::Matrix<double, 7, 1> q;
+    zv.fill(0);
+    for (unsigned i = 0; i < 7; ++i)
+        q[i] = rand_angle();
+
+    kin.P << rand_vec(), rand_vec(), zv, rand_vec(), rand_vec(), zv, zv, rand_vec();
+    kin.H = rand_normal_vec(7);
+
+    std::vector<unsigned> inter = {2, 4, 5};
+    std::vector<Eigen::Vector3d> p_sew = kin.forward_kinematics_inter(q, inter, R, T);
+
+    psi = sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
+}
+
+void IK_R_2R_R_3R_SJ2_Setup::run() {
+    sol = IK_R_2R_R_3R_SJ2(R, T, sew, psi, kin);
+}
+
+double IK_R_2R_R_3R_SJ2_Setup::error() {
+    double error = INFINITY;
+    std::vector<unsigned> inter = {2, 4, 5};
+
+    for (Eigen::Matrix<double, 7, 1> q : sol.q) {
+        Eigen::Matrix3d R_t;
+        Eigen::Vector3d T_t;
+        std::vector<Eigen::Vector3d> p_sew_t = kin.forward_kinematics_inter(q, inter, R_t, T_t);
+        double psi_t = sew.fwd_kin(p_sew_t[0], p_sew_t[1], p_sew_t[2]);
+        double error_i = (R_t - R).norm() + (T_t - T).norm() + wrap_to_pi(psi_t - psi);
+
+        if (error_i < error) error = error_i;
+    }
+
+    return error;
+}
+
+void IK_R_2R_R_3R_SJ2_Setup::debug() {
+    std::cout << "R: \n" << R << std::endl
+              << "T: \n" << T << std::endl
+              << "psi: \n" << psi << std::endl
+              << "P: \n" << kin.P << std::endl
+              << "H: \n" << kin.H << std::endl
+              << "e_r: \n" << sew.e_r << std::endl
+              << "n: \n" << sol.q.size() << std::endl;
+
+    for (unsigned i = 0; i < sol.q.size(); ++i) {
+        std::cout << "Q_" << i << ": \n" << sol.q[i] << std::endl;
+    }
+}
 
 Solution<7> IK_R_2R_R_3R_SJ2(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, const SEWConv &SEW_class, double psi, const Kinematics<7, 8> &kin) {
     Solution<7> sol;
@@ -27,6 +81,9 @@ Solution<7> IK_R_2R_R_3R_SJ2(const Eigen::Matrix3d &R_07, const Eigen::Vector3d 
         for (double q4 : t4) {
             std::vector<double> t2;
             std::vector<double> t3;
+
+            t2.push_back(0);
+            t3.push_back(0);
 
             bool t23_is_ls = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3),q4)*kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
             if (t23_is_ls) {
@@ -61,11 +118,11 @@ Solution<7> IK_R_2R_R_3R_SJ2(const Eigen::Matrix3d &R_07, const Eigen::Vector3d 
         error(q1);
         Eigen::Vector4d q_partial_col = partial_q.col(i);
 
-        Eigen::Vector3d R_01 = rot(kin.H.col(0), q_partial_col[0]);
-        Eigen::Vector3d R_12 = rot(kin.H.col(1), q_partial_col[1]);
-        Eigen::Vector3d R_23 = rot(kin.H.col(2), q_partial_col[2]);
-        Eigen::Vector3d R_34 = rot(kin.H.col(3), q_partial_col[3]);
-        Eigen::Vector3d R_04 = R_01 * R_12 * R_23 * R_34;
+        Eigen::Matrix3d R_01 = rot(kin.H.col(0), q_partial_col[0]);
+        Eigen::Matrix3d R_12 = rot(kin.H.col(1), q_partial_col[1]);
+        Eigen::Matrix3d R_23 = rot(kin.H.col(2), q_partial_col[2]);
+        Eigen::Matrix3d R_34 = rot(kin.H.col(3), q_partial_col[3]);
+        Eigen::Matrix3d R_04 = R_01 * R_12 * R_23 * R_34;
 
         std::vector<double> t5;
         std::vector<double> t6;
@@ -75,10 +132,10 @@ Solution<7> IK_R_2R_R_3R_SJ2(const Eigen::Matrix3d &R_07, const Eigen::Vector3d 
             double q5 = t5[i_56];
             double q6 = t6[i_56];
 
-            Eigen::Vector3d R_45 = rot(kin.H.col(4), q5);
-            Eigen::Vector3d R_56 = rot(kin.H.col(5), q6);
+            Eigen::Matrix3d R_45 = rot(kin.H.col(4), q5);
+            Eigen::Matrix3d R_56 = rot(kin.H.col(5), q6);
             Eigen::Vector3d p = kin.H.col(5);
-            Eigen::Vector3d R_06 = R_04 * R_45 * R_56;
+            Eigen::Matrix3d R_06 = R_04 * R_45 * R_56;
 
             double q7;
             bool q7_is_ls = IKS::sp1_run(p, R_06.transpose() * R_07 * p, kin.H.col(6), q7);

@@ -4,6 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
+#include <iostream>
 #include <time.h>
 #include <math.h>
 #include <random>
@@ -17,7 +18,8 @@ struct Kinematics {
     Eigen::Matrix<double, 3, N2> P;
 
     void forward_kinematics(const Eigen::Matrix<double, N1, 1> &theta, Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p);
-    void forward_kinematics_inter(const Eigen::Matrix<double, N1, 1> &theta, const std::vector<unsigned> &inter, Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p, std::vector<Eigen::Vector3d> &p_inter);
+    std::vector<Eigen::Vector3d> forward_kinematics_inter(const Eigen::Matrix<double, N1, 1> &theta, const std::vector<unsigned> &inter,
+                                                          Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p);
 };
 
 template <unsigned N>
@@ -35,20 +37,12 @@ struct SEWConv {
     Eigen::Vector3d inv_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &W, double psi, Eigen::Vector3d &n_SEW) const;
 };
 
-class Setup {
-    public:
-        Setup();
-
-        virtual void run() = 0;
-        virtual double error() = 0;
-};
-
 //Create number from 0.0000 to 1.0000
 double rand_0to1();
 
 //Example input is a normal vector
 //Matrix cross-product for 3 x 3 vector
-Eigen::Matrix<double, 3, 3> hat(const Eigen::Matrix<double, 3, Eigen::Dynamic>& vec);
+Eigen::Matrix3d hat(const Eigen::Vector3d& vec);
 
 //Create a random angle
 double rand_angle();
@@ -65,7 +59,7 @@ Eigen::Vector3d rand_perp_normal_vec(const Eigen::Vector3d& vec);
 
 //Create 3x3 rotation matrix using the Euler Rodrigues formula
 //TODO: Compare notes
-Eigen::Matrix<double, 3, Eigen::Dynamic> rot(Eigen::Matrix<double, 3, Eigen::Dynamic> k, double theta);
+Eigen::Matrix3d rot(const Eigen::Vector3d &k, double theta);
 
 double wrap_to_pi(double theta);
 
@@ -128,6 +122,7 @@ std::vector<std::pair<double, unsigned>> search_1d(std::function<Eigen::Matrix<d
 
     for (unsigned n = 0; n < initial_samples; ++n) {
         Eigen::Matrix<double, N, 1> v = f(x);
+        // std::cout << x << ' ' << v[0] << std::endl;
 
         for (unsigned i = 0; i < N; ++i) {
             double y = v(i);
@@ -158,6 +153,26 @@ void Kinematics<N1, N2>::forward_kinematics(const Eigen::Matrix<double, N1, 1> &
         r = r * rot(H.col(i), theta(i));
         p = p + r * P.col(i + 1);
     }
+}
+
+template <unsigned N1, unsigned N2>
+std::vector<Eigen::Vector3d> Kinematics<N1, N2>::forward_kinematics_inter(const Eigen::Matrix<double, N1, 1> &theta, const std::vector<unsigned> &inter,
+                                                                          Eigen::Matrix<double, 3, 3> &r, Eigen::Matrix<double, 3, 1> &p) {
+    std::vector<Eigen::Vector3d> p_inter;
+
+    p = P.col(0);
+    r = Eigen::Matrix<double, 3, 3>::Identity();
+
+    for (unsigned i = 0; i < N1; ++i) {
+        if (std::find(inter.begin(), inter.end(), i) != inter.end()) {
+            p_inter.push_back(p);
+        }
+
+        r = r * rot(H.col(i), theta(i));
+        p = p + r * P.col(i + 1);
+    }
+
+    return p_inter;
 }
 
 #endif // UTILS_H_

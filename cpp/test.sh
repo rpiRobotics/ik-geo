@@ -11,6 +11,7 @@ g++ -Wall -Wextra -Ofast                \
     IK/IK_3_parallel.cpp                \
     IK/IK_2_parallel.cpp                \
     IK/IK_2_intersecting.cpp            \
+    SEW_IK/IK_R_2R_R_3R_SJ2.cpp         \
     tests.cpp                           \
     utils.cpp                           \
     subproblems/sp.cpp                  \

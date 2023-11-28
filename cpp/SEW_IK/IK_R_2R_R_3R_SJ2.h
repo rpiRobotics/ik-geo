@@ -4,29 +4,22 @@
 #include "../utils.h"
 #include <eigen3/Eigen/src/Core/Matrix.h>
 
-class IK_R_2R_R_3R_SJ2_Setup : Setup {
+class IK_R_2R_R_3R_SJ2_Setup {
     private:
         SEWConv sew;
         Kinematics<7, 8> kin;
         Eigen::Matrix3d R;
-        Eigen::Matrix3d T;
+        Eigen::Vector3d T;
         double psi;
 
         Solution<7> sol;
 
     public:
-        IK_R_2R_R_3R_SJ2_Setup() : sew(rand_normal_vec()) {
-            Eigen::Vector3d zeros;
-            Eigen::Matrix<double, 7, 1> q;
-            zeros.fill(0);
-            for (unsigned i = 0; i < 7; ++i) q[i] = rand_angle();
+        IK_R_2R_R_3R_SJ2_Setup();
 
-            kin.P << rand_vec(), rand_vec(), zeros, rand_vec(), rand_vec(), zeros, zeros, rand_vec();
-            kin.H = rand_normal_vec(7);
-
-
-
-        }
+        void run();
+        double error();
+        void debug();
 };
 
 

@@ -12,8 +12,6 @@
 #include <eigen3/Eigen/Dense>
 #include "../utils.h"
 
-extern Eigen::Matrix<double, 3, Eigen::Dynamic> rot(Eigen::Matrix<double, 3, Eigen::Dynamic> k, double theta);
-
 struct Kin {
 	Eigen::Matrix<double, 3, 7> H;
 	Eigen::Matrix<double, 3, 7> P;

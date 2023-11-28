@@ -1,9 +1,5 @@
-#define _USE_MATH_DEFINES
-#include <cmath>
-
 #include "utils.h"
 #include "subproblems/sp.h"
-#include <utility>
 
 double SEWConv::fwd_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &E, const Eigen::Vector3d &W) const {
     Eigen::Vector3d p_SE = E - S;
@@ -30,7 +26,7 @@ double rand_0to1(){
 
 //Example input is a normal vector
 //Matrix cross-product for 3 x 3 vector
-Eigen::Matrix<double, 3, 3> hat(const Eigen::Matrix<double, 3, Eigen::Dynamic>& vec){
+Eigen::Matrix3d hat(const Eigen::Vector3d& vec){
     Eigen::Matrix3d output;
     output << 0, -vec(2), vec(1), vec(2), 0, -vec(0), -vec(1), vec(0), 0;
     return output;
@@ -90,12 +86,11 @@ Eigen::Vector3d rand_perp_normal_vec(Eigen::Vector3d& vec){
 
 //Create 3x3 rotation matrix using the Euler Rodrigues formula
 //TODO: Compare notes
-Eigen::Matrix<double, 3, Eigen::Dynamic> rot(Eigen::Matrix<double, 3, Eigen::Dynamic> k, double theta){
+Eigen::Matrix3d rot(const Eigen::Vector3d &k, double theta){
     Eigen::Matrix3d eye;
     eye = Eigen::Matrix3d::Identity();
-    eye.setIdentity();
-    k = k/k.norm();
-    return eye + sin(theta)*hat(k)+(1-cos(theta))*hat(k)*hat(k);
+    Eigen::Vector3d k_norm = k.normalized();
+    return eye + sin(theta)*hat(k_norm)+(1-cos(theta))*hat(k_norm)*hat(k_norm);
 }
 
 double wrap_to_pi(double theta) {
