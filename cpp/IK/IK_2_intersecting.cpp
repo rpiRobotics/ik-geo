@@ -1,4 +1,3 @@
-#include <iostream>
 #include "IK_2_intersecting.h"
 #include "../subproblems/sp.h"
 #include <eigen3/Eigen/src/Core/Matrix.h>

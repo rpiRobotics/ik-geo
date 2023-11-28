@@ -9,8 +9,8 @@
 #ifndef __IK_3_parallel_2_intersecting_h__
 #define __IK_3_parallel_2_intersecting_h__
 
-#include <eigen3/Eigen/Dense>
 #include "../utils.h"
+#include <eigen3/Eigen/Dense>
 
 Solution<6> IK_3_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06, const Eigen::Vector3d& p_0T, const Kinematics<6, 7>& kin);
 

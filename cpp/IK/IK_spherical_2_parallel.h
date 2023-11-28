@@ -7,10 +7,8 @@
 #ifndef __IK_spherical_2_parallel_h_
 #define __IK_spherical_2_parallel_h_
 
-#include <iostream>
-#include <vector>
-#include <eigen3/Eigen/Dense>
 #include "../utils.h"
+#include <eigen3/Eigen/Dense>
 
 struct Kin {
 	Eigen::Matrix<double, 3, 7> H;

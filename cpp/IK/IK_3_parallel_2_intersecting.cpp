@@ -5,11 +5,6 @@
 // Purpose: Port of the 3_parallel_2_intersecting files
 //---------------------------------------------------------------//
 
-#define _USE_MATH_DEFINES
-#include <cmath>
-
-#include <vector>
-#include <iostream>
 #include "IK_3_parallel_2_intersecting.h"
 #include "../subproblems/sp.h"
 

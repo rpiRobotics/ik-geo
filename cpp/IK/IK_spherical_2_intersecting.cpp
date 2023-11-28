@@ -7,7 +7,6 @@
 
 #include <chrono>
 #include <eigen3/Eigen/Dense>
-#include <iostream>
 #include "IK_spherical_2_intersecting.h"
 // #include "../rand_cpp.h"
 #include "../subproblems/sp.h"

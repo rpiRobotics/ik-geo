@@ -8,13 +8,15 @@ IK_R_2R_R_3R_SJ2_Setup::IK_R_2R_R_3R_SJ2_Setup() : sew(rand_normal_vec()) {
     Eigen::Vector3d zv;
     Eigen::Matrix<double, 7, 1> q;
     zv.fill(0);
-    for (unsigned i = 0; i < 7; ++i)
+
+    for (unsigned i = 0; i < 7; ++i) {
         q[i] = rand_angle();
+    }
 
     kin.P << rand_vec(), rand_vec(), zv, rand_vec(), rand_vec(), zv, zv, rand_vec();
-    kin.H = rand_normal_vec(7);
+    kin.H << rand_normal_vec(), rand_normal_vec(), rand_normal_vec(), rand_normal_vec(), rand_normal_vec(), rand_normal_vec(), rand_normal_vec();
 
-    std::vector<unsigned> inter = {2, 4, 5};
+    std::vector<unsigned> inter = {1, 3, 4};
     std::vector<Eigen::Vector3d> p_sew = kin.forward_kinematics_inter(q, inter, R, T);
 
     psi = sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
@@ -26,7 +28,7 @@ void IK_R_2R_R_3R_SJ2_Setup::run() {
 
 double IK_R_2R_R_3R_SJ2_Setup::error() {
     double error = INFINITY;
-    std::vector<unsigned> inter = {2, 4, 5};
+    std::vector<unsigned> inter = {1, 3, 4};
 
     for (Eigen::Matrix<double, 7, 1> q : sol.q) {
         Eigen::Matrix3d R_t;
@@ -126,6 +128,10 @@ Solution<7> IK_R_2R_R_3R_SJ2(const Eigen::Matrix3d &R_07, const Eigen::Vector3d 
 
         std::vector<double> t5;
         std::vector<double> t6;
+
+        t5.push_back(0);
+        t6.push_back(0);
+
         bool t56_is_ls = IKS::sp2_run(R_04.transpose()*R_07*kin.H.col(6), kin.H.col(6), -kin.H.col(4), kin.H.col(5), t5, t6);
 
         for (unsigned i_56 = 0; i_56 < t5.size(); ++i_56) {

@@ -4,9 +4,7 @@
 #define _USE_MATH_DEFINES
 #include <cmath>
 
-#include <iostream>
 #include <time.h>
-#include <math.h>
 #include <random>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Geometry>
