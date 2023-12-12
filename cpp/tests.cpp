@@ -15,6 +15,7 @@
 #include "IK/IK_2_parallel.h"
 #include "IK/IK_2_intersecting.h"
 #include "SEW_IK/IK_R_2R_R_3R_SJ2.h"
+#include "hardcoded_SEW_IK/Motoman_50_SJ2.h"
 
 const unsigned TEST_ITERS = 1000;
 
@@ -111,4 +112,7 @@ int main() {
 
     std::cout << "IK_R_2R_R_3R_SJ2" << std::endl;
     test_random<IK_R_2R_R_3R_SJ2_Setup>();
+
+    std::cout << "Motoman_50_SJ2_Setup" << std::endl;
+    test_random<Motoman_50_SJ2_Setup>();
 }

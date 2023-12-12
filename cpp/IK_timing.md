@@ -16,3 +16,7 @@ OS:  Ubuntu 22.04.3 LTS
 | Ik               | Batched Time (ns) |
 | :--------------- | ----------------: |
 | IK R 2R R 3R SJ2 |            169364 |
+
+| Hardcoded Ik     | Batched Time (ns) |
+| :--------------- | ----------------: |
+| Motoman 50 SJ2   |            235941 |
