@@ -97,6 +97,10 @@ double wrap_to_pi(double theta) {
     return fmod(theta + M_PI, M_PI * 2) - M_PI;
 }
 
+int modulo(int a, int b) {
+    return (a % b + b) % b;
+}
+
 Eigen::Vector2d solve_lower_triangular_2x2(const Eigen::Matrix2d &l, const Eigen::Vector2d &bv) {
     Eigen::Vector2d result;
 
