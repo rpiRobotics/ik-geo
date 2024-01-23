@@ -1,6 +1,7 @@
 #include "IK_2_intersecting.h"
 #include "../subproblems/sp.h"
 #include <eigen3/Eigen/src/Core/Matrix.h>
+#include "../search.h"
 
 Eigen::Matrix4d q_partial_given_q4(double q4, const Kinematics<6, 7> &kin,
                                    const Eigen::Vector3d &p_16) {

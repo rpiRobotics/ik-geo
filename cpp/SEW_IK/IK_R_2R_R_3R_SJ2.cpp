@@ -3,6 +3,7 @@
 #include "IK_R_2R_R_3R_SJ2.h"
 #include "../subproblems/sp.h"
 #include <ostream>
+#include "../search.h"
 
 IK_R_2R_R_3R_SJ2_Setup::IK_R_2R_R_3R_SJ2_Setup() : sew(rand_normal_vec()) {
     Eigen::Vector3d zv;
