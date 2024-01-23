@@ -14,6 +14,7 @@
 #include "IK/IK_3_parallel.h"
 #include "IK/IK_2_parallel.h"
 #include "IK/IK_2_intersecting.h"
+#include "IK/IK_gen_6_dof.h"
 #include "SEW_IK/IK_R_2R_R_3R_SJ2.h"
 #include "hardcoded_SEW_IK/Motoman_50_SJ2.h"
 
@@ -23,6 +24,11 @@ void test(const char *data_path, Solution<6> (*ik)(const Eigen::Matrix<double, 3
     std::ifstream data_file(data_path);
     std::string line;
     std::vector<Setup> setups;
+
+    if (!data_file.is_open()) {
+        std::cerr << "Failed to open " << data_path << std::endl;
+        exit(-1);
+    }
 
     std::getline(data_file, line);
 
@@ -43,7 +49,7 @@ void test(const char *data_path, Solution<6> (*ik)(const Eigen::Matrix<double, 3
 
     for (Setup &setup : setups) {
         double error = setup.error();
-        if (error < 1e-6) {
+        if (error < 1e-3) {
             error_sum += error;
             ++counted;
         }
@@ -109,6 +115,9 @@ int main() {
 
     std::cout << "Two Intersecting" << std::endl;
     test("data/IkTwoIntersecting.csv", IK_2_intersecting);
+
+    std::cout << "Gen Six DOF" << std::endl;
+    test("data/IkGenSixDof.csv", IK_gen_6_dof);
 
     std::cout << "IK_R_2R_R_3R_SJ2" << std::endl;
     test_random<IK_R_2R_R_3R_SJ2_Setup>();

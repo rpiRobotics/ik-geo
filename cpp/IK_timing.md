@@ -11,7 +11,7 @@ OS:  Ubuntu 22.04.3 LTS
 | Three Parallel Two Intersecting |              2559 |
 | Two Parallel                    |            222512 |
 | Two Intersecting                |            277708 |
-| Gen Six DOF                     |                   |
+| Gen Six DOF                     |           8406408 |
 
 | Ik               | Batched Time (ns) |
 | :--------------- | ----------------: |

@@ -244,6 +244,7 @@ std::vector<std::tuple<double, double, unsigned>> search_2d(std::function<Eigen:
     }
 
     std::vector<std::tuple<double, double, unsigned>> minima;
+    std::vector<std::tuple<double, double, unsigned>> optimized;
 
     for (unsigned i = 0; i < N_MAX_MINIMA; ++i) {
         std::optional<std::tuple<unsigned, unsigned, unsigned>> min = minimum();
@@ -278,10 +279,15 @@ std::vector<std::tuple<double, double, unsigned>> search_2d(std::function<Eigen:
 
         nlopt::result result = solver.optimize(guess, value);
 
-        printf("{%d} f(%f, %f)[%u] = %f\n", result, x0, x1, k, value);
+        if (result > 0) {
+            optimized.push_back(std::make_tuple(guess[0], guess[1], k));
+        }
+        else {
+            std::cerr << "warning: nlopt failed to optimize\n";
+        }
     }
 
-    return minima;
+    return optimized;
 }
 
 
