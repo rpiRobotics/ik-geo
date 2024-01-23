@@ -6,6 +6,9 @@
 
 #include "sp.h"
 #include "../utils.h"
+#include <algorithm>
+#include <limits>
+#include <tuple>
 
 namespace IKS {
 	void cone_polynomials(const Eigen::Vector3d &p0_i, const Eigen::Vector3d &k_i, const Eigen::Vector3d &p_i, const Eigen::Vector3d &p_i_s, const Eigen::Vector3d &k2,
@@ -346,9 +349,7 @@ namespace IKS {
 						const Eigen::Vector3d &k1, const Eigen::Vector3d &k2, const Eigen::Vector3d &k3,
 						std::vector<double> &theta1, std::vector<double> &theta2, std::vector<double> &theta3) {
 
-			theta1 = std::vector<double>(0);
-			theta2 = std::vector<double>(0);
-			theta3 = std::vector<double>(0);
+		    std::vector<std::tuple<double, double, double>> theta123;
 			int i_soln = 0;
 
 			Eigen::Matrix<double, 3, 1> p1_s = p0 + k1*k1.transpose()*p1;
@@ -413,15 +414,44 @@ namespace IKS {
 
 					if (fabs((v1-H*k2).norm() - (v3-H*k2).norm()) < 1e-6) {
 						i_soln ++ ;
-						theta1.push_back(atan2(sc1(0, 0), sc1(1, 0)));
 					// theta2[i_soln] = subproblem.sp_1(v3, v1, k2);
 						double theta;
 						sp1_run(v3, v1, k2, theta);
-						theta2.push_back(theta);
-						theta3.push_back(atan2(sc3(0, 0), sc3(1, 0)));
+						theta123.push_back(std::make_tuple(atan2(sc1(0, 0), sc1(1, 0)),
+														   theta,
+														   atan2(sc3(0, 0), sc3(1, 0))));
 					}
 				}
 
+			}
+
+			if (theta123.size() <= 4) {
+				for (auto theta : theta123) {
+					theta1.push_back(std::get<0>(theta));
+					theta2.push_back(std::get<1>(theta));
+					theta3.push_back(std::get<2>(theta));
+				}
+			}
+			else { // Remove repeated solutions
+				const double DIFF_THRESHOLD = 1e-3;
+
+				std::sort(theta123.begin(), theta123.end(), [](auto const &a, auto const &b) {
+					return std::get<0>(a) < std::get<0>(b);
+				});
+
+			double last = std::numeric_limits<double>::infinity();
+
+				for (unsigned i = 0; i < theta123.size(); ++i) {
+					double compare = std::get<0>(theta123[i]);
+
+					if (std::fabs(last - compare) > DIFF_THRESHOLD) {
+						theta1.push_back(std::get<0>(theta123[i]));
+						theta2.push_back(std::get<1>(theta123[i]));
+						theta3.push_back(std::get<2>(theta123[i]));
+					}
+
+					last = compare;
+				}
 			}
 	}
 
