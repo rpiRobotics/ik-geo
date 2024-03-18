@@ -1,7 +1,42 @@
 # IK-Geo
-Implementation of subproblem solutions using a linear algebra approach from ["Canonical Subproblems for Robot Inverse Kinematics"](https://arxiv.org/abs/2211.05737). We also include inverse kinematics solutions to a number of 6-dof robot types, examples with specific robots, and timing tests.
+Inverse kinematics and subproblem solutions from ["IK-Geo: Unified Robot Inverse Kinematics Using Subproblem Decomposition"](https://arxiv.org/abs/2211.05737) implemented in MATLAB, C++, Rust, and Python. We also include examples and timing tests.  IK-Geo is the fastest general IK solver based on published literature. In this unifying approach, IK for any 6-DOF all-revolute (6R) manipulator is decomposed into six canonical geometric subproblems solved by intersecting circles with other geometric objects. . IK-Geo finds all IK solutions including singular solutions and sometimes least-squares solutions by solving for subproblem solutions in all cases, including in a continuous and sometimes least-squares sense when a solution does not exist.
+
+We also connect our geometric method with polynomial-based method: 1D and 2D search solutions may be converted to a polynomial in the tangent half-angle of one joint.
 
 For 7-DOF inverse kinematics using the Shoulder-Elbow-Wrist (SEW) angle, please see the [stereo-sew](https://github.com/rpiRobotics/stereo-sew) repo.
+
+For diagrams, see the [matlab-diagrams](https://github.com/aelias36/matlab-diagrams) repo.
+
+## Inverse Kinematics Solutions
+Robots are classified into kinematic families based on cases of intersecting or parallel joint axes, and robots in the same family use the same IK algorithm.
+
+6R robots with three intersecting or parallel axes are solved in closed form, and all solutions are found exactly without iteration. Other 6R robots are efficiently solved by searching for zeros of an error function of one or two joint angles. To the best of our knowledge, all commercially available industrial 6R robots and 7R robots parameterized by some joint angle have intersecting or parallel axes and therefore can be solved in closed form or with 1D search.
+
+We provide implementations for many of the kinematic families shown below. If you'd like help implementing IK for a kinematic family not in this repo, please start a GitHub issue or send an email.
+
+
+| Solution Type | Robot Kinematic Family                             | Example                            |
+| ------------- | -------------------------------------------------- | ---------------------------------- |
+| Closed-form   | Spherical joint                                    | Franka Production 3, fixed $q_5$   |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two intersecting axes | KUKA LBR iiwa 7 R800 , fixed $q_3$ |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two parallel axes     | ABB IRB 6640                       |
+|               | Three parallel axes                                | N/A                                |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two intersecting axes | Universal Robots UR5               |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two parallel axes     | N/A                                |
+| 1D search     | Two intersecting axes                              | Kassow Robots KR810, fixed $q_7$   |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two intersecting axes | FANUC CRX-10iA/L                   |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two parallel axes     | Kawasaki KJ125                     |
+|               | Two parallel axes                                  | N/A                                |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two parallel axes     | N/A                                |
+|               | Two intersecting axes $k, k+2$                     | ABB YuMi, fixed $q_3$              |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two intersecting axes | RRC K-1207i, fixed $q_6$           |
+|               | &nbsp;&nbsp;&nbsp;&nbsp; and two parallel axes     | N/A                                |
+| 2D search     | General 6R                                         | Kassow Robots KR810, fixed $q_6$   |
+
+## Subproblem Solutions
+We present efficient and singularity-robust solutions to the following subproblems using geometric and linear algebra methods.
+
+Subproblems 2 and 3 are solved using Subproblem 4. Subproblems 5 and 6 are solved by finding the intersections between two ellipses.
 
 ### Subproblem 1: Circle and point
 
@@ -44,5 +79,5 @@ Make sure to switch to the right branch to see the most recent progress.
 
 `rust`: Rust implementation
 
-## Contributing
-If you have any improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue.
+## Questions and Contributing
+If you have any questions, improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue or send an email. 
