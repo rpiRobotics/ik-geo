@@ -1,6 +1,6 @@
 function [theta, is_LS] = sp_4(h, p, k, d)
 % subproblem.sp_4  Subproblem 4: Circle and plane
-%   theta = = subproblem.sp_4(h, p, k, d) finds theta such that
+%   theta = subproblem.sp_4(h, p, k, d) finds theta such that
 %       h'*rot(k,theta)*p = d
 %   If there's no solution, minimize the least-squares residual
 %       | h'*rot(k,theta)*p - d |
