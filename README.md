@@ -1,7 +1,7 @@
 # IK-Geo
 Inverse kinematics and subproblem solutions from ["IK-Geo: Unified Robot Inverse Kinematics Using Subproblem Decomposition"](https://arxiv.org/abs/2211.05737) implemented in MATLAB, C++, Rust, and Python. We also include examples and timing tests.  IK-Geo is the fastest general IK solver based on published literature. In this unifying approach, IK for any 6-DOF all-revolute (6R) manipulator is decomposed into six canonical geometric subproblems solved by intersecting circles with other geometric objects. . IK-Geo finds all IK solutions including singular solutions and sometimes least-squares solutions by solving for subproblem solutions in all cases, including in a continuous and sometimes least-squares sense when a solution does not exist.
 
-We also connect our geometric method with polynomial-based method: 1D and 2D search solutions may be converted to a polynomial in the tangent half-angle of one joint.
+We also connect our geometric method with polynomial-based method: 1D and 2D search solutions may be converted to a polynomial in the tangent half-angle of one joint. Examples are found in the [subproblem-polynomial](https://github.com/rpiRobotics/subproblem-polynomial) repo.
 
 For 7-DOF inverse kinematics using the Shoulder-Elbow-Wrist (SEW) angle, please see the [stereo-sew](https://github.com/rpiRobotics/stereo-sew) repo.
 
