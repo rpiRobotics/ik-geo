@@ -1,11 +1,17 @@
 # IK-Geo
 Inverse kinematics and subproblem solutions from ["IK-Geo: Unified Robot Inverse Kinematics Using Subproblem Decomposition"](https://arxiv.org/abs/2211.05737) implemented in MATLAB, C++, Rust, and Python. We also include examples and timing tests.  IK-Geo is the fastest general IK solver based on published literature. In this unifying approach, IK for any 6-DOF all-revolute (6R) manipulator is decomposed into six canonical geometric subproblems solved by intersecting circles with other geometric objects. . IK-Geo finds all IK solutions including singular solutions and sometimes least-squares solutions by solving for subproblem solutions in all cases, including in a continuous and sometimes least-squares sense when a solution does not exist.
 
+## Related Repos
+
 We also connect our geometric method with polynomial-based method: 1D and 2D search solutions may be converted to a polynomial in the tangent half-angle of one joint. Examples are found in the [subproblem-polynomial](https://github.com/rpiRobotics/subproblem-polynomial) repo.
 
-For 7-DOF inverse kinematics using the Shoulder-Elbow-Wrist (SEW) angle, please see the [stereo-sew](https://github.com/rpiRobotics/stereo-sew) repo.
+For 7-DOF inverse kinematics using the Shoulder-Elbow-Wrist (SEW) angle, see the [stereo-sew](https://github.com/rpiRobotics/stereo-sew) repo.
 
 For diagrams, see the [matlab-diagrams](https://github.com/aelias36/matlab-diagrams) repo.
+
+Improvements to the 1D search algorithm have been made in [1d_search_improvements](https://github.com/rpiRobotics/1d_search_improvements).
+
+The branch of this repo by TU Munich [OstermD/ik-geo](https://github.com/OstermD/ik-geo), along with their [EAIK](https://github.com/OstermD/EAIK) repo, demonstrates automating the IK derivation process.
 
 ## Inverse Kinematics Solutions
 Robots are classified into kinematic families based on cases of intersecting or parallel joint axes, and robots in the same family use the same IK algorithm.
