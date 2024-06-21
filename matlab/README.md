@@ -14,6 +14,8 @@ e.g. `subproblem.sp_1(p1, p2, k)`.
 
 `+subproblem_setups`: Subproblem solutions
 
+`automatic_IK`: Automatically find IK solutions based on Denavit-Hartenberg or Product of Exponentials conventions
+
 `subproblems`: Test classes for subproblem solutions
 
 `correctness_tests`: Tests to verify the correctness of subproblem and IK solutions
