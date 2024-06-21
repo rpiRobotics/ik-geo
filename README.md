@@ -11,7 +11,11 @@ For diagrams, see the [matlab-diagrams](https://github.com/aelias36/matlab-diagr
 
 Improvements to the 1D search algorithm have been made in [1d_search_improvements](https://github.com/rpiRobotics/1d_search_improvements).
 
-The branch of this repo by TU Munich [OstermD/ik-geo](https://github.com/OstermD/ik-geo), along with their [EAIK](https://github.com/OstermD/EAIK) repo, demonstrates automating the IK derivation process.
+The pure python implementation can be found at [https://pypi.org/project/linearSubproblemSltns/](https://pypi.org/project/linearSubproblemSltns/).
+
+The branch of this repo by TU Munich, [OstermD/ik-geo](https://github.com/OstermD/ik-geo), along with their [EAIK](https://github.com/OstermD/EAIK) repo, demonstrates automating the IK derivation process and provides a python wrapper for the C++ implementation. The Python wrapper can be found at [https://pypi.org/project/EAIK/](https://pypi.org/project/EAIK/).
+
+The branch of this repo by Verdant Evolution, [Verdant-Evolution/ik-geo](https://github.com/Verdant-Evolution/ik-geo), provides a Python wrapper for the Rust implementation along with some improvements to the 1D and 2D search algorithms. The Python wrapper can be found at [https://pypi.org/project/ik-geo/](https://pypi.org/project/ik-geo/).
 
 ## Inverse Kinematics Solutions
 Robots are classified into kinematic families based on cases of intersecting or parallel joint axes, and robots in the same family use the same IK algorithm.
