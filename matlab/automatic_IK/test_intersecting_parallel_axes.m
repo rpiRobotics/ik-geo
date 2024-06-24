@@ -1,9 +1,9 @@
 % setup = hardcoded_IK_setups.ur5;
-setup = hardcoded_IK_setups.IRB_6640;
+% setup = hardcoded_IK_setups.IRB_6640;
 % setup = hardcoded_IK_setups.two_parallel_bot;
 % setup = hardcoded_IK_setups.three_parallel_bot;
 % setup = hardcoded_IK_setups.KUKA_R800_fixed_q3;
-% setup = hardcoded_IK_setups.yumi_fixed_q3;
+setup = hardcoded_IK_setups.yumi_fixed_q3;
 % setup = hardcoded_IK_setups.RRC_fixed_q6;
 % setup = hardcoded_IK_setups.spherical_bot;
 
@@ -33,8 +33,7 @@ N = length(kin.joint_type);
 assert(width(kin.P) == N + 1);
 assert(width(kin.H) == N);
 
-% TODO: Also include how close the intersction is, or adjustable threshold
-% TODO: is_intersecting_nonconsecutive
+% TODO: Also include how close the intersection is, or adjustable threshold
 
 is_intersecting   = false([1, N-1]); % joints i, i+1 intersect
 is_intersecting_nonconsecutive = false([1, N-2]); % joints i, i+2 intersect
@@ -70,6 +69,34 @@ end
 
 fprintf("\n");
 
+% Test for nonconsecutive intersecting axes i, i+2
+% There may be a more elegant way to do this
+% Set joint i+1 to three angles and see if it's always intersecting or parallel
+for i = 1:N-2
+    is_intersecting_nonconsecutive(i) = true;
+    j = i+1;
+    k = i+2;
+
+    for theta = [0, 0.1, 0.2]
+        p_ik = kin.P(:,j) + rot(kin.H(:,j), theta)*kin.P(:,k);
+        h_i = kin.H(:,i);
+        h_k = rot(kin.H(:,j), theta)*kin.H(:,k);
+
+        ab = pinv([h_i h_k]) * p_ik;
+        dist_ik = norm(p_ik - [h_i h_k] * ab);
+
+        if not(dist_ik < 1e-3 || abs(dot(h_i, h_k)) > 1-1e-3)
+            is_intersecting_nonconsecutive(i) = false;
+            break
+        end
+    end
+    if is_intersecting_nonconsecutive(i)
+        fprintf("Joints %d and %d intersect (nonconsecutive)\n", i, k);
+    end
+end
+
+fprintf("\n");
+
 % Test for 2R|| (and implicitly 3R||) joints
 for i = 1:N-1
     j = i+1;
@@ -80,21 +107,19 @@ for i = 1:N-1
         fprintf("Joints %d and %d parallel\n", i, j);
         is_parallel(i) = true;
     end
-
 end
 
-% Recomend solver based on intersecting and parallel axes
-
+% Recommend solver based on intersecting and parallel axes
 fprintf("\nCompatible solvers:\n")
 if N == 6
-    rec_solver_6_DOF(is_intersecting, is_parallel, is_spherical)
+    rec_solver_6_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
 elseif N == 7
-    rec_solver_7_DOF(is_intersecting, is_parallel, is_spherical)
+    rec_solver_7_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
 else
-    fprintf("Only 6- and 7-DOF solver reccomendations supported\n")
+    fprintf("Only 6- and 7-DOF solver recommendations supported\n")
 end
 
-function rec_solver_6_DOF(is_intersecting, is_parallel, is_spherical)
+function rec_solver_6_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
     if is_spherical(4) && is_intersecting(1)
         fprintf("IK_spherical_2_intersecting (Closed-Form Quadratic)\n")
     end
@@ -123,13 +148,14 @@ function rec_solver_6_DOF(is_intersecting, is_parallel, is_spherical)
         fprintf("IK_2_parallel (1D Search)\n")
     end
 
-    % TODO
-    %fprintf("IK_4_6_intersecting (1D Search)\n")
-    
+    if is_intersecting_nonconsecutive(4)
+        fprintf("IK_4_6_intersecting (1D Search)\n")
+    end
+
     % Always possible
         fprintf("IK_gen_6_dof (2D Search)\n")
 end
 
-function rec_solver_7_DOF(is_intersecting, is_parallel, is_spherical)
+function rec_solver_7_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
     % TODO
 end
