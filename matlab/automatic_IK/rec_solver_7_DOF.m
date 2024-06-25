@@ -1,5 +1,7 @@
 function rec_solver_7_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
 
+fprintf("\nCompatible solvers:\n")
+
 if is_intersecting(1) && is_intersecting(3) && is_spherical(5)
     fprintf("IK_2R_2R_3R (Closed-Form Quadratic)\n");
 end

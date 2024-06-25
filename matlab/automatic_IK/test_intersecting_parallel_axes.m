@@ -11,9 +11,9 @@
 % setup = IK_setups.IK_2_intersecting;
 % setup = IK_setups.IK_2_parallel;
 % setup = IK_setups.IK_spherical;
-setup = IK_setups.IK_spherical_2_intersecting;
+% setup = IK_setups.IK_spherical_2_intersecting;
 % setup = IK_setups.IK_spherical_2_parallel;
-% setup = IK_setups.IK_3_parallel;
+setup = IK_setups.IK_3_parallel;
 % setup = IK_setups.IK_3_parallel_2_intersecting;
 
 if ismethod(setup,"get_kin_partial") % hardcoded with fixed q_i
@@ -50,10 +50,10 @@ fprintf("Spherical Joints: ");
 for i=find(is_spherical)
     fprintf("(%d, %d, %d) ", i, i+1, i+2);
 end
-fprintf("\n");
+fprintf("\n\n");
 
 % Recommend solver based on intersecting and parallel axes
-fprintf("\nCompatible solvers:\n")
+N = length(kin.joint_type);
 if N == 6
     rec_solver_6_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
 elseif N == 7
