@@ -1,4 +1,5 @@
 function [is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical] = detect_intersecting_parallel_axes(kin)
+% Test robot kinematics to determine intersecting or parallel axes
 
 THRESH = 1e-3;
 

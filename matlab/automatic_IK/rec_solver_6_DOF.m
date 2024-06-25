@@ -1,5 +1,5 @@
 function rec_solver_6_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
-
+% Recommend 6-DOF solvers given detected intersecting / parallel axes
 
     if any(is_spherical)
         fprintf("Spherical joint: Closed-form solutions exist\n")

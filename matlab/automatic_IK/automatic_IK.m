@@ -25,34 +25,13 @@ else % randomly generated
     kin = P.kin;
 end
 
+
 [is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical] = detect_intersecting_parallel_axes(kin);
 
 clc
-fprintf("Intersecting Joints: ");
-for i=find(is_intersecting)
-    fprintf("(%d, %d) ", i, i+1);
-end
+print_intersecting_parallel_axes(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical);
 fprintf("\n");
 
-fprintf("Intersecting Nonconsecutive Joints: ");
-for i=find(is_intersecting_nonconsecutive)
-    fprintf("(%d, %d) ", i, i+2);
-end
-fprintf("\n");
-
-fprintf("Parallel Joints: ");
-for i=find(is_parallel)
-    fprintf("(%d, %d) ", i, i+1);
-end
-fprintf("\n");
-
-fprintf("Spherical Joints: ");
-for i=find(is_spherical)
-    fprintf("(%d, %d, %d) ", i, i+1, i+2);
-end
-fprintf("\n\n");
-
-% Recommend solver based on intersecting and parallel axes
 N = length(kin.joint_type);
 if N == 6
     rec_solver_6_DOF(is_intersecting, is_intersecting_nonconsecutive, is_parallel, is_spherical)
