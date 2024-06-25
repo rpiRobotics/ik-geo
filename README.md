@@ -1,5 +1,5 @@
 # IK-Geo
-Inverse kinematics and subproblem solutions from ["IK-Geo: Unified Robot Inverse Kinematics Using Subproblem Decomposition"](https://arxiv.org/abs/2211.05737) implemented in MATLAB, C++, Rust, and Python. We also include examples and timing tests.  IK-Geo is the fastest general IK solver based on published literature. In this unifying approach, IK for any 6-DOF all-revolute (6R) manipulator is decomposed into six canonical geometric subproblems solved by intersecting circles with other geometric objects. . IK-Geo finds all IK solutions including singular solutions and sometimes least-squares solutions by solving for subproblem solutions in all cases, including in a continuous and sometimes least-squares sense when a solution does not exist.
+Inverse kinematics and subproblem solutions from ["IK-Geo: Unified Robot Inverse Kinematics Using Subproblem Decomposition"](https://arxiv.org/abs/2211.05737) implemented in MATLAB, C++, Rust, and Python. We also include examples and timing tests.  IK-Geo is the fastest general IK solver based on published literature. In this unifying approach, IK for any 6-DOF all-revolute (6R) manipulator is decomposed into six canonical geometric subproblems solved by intersecting circles with other geometric objects. IK-Geo finds all IK solutions including singular solutions and sometimes least-squares solutions by solving for subproblem solutions in all cases, including in a continuous and sometimes least-squares sense when a solution does not exist.
 
 ## Related Repos
 
@@ -22,7 +22,9 @@ Robots are classified into kinematic families based on cases of intersecting or 
 
 6R robots with three intersecting or parallel axes are solved in closed form, and all solutions are found exactly without iteration. Other 6R robots are efficiently solved by searching for zeros of an error function of one or two joint angles. To the best of our knowledge, all commercially available industrial 6R robots and 7R robots parameterized by some joint angle have intersecting or parallel axes and therefore can be solved in closed form or with 1D search.
 
-We provide implementations for many of the kinematic families shown below. If you'd like help implementing IK for a kinematic family not in this repo, please start a GitHub issue or send an email.
+We provide implementations for many of the kinematic families shown below.
+
+See [matlab/automatic_IK/](matlab/automatic_IK/) to automatically detect which IK solvers can be used for a given robot.
 
 
 | Solution Type | Robot Kinematic Family                             | Example                            |
