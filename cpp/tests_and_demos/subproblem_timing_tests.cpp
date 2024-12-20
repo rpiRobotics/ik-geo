@@ -16,9 +16,11 @@
 
 #include <iostream>
 #include <chrono>
+// #include <Eigen/Dense>
 
-#include "../subproblems/sp.cpp"
+#include "../subproblems/sp.h"
 #include "../read_csv.h"
+#include "../utils.h"
 
 int main(int argc, char * argv[])
 {

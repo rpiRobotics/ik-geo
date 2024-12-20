@@ -6,8 +6,8 @@
 //---------------------------------------------------------------//
 
 // import all subproblems
-#include "../subproblems/sp.cpp"
-#include "../rand_cpp.h"
+#include "../subproblems/sp.h"
+#include "../utils.h"
 #include <iostream>
 #include <vector>
 #include <eigen3/Eigen/Dense>
