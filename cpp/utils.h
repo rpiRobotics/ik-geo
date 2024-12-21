@@ -66,6 +66,9 @@ Eigen::Matrix3d rot(const Eigen::Vector3d &k, double theta);
 
 double wrap_to_pi(double theta);
 
+// Function to wrap each element of a vector to the range [-π, π]
+Eigen::VectorXd wrap_to_pi(const Eigen::VectorXd &theta);
+
 int modulo(int a, int b);
 
 Eigen::Vector2d solve_lower_triangular_2x2(const Eigen::Matrix2d &l, const Eigen::Vector2d &bv);

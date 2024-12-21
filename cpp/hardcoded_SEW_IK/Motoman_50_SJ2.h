@@ -3,22 +3,20 @@
 
 #include "../utils.h"
 
-class Motoman_50_SJ2_Setup {
-    private:
-        SEWConv sew;
-        Kinematics<7, 8> kin;
-        Eigen::Matrix3d R;
-        Eigen::Vector3d T;
-        double psi;
+struct Motoman_50_SJ2_Setup {
+    SEWConv sew;
+    Kinematics<7, 8> kin;
+    Eigen::Matrix3d R;
+    Eigen::Vector3d T;
+    double psi;
+    Solution<7> sol;
+    Eigen::Matrix<double, 7, 1> q_given;
 
-        Solution<7> sol;
-
-    public:
-        Motoman_50_SJ2_Setup();
-
-        void run();
-        double error();
-        void debug();
+    Motoman_50_SJ2_Setup();
+    void run();
+    double error();
+    double error_to_q_given() const;
+    void debug() const;
 };
 
 

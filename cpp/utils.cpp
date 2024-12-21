@@ -43,14 +43,14 @@ double rand_angle(){
     return theta;
 }
 
-Eigen::Matrix<double, Eigen::Dynamic, 1> rand_angle(int N){
+Eigen::VectorXd rand_angle(int N) {
     std::random_device rd;
     std::default_random_engine eng(rd());
-    std::uniform_real_distribution<double> distr(0, N);
-    Eigen::Matrix<double, Eigen::Dynamic, 1> theta;
+    std::uniform_real_distribution<double> distr(0, 1);
+    Eigen::VectorXd theta(N);
 
     for (int i = 0; i < N; i++) {
-        theta(i, 0) = distr(eng)*2*M_PI-M_PI;
+        theta(i) = distr(eng) * 2 * M_PI - M_PI;
     }
 
     return theta;
@@ -95,6 +95,15 @@ Eigen::Matrix3d rot(const Eigen::Vector3d &k, double theta){
 
 double wrap_to_pi(double theta) {
     return fmod(theta + M_PI, M_PI * 2) - M_PI;
+}
+
+// Function to wrap each element of a vector to the range [-π, π]
+Eigen::Matrix<double, Eigen::Dynamic, 1> wrap_to_pi(const Eigen::Matrix<double, Eigen::Dynamic, 1>& angles) {
+    Eigen::Matrix<double, Eigen::Dynamic, 1> wrapped_angles = angles;
+    for (int i = 0; i < angles.size(); ++i) {
+        wrapped_angles(i) = wrap_to_pi(angles(i));
+    }
+    return wrapped_angles;
 }
 
 int modulo(int a, int b) {
