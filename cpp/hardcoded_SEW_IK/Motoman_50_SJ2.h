@@ -3,6 +3,7 @@
 
 #include "../utils.h"
 
+
 struct Motoman_50_SJ2_Setup {
     SEWConv sew;
     Kinematics<7, 8> kin;
@@ -19,6 +20,7 @@ struct Motoman_50_SJ2_Setup {
     double error();
     double error_to_q_given() const;
     void debug() const;
+    Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, const SEWConv &SEW_class, double psi, const Kinematics<7, 8> &kin);
 };
 
 
