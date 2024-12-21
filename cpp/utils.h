@@ -34,6 +34,7 @@ struct Solution {
 struct SEWConv {
     Eigen::Vector3d e_r;
 
+    SEWConv() : e_r(Eigen::Vector3d::Zero()) {}
     SEWConv(const Eigen::Vector3d &e_r) : e_r(e_r) {}
 
     double fwd_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &E, const Eigen::Vector3d &W) const;

@@ -13,6 +13,8 @@ struct Motoman_50_SJ2_Setup {
     Eigen::Matrix<double, 7, 1> q_given;
 
     Motoman_50_SJ2_Setup();
+    Motoman_50_SJ2_Setup(const std::string& csv_line);
+    void initialize_kinematics();
     void run();
     double error();
     double error_to_q_given() const;

@@ -1,19 +1,45 @@
 #include "../SEW_IK/IK_R_2R_R_3R_SJ2.h"
 #include "Motoman_50_SJ2.h"
+#include <sstream>
 
-Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup() : sew(rand_vec()) {
-    Eigen::Vector3d ex;
-    Eigen::Vector3d ey;
-    Eigen::Vector3d ez;
-    Eigen::Vector3d zv;
+Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup() {
+    initialize_kinematics();
 
     q_given = rand_angle(7);
 
-    ex << 1, 0, 0;
-    ey << 0, 1, 0;
-    ez << 0, 0, 1;
-    zv.setZero();
+    std::vector<unsigned> inter = {1, 3, 4};
+    std::vector<Eigen::Vector3d> p_sew = kin.forward_kinematics_inter(q_given, inter, R, T);
+    psi = sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
+}
 
+Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup(const std::string& csv_line) {
+    initialize_kinematics();
+
+    std::vector<std::string> tokens;
+    std::stringstream ss(csv_line);
+    std::string item;
+    while (std::getline(ss, item, ',')) {
+        tokens.push_back(item);
+    }
+    
+    R << std::stod(tokens[0]), std::stod(tokens[1]), std::stod(tokens[2]),
+         std::stod(tokens[3]), std::stod(tokens[4]), std::stod(tokens[5]),
+         std::stod(tokens[6]), std::stod(tokens[7]), std::stod(tokens[8]);
+    
+    T << std::stod(tokens[9]), std::stod(tokens[10]), std::stod(tokens[11]);
+
+    psi = std::stod(tokens[12]);
+
+    q_given << std::stod(tokens[13]), std::stod(tokens[14]), std::stod(tokens[15]),
+               std::stod(tokens[16]), std::stod(tokens[17]), std::stod(tokens[18]),
+               std::stod(tokens[19]);
+}
+
+void Motoman_50_SJ2_Setup::initialize_kinematics() {
+    Eigen::Vector3d ex(1, 0, 0);
+    Eigen::Vector3d ey(0, 1, 0);
+    Eigen::Vector3d ez(0, 0, 1);
+    Eigen::Vector3d zv = Eigen::Vector3d::Zero();
 
     double d1 = 0.540;
     double a1 = 0.145;
@@ -24,12 +50,7 @@ Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup() : sew(rand_vec()) {
     kin.P << d1*ez, a1*ex, zv, d3*ez, d5*ez, zv, zv, dT*ez;
     kin.H << ez, -ey, ez, -ey, ez, -ey, ez;
 
-    sew = SEWConv(rot(ey, -M_PI/4) * ez);
-
-    std::vector<unsigned> inter = {1, 3, 4};
-    std::vector<Eigen::Vector3d> p_sew = kin.forward_kinematics_inter(q_given, inter, R, T);
-
-    psi = sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
+    sew = SEWConv(rot(ey, -M_PI/4) * ez);   
 }
 
 void Motoman_50_SJ2_Setup::run() {
