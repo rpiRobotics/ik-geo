@@ -3,6 +3,7 @@
 #include <eigen3/Eigen/Dense>
 #include <iostream>
 #include <fstream>
+#include <chrono>
 
 /*
 To compile:
@@ -12,12 +13,14 @@ g++ -Wall -O3 tests_and_demos/test_MM50_SJ2.cpp hardcoded_SEW_IK/Motoman_50_SJ2.
 void test_MM50_random();
 void test_MM50_csv();
 void test_MM50_csv_file();
+void test_MM50_csv_file_bulk();
 
 int main() {
     // test_MM50_random();
     // test_MM50_csv();
+    // test_MM50_csv_file();
 
-    test_MM50_csv_file();
+    test_MM50_csv_file_bulk();
 
     return 0;
 }
@@ -114,6 +117,41 @@ void test_MM50_csv_file() {
     std::ofstream error_file("data/errors_to_q_given.csv");
     for (const auto& error : errors_to_q_given) {
         error_file << error << "\n";
+    }
+    error_file.close();
+}
+
+void test_MM50_csv_file_bulk() {
+    std::ifstream file("data/hardcoded_IK_setup_MM50_SJ2.csv");
+
+    std::vector<Motoman_50_SJ2_Setup> setups;
+
+    std::string line;
+    // Skip the first line
+    std::getline(file, line);
+
+    int lines_to_read = -1; // Change this value to read more or fewer lines, set to -1 to read all lines
+    int line_count = 0;
+    while ((lines_to_read < 0 || line_count < lines_to_read) && std::getline(file, line)) {
+        ++line_count;
+        setups.emplace_back(line);
+    }
+
+    // Run the inverse kinematics solver for each setup and measure the time taken
+    auto start = std::chrono::high_resolution_clock::now();
+    for (auto& setup : setups) {
+        setup.run();
+    }
+    auto end = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double, std::micro> duration = end - start;
+    double avg_time = duration.count() / setups.size();
+    std::cout << "Average time per pose: " << avg_time << " microseconds" << std::endl;
+
+    // Calculate and save the errors to a file
+    std::ofstream error_file("data/errors_to_q_given.csv");
+    for (const auto& setup : setups) {
+        double error_to_q_given = setup.error_to_q_given();
+        error_file << error_to_q_given << "\n";
     }
     error_file.close();
 }
