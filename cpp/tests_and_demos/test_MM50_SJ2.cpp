@@ -73,12 +73,14 @@ void test_MM50_csv() {
 
 void test_MM50_csv_file() {
     std::ifstream file("data/hardcoded_IK_setup_MM50_SJ2.csv");
-    std::string line;
 
+    std::vector<double> errors_to_q_given;
+
+    std::string line;
     //skip the first line
     std::getline(file, line);
 
-    int lines_to_read = 50; // Change this value to read more or fewer lines, set to -1 to read all lines
+    int lines_to_read = -1; // Change this value to read more or fewer lines, set to -1 to read all lines
     int line_count = 0;
     while ((lines_to_read < 0 || line_count < lines_to_read) && std::getline(file, line)) {
         ++line_count;
@@ -102,8 +104,16 @@ void test_MM50_csv_file() {
 
         // Calculate and print the error to the given q
         double error_to_q_given = setup.error_to_q_given();
-        std::cout << "Error to q_given: " << error_to_q_given << std::endl;
+        // std::cout << "Error to q_given: " << error_to_q_given << std::endl;
+        errors_to_q_given.push_back(error_to_q_given);
 
         // setup.debug();
     }
+
+    // Save the errors to a file
+    std::ofstream error_file("data/errors_to_q_given.csv");
+    for (const auto& error : errors_to_q_given) {
+        error_file << error << "\n";
+    }
+    error_file.close();
 }

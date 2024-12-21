@@ -112,7 +112,7 @@ Solution<7> IK_R_2R_R_3R_SJ2(const Eigen::Matrix3d &R_07, const Eigen::Vector3d 
         return psi_vec;
     };
 
-    std::vector<std::pair<double, unsigned>> zeros = search_1d<4>(error, -M_PI, M_PI, 200);
+    std::vector<std::pair<double, unsigned>> zeros = search_1d<4>(error, -M_PI, M_PI, 1e3);
 
     for (std::pair<double, unsigned> zero : zeros) {
         double q1 = zero.first;
