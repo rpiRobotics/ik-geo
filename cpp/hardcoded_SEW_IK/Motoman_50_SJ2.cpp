@@ -22,9 +22,9 @@ Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup(const std::string& csv_line) {
         tokens.push_back(item);
     }
     
-    R << std::stod(tokens[0]), std::stod(tokens[1]), std::stod(tokens[2]),
-         std::stod(tokens[3]), std::stod(tokens[4]), std::stod(tokens[5]),
-         std::stod(tokens[6]), std::stod(tokens[7]), std::stod(tokens[8]);
+    R << std::stod(tokens[0]), std::stod(tokens[3]), std::stod(tokens[6]),
+         std::stod(tokens[1]), std::stod(tokens[4]), std::stod(tokens[7]),
+         std::stod(tokens[2]), std::stod(tokens[5]), std::stod(tokens[8]);
     
     T << std::stod(tokens[9]), std::stod(tokens[10]), std::stod(tokens[11]);
 
