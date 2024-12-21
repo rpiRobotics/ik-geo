@@ -154,4 +154,15 @@ void test_MM50_csv_file_bulk() {
         error_file << error_to_q_given << "\n";
     }
     error_file.close();
+
+    // Report the proportion of errors below 1e-1
+    int count_below_threshold = 0;
+    double threshold = 1e-1;
+    for (const auto& setup : setups) {
+        if (setup.error_to_q_given() < threshold) {
+            ++count_below_threshold;
+        }
+    }
+    double proportion_below_threshold = static_cast<double>(count_below_threshold) / setups.size();
+    std::cout << "Proportion of errors below " << threshold << ": " << proportion_below_threshold << std::endl;
 }
