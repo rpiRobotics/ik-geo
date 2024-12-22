@@ -124,43 +124,41 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
 
         // instead of looping over t4, only use the first element of t4 because the error will be always duplicated for the MM50
         std::vector<double> t4;
-        bool t4_is_ls = IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
+        IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
 
-        if (t4_is_ls) return psi_vec;
+        double q4 = t4[0];
+        std::vector<double> t2;
+        std::vector<double> t3;
 
-        if (!t4.empty()) {
-            double q4 = t4[0];
-            std::vector<double> t2;
-            std::vector<double> t3;
+        t2.push_back(0);
+        t3.push_back(0);
 
-            t2.push_back(0);
-            t3.push_back(0);
-
-            bool t23_is_ls = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3), q4) * kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
-            if (t23_is_ls) {
-                i_sol += 2;
-                return psi_vec;
-            }
-
-            for (unsigned i_23 = 0; i_23 < t2.size(); ++i_23) {
-                double q2 = t2[i_23];
-                double q3 = t3[i_23];
-
-                Eigen::Vector3d p_1E = p_1S + rot(kin.H.col(0), q1) * rot(kin.H.col(1), q2) * rot(kin.H.col(2), q3) * kin.P.col(3);
-                double psi_i = SEW_class.fwd_kin(p_1S, p_1E, p_1W);
-                Eigen::Vector4d q_i;
-
-                psi_vec[i_sol] = wrap_to_pi(psi_i - psi);
-                q_i << q1, q2, q3, q4;
-                partial_q.col(i_sol) = q_i;
-                i_sol += 1;
-            }
+        bool t23_is_LS = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3), q4) * kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
+        if (t2.size() == 1) {
+            // duplicate solns for t2 and t3
+            t2.push_back(t2[0]);
+            t3.push_back(t3[0]);
         }
+
+        for (unsigned i_23 = 0; i_23 < t2.size(); ++i_23) {
+            double q2 = t2[i_23];
+            double q3 = t3[i_23];
+
+            Eigen::Vector3d p_1E = p_1S + rot(kin.H.col(0), q1) * rot(kin.H.col(1), q2) * rot(kin.H.col(2), q3) * kin.P.col(3);
+            double psi_i = SEW_class.fwd_kin(p_1S, p_1E, p_1W);
+            Eigen::Vector4d q_i;
+
+            psi_vec[i_sol] = wrap_to_pi(psi_i - psi);
+            q_i << q1, q2, q3, q4;
+            partial_q.col(i_sol) = q_i;
+            i_sol += 1;
+        }
+        
 
         return psi_vec;
     };
 
-    std::vector<std::pair<double, unsigned>> zeros = search_1d<2>(error, -M_PI, M_PI, 1e3); // Size 2 rather than 4 because we're skipping half of t4
+    std::vector<std::pair<double, unsigned>> zeros = search_1d_no_cross_thresh<2>(error, -M_PI, M_PI, 500); // Size 2 rather than 4 because we're skipping half of t4
 
     // Each zero representing q1 needs to be duplicated because we only used the first element of t4
     // q1 stays the same, but the solution number is incremented by 2
@@ -227,9 +225,10 @@ Eigen::Matrix4d Motoman_50_SJ2_Setup::calculate_partial_q(const Eigen::Vector3d 
     Eigen::Vector3d p_SW = p_1W - p_1S;
 
     std::vector<double> t4;
-    bool t4_is_ls = IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
-
-    if (t4_is_ls) return partial_q;
+    IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
+    if (t4.size() < 2) {
+        t4.push_back(t4[0]); // duplicate if LS
+    }
 
     for (double q4 : t4) {
         std::vector<double> t2;
@@ -238,10 +237,11 @@ Eigen::Matrix4d Motoman_50_SJ2_Setup::calculate_partial_q(const Eigen::Vector3d 
         t2.push_back(0);
         t3.push_back(0);
 
-        bool t23_is_ls = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3),q4)*kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
-        if (t23_is_ls) {
-            i_sol += 2;
-            continue;
+        IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3),q4)*kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
+        if (t2.size() < 2) {
+            // duplicate solns for t2 and t3
+            t2.push_back(t2[0]);
+            t3.push_back(t3[0]);
         }
 
         for (unsigned i_23 = 0; i_23 < t2.size(); ++i_23) {

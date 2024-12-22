@@ -83,6 +83,39 @@ std::vector<std::pair<double, unsigned>> search_1d(std::function<Eigen::Matrix<d
 }
 
 template<int N>
+std::vector<std::pair<double, unsigned>> search_1d_no_cross_thresh(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned initial_samples) {
+    double delta = (right - left) / (double)initial_samples;
+
+    Eigen::Matrix<double, N, 1> last_v = f(left);
+    double x = left + delta;
+
+    std::vector<std::pair<double, unsigned>> zeros;
+
+    for (unsigned n = 0; n < initial_samples; ++n) {
+        Eigen::Matrix<double, N, 1> v = f(x);
+        // std::cout << x << ' ' << v[0] << std::endl;
+
+        for (unsigned i = 0; i < N; ++i) {
+            double y = v(i);
+            double last_y = last_v(i);
+
+            if ((y < 0.0) != (last_y < 0.0)) {
+                double z;
+
+                if (find_zero(f, x - delta, x, i, z)) {
+                    zeros.push_back(std::make_pair(z, i));
+                }
+            }
+        }
+
+        last_v = v;
+        x += delta;
+    }
+
+    return zeros;
+}
+
+template<int N>
 struct ProblemParams {
     std::function<Eigen::Matrix<double, N, 1>(double, double)> f;
     unsigned k;
