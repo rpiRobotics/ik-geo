@@ -113,7 +113,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
     Eigen::Matrix4d partial_q;
 
     auto error = [&partial_q, &kin, &p_1W, &SEW_class, psi](double q1) mutable {
-        Eigen::Vector4d psi_vec;
+        Eigen::Vector2d psi_vec; // Only size 2 rather than 4 since we're skipping half of t4
         unsigned i_sol = 0;
 
         psi_vec.fill(NAN);
@@ -122,22 +122,24 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
         Eigen::Vector3d p_1S = rot(kin.H.col(0), q1) * kin.P.col(1);
         Eigen::Vector3d p_SW = p_1W - p_1S;
 
+        // instead of looping over t4, only use the first element of t4 because the error will be always duplicated for the MM50
         std::vector<double> t4;
         bool t4_is_ls = IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
 
         if (t4_is_ls) return psi_vec;
 
-        for (double q4 : t4) {
+        if (!t4.empty()) {
+            double q4 = t4[0];
             std::vector<double> t2;
             std::vector<double> t3;
 
             t2.push_back(0);
             t3.push_back(0);
 
-            bool t23_is_ls = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3),q4)*kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
+            bool t23_is_ls = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3), q4) * kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
             if (t23_is_ls) {
                 i_sol += 2;
-                continue;
+                return psi_vec;
             }
 
             for (unsigned i_23 = 0; i_23 < t2.size(); ++i_23) {
@@ -158,13 +160,24 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
         return psi_vec;
     };
 
-    std::vector<std::pair<double, unsigned>> zeros = search_1d<4>(error, -M_PI, M_PI, 1e3);
+    std::vector<std::pair<double, unsigned>> zeros = search_1d<2>(error, -M_PI, M_PI, 1e3); // Size 2 rather than 4 because we're skipping half of t4
 
-    for (std::pair<double, unsigned> zero : zeros) {
+    // Each zero representing q1 needs to be duplicated because we only used the first element of t4
+    // q1 stays the same, but the solution number is incremented by 2
+    std::vector<std::pair<double, unsigned>> duplicated_zeros;
+    for (const auto& zero : zeros) {
+        duplicated_zeros.push_back(zero);
+    }
+    for (const auto& zero : zeros) {
+        duplicated_zeros.push_back(std::make_pair(zero.first, zero.second + 2));
+    }
+
+    for (std::pair<double, unsigned> zero : duplicated_zeros) {
         double q1 = zero.first;
         unsigned i = zero.second;
 
-        error(q1);
+
+        partial_q =  calculate_partial_q(p_1W, SEW_class, psi, q1); // Calculate partial_q using all of q1 values
         Eigen::Vector4d q_partial_col = partial_q.col(i);
 
         Eigen::Matrix3d R_01 = rot(kin.H.col(0), q_partial_col[0]);
@@ -202,3 +215,46 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
 
     return sol;
 }
+
+// Unlike the error function, loop through all of t1 to calculate the partial_q matrix
+Eigen::Matrix4d Motoman_50_SJ2_Setup::calculate_partial_q(const Eigen::Vector3d &p_1W, const SEWConv &SEW_class, double psi, double q1) {
+    Eigen::Matrix4d partial_q;
+    unsigned i_sol = 0;
+
+    partial_q.fill(NAN);
+
+    Eigen::Vector3d p_1S = rot(kin.H.col(0), q1) * kin.P.col(1);
+    Eigen::Vector3d p_SW = p_1W - p_1S;
+
+    std::vector<double> t4;
+    bool t4_is_ls = IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
+
+    if (t4_is_ls) return partial_q;
+
+    for (double q4 : t4) {
+        std::vector<double> t2;
+        std::vector<double> t3;
+
+        t2.push_back(0);
+        t3.push_back(0);
+
+        bool t23_is_ls = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3),q4)*kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
+        if (t23_is_ls) {
+            i_sol += 2;
+            continue;
+        }
+
+        for (unsigned i_23 = 0; i_23 < t2.size(); ++i_23) {
+            double q2 = t2[i_23];
+            double q3 = t3[i_23];
+
+            Eigen::Vector4d q_i;
+
+            q_i << q1, q2, q3, q4;
+            partial_q.col(i_sol) = q_i;
+            i_sol += 1;
+        }
+    }
+
+    return partial_q;
+};
