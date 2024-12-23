@@ -6,7 +6,8 @@
 template <int N>
 bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i, double &result) {
     const unsigned ITERATIONS = 100;
-    const double EPSILON = 1e-5;
+    const double EPSILON = 1e-12;
+    const double EPSILON_X = 1e-12;
 
     double x_left = left;
     double x_right = right;
@@ -14,10 +15,17 @@ bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left
     double y_left = f(x_left)(i);
     double y_right = f(x_right)(i);
 
+    double best_x = x_left;
+    double best_y = fabs(y_left);
+
     for (unsigned n = 0; n < ITERATIONS; ++n) {
         double delta = y_right - y_left;
 
         if (fabs(delta) < EPSILON) {
+            break;
+        }
+
+        if (fabs(x_right - x_left) < EPSILON_X) {
             break;
         }
 
@@ -28,7 +36,12 @@ bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left
             return false;
         }
 
-        if ((y_left < 0.0) != (y_0 < 0.0)) {
+        if (fabs(y_0) < best_y) {
+            best_x = x_0;
+            best_y = fabs(y_0);
+        }
+
+        if ((y_left < 0.0) == (y_0 < 0.0)) { // Same signs
             x_left = x_0;
             y_left = y_0;
         }
@@ -38,13 +51,8 @@ bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left
         }
     }
 
-    if (left <= x_left && x_left <= right) {
-        result = x_left;
-        return true;
-    }
-    else {
-        return false;
-    }
+    result = best_x;
+    return true;
 }
 
 template<int N>
@@ -99,7 +107,7 @@ std::vector<std::pair<double, unsigned>> search_1d_no_cross_thresh(std::function
             double y = v(i);
             double last_y = last_v(i);
 
-            if ((y < 0.0) != (last_y < 0.0)) {
+            if ((y < 0.0) != (last_y < 0.0)) { // if sign changed
                 double z;
 
                 if (find_zero(f, x - delta, x, i, z)) {
