@@ -14,13 +14,16 @@ void test_MM50_random();
 void test_MM50_csv();
 void test_MM50_csv_file();
 void test_MM50_csv_file_bulk();
+void test_MM50_single_line(int line_number);
+void find_first_large_error();
 
 int main() {
     // test_MM50_random();
     // test_MM50_csv();
     // test_MM50_csv_file();
-
     test_MM50_csv_file_bulk();
+    // test_MM50_single_line(12);
+    // find_first_large_error();
 
     return 0;
 }
@@ -165,4 +168,73 @@ void test_MM50_csv_file_bulk() {
     }
     double proportion_below_threshold = static_cast<double>(count_below_threshold) / setups.size();
     std::cout << "Proportion of errors below " << threshold << ": " << proportion_below_threshold << std::endl;
+}
+
+void test_MM50_single_line(int line_number) {
+    std::ifstream file("data/hardcoded_IK_setup_MM50_SJ2.csv");
+
+    std::string line;
+    // Skip the first line
+    std::getline(file, line);
+
+    int current_line = 0;
+    while (std::getline(file, line)) {
+        ++current_line;
+        if (current_line == line_number) {
+            Motoman_50_SJ2_Setup setup(line);
+
+            // Run the inverse kinematics solver
+            setup.run();
+
+            // Print the solutions
+            std::cout << "Solutions:" << std::endl;
+            for (size_t i = 0; i < setup.sol.q.size(); ++i) {
+                std::cout << "Solution " << i + 1 << ": " << setup.sol.q[i].transpose() << std::endl;
+            }
+
+            // Calculate and print the error
+            double error = setup.error();
+            std::cout << "Error: " << error << std::endl;
+
+            // Calculate and print the error to the given q
+            double error_to_q_given = setup.error_to_q_given();
+            std::cout << "Error to q_given: " << error_to_q_given << std::endl;
+
+            setup.debug();
+            break;
+        }
+    }
+
+    if (current_line != line_number) {
+        std::cerr << "Line number " << line_number << " not found in the file." << std::endl;
+    }
+}
+
+void find_first_large_error() {
+    std::ifstream file("data/hardcoded_IK_setup_MM50_SJ2.csv");
+
+    std::string line;
+    // Skip the first line
+    std::getline(file, line);
+
+    int line_count = 0;
+    double threshold = 1e-1;
+    while (std::getline(file, line)) {
+        ++line_count;
+        Motoman_50_SJ2_Setup setup(line);
+
+        // Run the inverse kinematics solver
+        setup.run();
+
+        // Calculate the error to the given q
+        double error_to_q_given = setup.error_to_q_given();
+
+        if (error_to_q_given > threshold) {
+            std::cout << "First large error found at line " << line_count << ": " << error_to_q_given << std::endl;
+            setup.debug();
+            return;
+        }
+    }
+
+    std::cout << "No error larger than " << threshold << " found in the file." << std::endl;
 }
