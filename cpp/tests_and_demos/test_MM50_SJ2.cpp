@@ -27,7 +27,7 @@ int main() {
     // test_MM50_csv_file();
     test_MM50_csv_file_bulk();
 
-    // test_MM50_single_line(64);
+    // test_MM50_single_line(890);
     // find_first_large_error();
     // test_wrap_to_pi();
     // test_min_max();
@@ -210,6 +210,9 @@ void test_MM50_csv_file_bulk() {
     }
     double proportion_below_threshold = static_cast<double>(count_below_threshold) / setups.size();
     std::cout << "Proportion of errors below " << threshold << ": " << proportion_below_threshold << std::endl;
+    // Report the count of errors above the threshold
+    int count_above_threshold = setups.size() - count_below_threshold;
+    std::cout << "Count of errors above " << threshold << ": " << count_above_threshold << std::endl;
 }
 
 void test_MM50_single_line(int line_number) {

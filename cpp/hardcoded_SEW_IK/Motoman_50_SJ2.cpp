@@ -67,7 +67,7 @@ double Motoman_50_SJ2_Setup::error() {
         Eigen::Vector3d T_t;
         std::vector<Eigen::Vector3d> p_sew_t = kin.forward_kinematics_inter(q, inter, R_t, T_t);
         double psi_t = sew.fwd_kin(p_sew_t[0], p_sew_t[1], p_sew_t[2]);
-        double error_i = (R_t - R).norm() + (T_t - T).norm() + wrap_to_pi(psi_t - psi);
+        double error_i = (R_t - R).norm() + (T_t - T).norm() + abs(wrap_to_pi(psi_t - psi));
 
         if (error_i < error) error = error_i;
     }
@@ -158,7 +158,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
         return psi_vec;
     };
 
-    std::vector<std::pair<double, unsigned>> zeros = search_1d_min_max<2>(error, -M_PI, M_PI, 500); // Size 2 rather than 4 because we're skipping half of t4
+    std::vector<std::pair<double, unsigned>> zeros = search_1d_min_max<2>(error, -M_PI, M_PI, 250); // Size 2 rather than 4 because we're skipping half of t4
 
     // Each zero representing q1 needs to be duplicated because we only used the first element of t4
     // q1 stays the same, but the solution number is incremented by 2

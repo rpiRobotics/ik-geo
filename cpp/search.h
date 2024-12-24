@@ -186,14 +186,14 @@ TODO: Make this work with the +-pi wraparound
 */
 template<int N>
 std::vector<std::pair<double, unsigned>> search_1d_min_max(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned initial_samples) {
-    double delta = (right - left) / (double)initial_samples;
+    double delta = (right - left) / (double)(initial_samples-1);
 
     std::vector<std::pair<double, unsigned>> zeros;
 
     double x[3] = {left - delta, left, left + delta};
     Eigen::Matrix<double, N, 1> v[3] = {f(x[1]), f(x[1]), f(x[2])}; // first entry will be overwritten
 
-    for (unsigned n = 2; n < initial_samples+1; ++n) {
+    for (unsigned n = 2; n < initial_samples; ++n) {
         // Move the buffer
         x[0] = x[1];
         x[1] = x[2];
