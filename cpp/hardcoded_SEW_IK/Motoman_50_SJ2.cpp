@@ -133,7 +133,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
         t2.push_back(0);
         t3.push_back(0);
 
-        bool t23_is_LS = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3), q4) * kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
+        IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3), q4) * kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
         if (t2.size() == 1) {
             // duplicate solns for t2 and t3
             t2.push_back(t2[0]);
@@ -158,7 +158,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
         return psi_vec;
     };
 
-    std::vector<std::pair<double, unsigned>> zeros = search_1d_no_cross_thresh<2>(error, -M_PI, M_PI, 500); // Size 2 rather than 4 because we're skipping half of t4
+    std::vector<std::pair<double, unsigned>> zeros = search_1d_min_max<2>(error, -M_PI, M_PI, 500); // Size 2 rather than 4 because we're skipping half of t4
 
     // Each zero representing q1 needs to be duplicated because we only used the first element of t4
     // q1 stays the same, but the solution number is incremented by 2

@@ -170,6 +170,80 @@ std::vector<std::pair<double, unsigned>> search_1d_no_cross_thresh(std::function
     return zeros;
 }
 
+/*
+Similar to search_1d_no_cross_thresh but also use minimization and maximization
+
+Rather than just checking for zero crossings between two points,
+we also check for triplets of points where
+    the middle point is larger than (smaller than) the other two and
+    all three points are smaller than (larger than) zero
+If such a triplet is found, we iterate to find the maxium (minimum) bracketed by the outer points
+If the maximum (minimum) is below (above) 0, then we have found 2 zero crossings
+And we iterate on those zero crossings to find the function zeros
+
+TODO: Make this work with the +-pi wraparound
+*/
+template<int N>
+std::vector<std::pair<double, unsigned>> search_1d_min_max(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned initial_samples) {
+    double delta = (right - left) / (double)initial_samples;
+
+    std::vector<std::pair<double, unsigned>> zeros;
+
+    double x[3] = {left, left + delta, left + 2 * delta};
+    Eigen::Matrix<double, N, 1> v[3] = {f(x[0]), f(x[1]), f(x[2])};
+
+    for (unsigned n = 2; n < initial_samples; ++n) {
+        for (unsigned i = 0; i < N; ++i) {
+            double y[3] = {v[0](i), v[1](i), v[2](i)};
+
+            if ((y[1] < 0.0) != (y[0] < 0.0)) { // if sign changed between y[0] and y[1]
+                double z;
+                if (find_zero(f, x[0], x[1], i, z)) {
+                    zeros.push_back(std::make_pair(z, i));
+                }
+            } else if ((y[1] < 0.0) != (y[2] < 0.0)) { // if sign changed between y[1] and y[2]
+                double z;
+                if (find_zero(f, x[1], x[2], i, z)) {
+                    zeros.push_back(std::make_pair(z, i));
+                }
+            } else if (y[1] < y[0] && y[1] < y[2] && y[1] < 0.0 && y[0] < 0.0 && y[2] < 0.0) {
+                double min_x = find_min<N>(f, x[0], x[2], i);
+                if (f(min_x)(i) < 0.0) {
+                    double z1, z2;
+                    if (find_zero(f, x[0], min_x, i, z1)) {
+                        zeros.push_back(std::make_pair(z1, i));
+                    }
+                    if (find_zero(f, min_x, x[2], i, z2)) {
+                        zeros.push_back(std::make_pair(z2, i));
+                    }
+                }
+            } else if (y[1] > y[0] && y[1] > y[2] && y[1] > 0.0 && y[0] > 0.0 && y[2] > 0.0) {
+                double max_x = find_max<N>(f, x[0], x[2], i);
+                if (f(max_x)(i) > 0.0) {
+                    double z1, z2;
+                    if (find_zero(f, x[0], max_x, i, z1)) {
+                        zeros.push_back(std::make_pair(z1, i));
+                    }
+                    if (find_zero(f, max_x, x[2], i, z2)) {
+                        zeros.push_back(std::make_pair(z2, i));
+                    }
+                }
+            }
+        }
+
+        // Move the buffer
+        x[0] = x[1];
+        x[1] = x[2];
+        x[2] = left + (n + 1) * delta;
+        v[0] = v[1];
+        v[1] = v[2];
+        v[2] = f(x[2]);
+    }
+
+    return zeros;
+}
+
+
 template<int N>
 struct ProblemParams {
     std::function<Eigen::Matrix<double, N, 1>(double, double)> f;

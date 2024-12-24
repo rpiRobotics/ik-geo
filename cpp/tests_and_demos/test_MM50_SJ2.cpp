@@ -25,12 +25,12 @@ int main() {
     // test_MM50_random();
     // test_MM50_csv();
     // test_MM50_csv_file();
-    // test_MM50_csv_file_bulk();
+    test_MM50_csv_file_bulk();
 
     // test_MM50_single_line(64);
     // find_first_large_error();
     // test_wrap_to_pi();
-    test_min_max();
+    // test_min_max();
     return 0;
 }
 void test_min_max() {
