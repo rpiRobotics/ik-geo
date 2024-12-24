@@ -4,6 +4,48 @@
 #include "utils.h"
 
 template <int N>
+double find_min(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i) {
+    const unsigned ITERATIONS = 100;
+    
+    double x_left = left;
+    double x_right = right;
+
+    double y_left = f(x_left)(i);
+    double y_right = f(x_right)(i);
+
+    double best_x = x_left;
+    double best_y = y_left;
+
+    for (unsigned n = 0; n < ITERATIONS; ++n) {
+        double x_mid = 0.5 * (x_left + x_right);
+        double y_mid = f(x_mid)(i);
+
+        if (y_mid < best_y) {
+            best_x = x_mid;
+            best_y = y_mid;
+        }
+
+        if (y_left < y_right) {
+            x_right = x_mid;
+            y_right = y_mid;
+        } else {
+            x_left = x_mid;
+            y_left = y_mid;
+        }
+    }
+
+    return best_x;
+}
+
+template <int N>
+double find_max(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i) {
+    auto neg_f = [f](double x) {
+        return -f(x);
+    };
+    return find_min<N>(neg_f, left, right, i);
+}
+
+template <int N>
 bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i, double &result) {
     const unsigned ITERATIONS = 100;
     const double EPSILON = 1e-12;

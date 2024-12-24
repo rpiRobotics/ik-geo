@@ -1,9 +1,11 @@
 #include "hardcoded_SEW_IK/Motoman_50_SJ2.h"
 #include "utils.h"
+#include "search.h"
 #include <eigen3/Eigen/Dense>
 #include <iostream>
 #include <fstream>
 #include <chrono>
+
 
 /*
 To compile:
@@ -17,16 +19,30 @@ void test_MM50_csv_file_bulk();
 void test_MM50_single_line(int line_number);
 void find_first_large_error();
 void test_wrap_to_pi();
+void test_min_max();
 
 int main() {
     // test_MM50_random();
     // test_MM50_csv();
     // test_MM50_csv_file();
     // test_MM50_csv_file_bulk();
+
     // test_MM50_single_line(64);
     // find_first_large_error();
-    test_wrap_to_pi();
+    // test_wrap_to_pi();
+    test_min_max();
     return 0;
+}
+void test_min_max() {
+    auto f = [](double x) {
+        return Eigen::Matrix<double, 3, 1>(0, 0, x*x*x - 2*x*x + x); // x^3-2x^2+x
+    };
+
+    double min_result = find_min<3>(f, 0.4, 1.6, 2);
+    std::cout << "Min found at x = " << min_result << std::endl;
+
+    double max_result = find_max<3>(f, 0, 1, 2);
+    std::cout << "Max found at x = " << max_result << std::endl;
 }
 
 void test_wrap_to_pi() {
