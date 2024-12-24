@@ -6,7 +6,8 @@
 template <int N>
 double find_min(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i) {
     const unsigned ITERATIONS = 100;
-    
+    const double EPSILON = 1e-12;
+
     double x_left = left;
     double x_right = right;
 
@@ -23,6 +24,10 @@ double find_min(std::function<Eigen::Matrix<double, N, 1>(double)> f, double lef
         if (y_mid < best_y) {
             best_x = x_mid;
             best_y = y_mid;
+        }
+
+        if (fabs(x_right - x_left) < EPSILON || fabs(y_right - y_left) < EPSILON) {
+            break;
         }
 
         if (y_left < y_right) {
