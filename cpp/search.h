@@ -177,8 +177,9 @@ Rather than just checking for zero crossings between two points,
 we also check for triplets of points where
     the middle point is larger than (smaller than) the other two and
     all three points are smaller than (larger than) zero
-If such a triplet is found, we iterate to find the maxium (minimum) bracketed by the outer points
-If the maximum (minimum) is below (above) 0, then we have found 2 zero crossings
+If such a triplet is found, we iterate to find the maxium (minimum)
+    bracketed by the closest two points among the triplet
+If the maximum (minimum) is above (below) 0, then we have found 2 zero crossings
 And we iterate on those zero crossings to find the function zeros
 
 TODO: Make this work with the +-pi wraparound
@@ -197,37 +198,55 @@ std::vector<std::pair<double, unsigned>> search_1d_min_max(std::function<Eigen::
             double y[3] = {v[0](i), v[1](i), v[2](i)};
 
             if ((y[1] < 0.0) != (y[0] < 0.0)) { // if sign changed between y[0] and y[1]
-                double z;
-                if (find_zero(f, x[0], x[1], i, z)) {
-                    zeros.push_back(std::make_pair(z, i));
-                }
-            } else if ((y[1] < 0.0) != (y[2] < 0.0)) { // if sign changed between y[1] and y[2]
-                double z;
-                if (find_zero(f, x[1], x[2], i, z)) {
-                    zeros.push_back(std::make_pair(z, i));
-                }
-            } else if (y[1] < y[0] && y[1] < y[2] && y[1] < 0.0 && y[0] < 0.0 && y[2] < 0.0) {
-                double min_x = find_min<N>(f, x[0], x[2], i);
-                if (f(min_x)(i) < 0.0) {
-                    double z1, z2;
+            double z;
+            if (find_zero(f, x[0], x[1], i, z)) {
+                zeros.push_back(std::make_pair(z, i));
+            }
+            } else if (n == initial_samples - 1 && (y[1] < 0.0) != (y[2] < 0.0)) { // if sign changed between y[1] and y[2] and it's the last iteration
+            double z;
+            if (find_zero(f, x[1], x[2], i, z)) {
+                zeros.push_back(std::make_pair(z, i));
+            }
+            } else if (y[1] < y[0] && y[1] < y[2] && y[0] > 0.0 && y[1] > 0.0 && y[2] > 0.0) { // triangle pointing down
+            double min_x = find_min<N>(f, x[0], x[2], i);
+            if (f(min_x)(i) < 0.0) {
+                double z1, z2;
+                if (min_x < x[1]) { // min falls between x[0] and x[1]
                     if (find_zero(f, x[0], min_x, i, z1)) {
+                        zeros.push_back(std::make_pair(z1, i));
+                    }
+                    if (find_zero(f, min_x, x[1], i, z2)) {
+                        zeros.push_back(std::make_pair(z2, i));
+                    }
+                } else { // min falls between x[1] and x[2]
+                    if (find_zero(f, x[1], min_x, i, z1)) {
                         zeros.push_back(std::make_pair(z1, i));
                     }
                     if (find_zero(f, min_x, x[2], i, z2)) {
                         zeros.push_back(std::make_pair(z2, i));
                     }
                 }
-            } else if (y[1] > y[0] && y[1] > y[2] && y[1] > 0.0 && y[0] > 0.0 && y[2] > 0.0) {
-                double max_x = find_max<N>(f, x[0], x[2], i);
-                if (f(max_x)(i) > 0.0) {
-                    double z1, z2;
+            }
+            } else if (y[1] > y[0] && y[1] > y[2] && y[0] < 0.0 && y[1] < 0.0 && y[2] < 0.0) { // triangle pointing up
+            double max_x = find_max<N>(f, x[0], x[2], i);
+            if (f(max_x)(i) > 0.0) {
+                double z1, z2;
+                if (max_x < x[1]) { // max falls between x[0] and x[1]
                     if (find_zero(f, x[0], max_x, i, z1)) {
+                        zeros.push_back(std::make_pair(z1, i));
+                    }
+                    if (find_zero(f, max_x, x[1], i, z2)) {
+                        zeros.push_back(std::make_pair(z2, i));
+                    }
+                } else { // max falls between x[1] and x[2]
+                    if (find_zero(f, x[1], max_x, i, z1)) {
                         zeros.push_back(std::make_pair(z1, i));
                     }
                     if (find_zero(f, max_x, x[2], i, z2)) {
                         zeros.push_back(std::make_pair(z2, i));
                     }
                 }
+            }
             }
         }
 
