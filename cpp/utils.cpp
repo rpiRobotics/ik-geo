@@ -94,9 +94,9 @@ Eigen::Matrix3d rot(const Eigen::Vector3d &k, double theta){
 }
 
 double wrap_to_pi(double theta) {
-    double wrapped = fmod(theta + M_PI, M_PI * 2);
-    if (wrapped <= -M_PI) {
-        wrapped += M_PI * 2;
+    double wrapped = fmod(theta + M_PI, 2 * M_PI);
+    if (wrapped < 0) {
+        wrapped += 2 * M_PI;
     }
     return wrapped - M_PI;
 }

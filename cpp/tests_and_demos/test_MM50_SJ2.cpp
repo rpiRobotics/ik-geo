@@ -30,8 +30,10 @@ int main() {
 }
 
 void test_wrap_to_pi() {
-    std::vector<double> angles = {0, M_PI, -M_PI, 2 * M_PI, -2 * M_PI, 3 * M_PI, -3 * M_PI, M_PI / 2, -M_PI / 2};
-    std::vector<double> expected_results = {0, M_PI, -M_PI, 0, 0, M_PI, -M_PI, M_PI / 2, -M_PI / 2};
+    std::vector<double> angles = {0, M_PI, -M_PI, 2 * M_PI, -2 * M_PI, 3 * M_PI, -3 * M_PI, M_PI / 2, -M_PI / 2,
+                                  4 * M_PI, -4 * M_PI, 5 * M_PI, -5 * M_PI, M_PI / 4, -M_PI / 4, 3 * M_PI / 2, -3 * M_PI / 2};
+    std::vector<double> expected_results = {0, M_PI, -M_PI, 0, 0, M_PI, -M_PI, M_PI / 2, -M_PI / 2,
+                                            0, 0, M_PI, -M_PI, M_PI / 4, -M_PI / 4, -M_PI / 2, M_PI / 2};
 
     bool all_tests_passed = true;
     for (size_t i = 0; i < angles.size(); ++i) {
