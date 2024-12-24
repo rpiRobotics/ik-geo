@@ -16,16 +16,40 @@ void test_MM50_csv_file();
 void test_MM50_csv_file_bulk();
 void test_MM50_single_line(int line_number);
 void find_first_large_error();
+void test_wrap_to_pi();
 
 int main() {
     // test_MM50_random();
     // test_MM50_csv();
     // test_MM50_csv_file();
-    test_MM50_csv_file_bulk();
-    // test_MM50_single_line(12);
+    // test_MM50_csv_file_bulk();
+    // test_MM50_single_line(64);
     // find_first_large_error();
-
+    test_wrap_to_pi();
     return 0;
+}
+
+void test_wrap_to_pi() {
+    std::vector<double> angles = {0, M_PI, -M_PI, 2 * M_PI, -2 * M_PI, 3 * M_PI, -3 * M_PI, M_PI / 2, -M_PI / 2};
+    std::vector<double> expected_results = {0, M_PI, -M_PI, 0, 0, M_PI, -M_PI, M_PI / 2, -M_PI / 2};
+
+    bool all_tests_passed = true;
+    for (size_t i = 0; i < angles.size(); ++i) {
+        double wrapped_angle = wrap_to_pi(angles[i]);
+        double expected_angle = expected_results[i];
+
+        bool is_pi_case = (std::abs(wrapped_angle - M_PI) < 1e-6 && std::abs(expected_angle + M_PI) < 1e-6) ||
+                          (std::abs(wrapped_angle + M_PI) < 1e-6 && std::abs(expected_angle - M_PI) < 1e-6);
+
+        if (std::abs(wrapped_angle - expected_angle) > 1e-6 && !is_pi_case) {
+            std::cout << "Test failed for angle " << angles[i] << ": expected " << expected_angle << ", got " << wrapped_angle << std::endl;
+            all_tests_passed = false;
+        }
+    }
+
+    if (all_tests_passed) {
+        std::cout << "All wrap_to_pi tests passed!" << std::endl;
+    }
 }
 
 

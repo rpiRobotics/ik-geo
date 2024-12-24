@@ -94,7 +94,11 @@ Eigen::Matrix3d rot(const Eigen::Vector3d &k, double theta){
 }
 
 double wrap_to_pi(double theta) {
-    return fmod(theta + M_PI, M_PI * 2) - M_PI;
+    double wrapped = fmod(theta + M_PI, M_PI * 2);
+    if (wrapped <= -M_PI) {
+        wrapped += M_PI * 2;
+    }
+    return wrapped - M_PI;
 }
 
 // Function to wrap each element of a vector to the range [-π, π]
