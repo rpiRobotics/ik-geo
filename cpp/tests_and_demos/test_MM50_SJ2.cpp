@@ -9,7 +9,7 @@
 
 /*
 To compile:
-g++ -Wall -O3 tests_and_demos/test_MM50_SJ2.cpp hardcoded_SEW_IK/Motoman_50_SJ2.cpp SEW_IK/IK_R_2R_R_3R_SJ2.cpp subproblems/sp.cpp utils.cpp -I. -std=c++17 -o test_MM50_SJ2
+g++ -Wall -Werror -Wextra -Wshadow -O3 tests_and_demos/test_MM50_SJ2.cpp hardcoded_SEW_IK/Motoman_50_SJ2.cpp SEW_IK/IK_R_2R_R_3R_SJ2.cpp subproblems/sp.cpp utils.cpp -I. -std=c++17 -o test_MM50_SJ2
 */
 
 void test_MM50_random();
@@ -80,8 +80,8 @@ void test_MM50_random() {
 
     // Print the solutions
     std::cout << "Solutions:" << std::endl;
-    for (size_t i = 0; i < setup.sol.q.size(); ++i) {
-        std::cout << "Solution " << i + 1 << ": " << setup.sol.q[i].transpose() << std::endl;
+    for (size_t i = 0; i < setup.m_sol.q.size(); ++i) {
+        std::cout << "Solution " << i + 1 << ": " << setup.m_sol.q[i].transpose() << std::endl;
     }
 
     // Calculate and print the error
@@ -104,8 +104,8 @@ void test_MM50_csv() {
 
     // Print the solutions
     std::cout << "Solutions:" << std::endl;
-    for (size_t i = 0; i < setup.sol.q.size(); ++i) {
-        std::cout << "Solution " << i + 1 << ": " << setup.sol.q[i].transpose() << std::endl;
+    for (size_t i = 0; i < setup.m_sol.q.size(); ++i) {
+        std::cout << "Solution " << i + 1 << ": " << setup.m_sol.q[i].transpose() << std::endl;
     }
 
     // Calculate and print the error
@@ -233,8 +233,8 @@ void test_MM50_single_line(int line_number) {
 
             // Print the solutions
             std::cout << "Solutions:" << std::endl;
-            for (size_t i = 0; i < setup.sol.q.size(); ++i) {
-                std::cout << "Solution " << i + 1 << ": " << setup.sol.q[i].transpose() << std::endl;
+            for (size_t i = 0; i < setup.m_sol.q.size(); ++i) {
+                std::cout << "Solution " << i + 1 << ": " << setup.m_sol.q[i].transpose() << std::endl;
             }
 
             // Calculate and print the error

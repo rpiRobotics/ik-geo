@@ -13,7 +13,6 @@
 #include <limits>
 #include <optional>
 #include <iostream>
-#include <nlopt.hpp>
 
 template <unsigned N1, unsigned N2>
 struct Kinematics {
@@ -35,7 +34,7 @@ struct SEWConv {
     Eigen::Vector3d e_r;
 
     SEWConv() : e_r(Eigen::Vector3d::Zero()) {}
-    SEWConv(const Eigen::Vector3d &e_r) : e_r(e_r) {}
+    SEWConv(const Eigen::Vector3d &e_r_arg) : e_r(e_r_arg) {} // e_r_arg to prevent shadow variable
 
     double fwd_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &E, const Eigen::Vector3d &W) const;
     Eigen::Vector3d inv_kin(const Eigen::Vector3d &S, const Eigen::Vector3d &W, double psi, Eigen::Vector3d &n_SEW) const;

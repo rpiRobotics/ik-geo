@@ -6,11 +6,11 @@
 Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup() {
     initialize_kinematics();
 
-    q_given = rand_angle(7);
+    m_q_given = rand_angle(7);
 
     std::vector<unsigned> inter = {1, 3, 4};
-    std::vector<Eigen::Vector3d> p_sew = kin.forward_kinematics_inter(q_given, inter, R, T);
-    psi = sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
+    std::vector<Eigen::Vector3d> p_sew = m_kin.forward_kinematics_inter(m_q_given, inter, m_R, m_T);
+    m_psi = m_sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
 }
 
 Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup(const std::string& csv_line) {
@@ -23,15 +23,15 @@ Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup(const std::string& csv_line) {
         tokens.push_back(item);
     }
     
-    R << std::stod(tokens[0]), std::stod(tokens[3]), std::stod(tokens[6]),
+    m_R << std::stod(tokens[0]), std::stod(tokens[3]), std::stod(tokens[6]),
          std::stod(tokens[1]), std::stod(tokens[4]), std::stod(tokens[7]),
          std::stod(tokens[2]), std::stod(tokens[5]), std::stod(tokens[8]);
     
-    T << std::stod(tokens[9]), std::stod(tokens[10]), std::stod(tokens[11]);
+    m_T << std::stod(tokens[9]), std::stod(tokens[10]), std::stod(tokens[11]);
 
-    psi = std::stod(tokens[12]);
+    m_psi = std::stod(tokens[12]);
 
-    q_given << std::stod(tokens[13]), std::stod(tokens[14]), std::stod(tokens[15]),
+    m_q_given << std::stod(tokens[13]), std::stod(tokens[14]), std::stod(tokens[15]),
                std::stod(tokens[16]), std::stod(tokens[17]), std::stod(tokens[18]),
                std::stod(tokens[19]);
 }
@@ -48,26 +48,26 @@ void Motoman_50_SJ2_Setup::initialize_kinematics() {
     double d5 = 0.610;
     double dT = 0.350;
 
-    kin.P << d1*ez, a1*ex, zv, d3*ez, d5*ez, zv, zv, dT*ez;
-    kin.H << ez, -ey, ez, -ey, ez, -ey, ez;
+    m_kin.P << d1*ez, a1*ex, zv, d3*ez, d5*ez, zv, zv, dT*ez;
+    m_kin.H << ez, -ey, ez, -ey, ez, -ey, ez;
 
-    sew = SEWConv(rot(ey, -M_PI/4) * ez);   
+    m_sew = SEWConv(rot(ey, -M_PI/4) * ez);   
 }
 
 void Motoman_50_SJ2_Setup::run() {
-    sol = MM50_IK(R, T, sew, psi, kin);
+    m_sol = MM50_IK(m_R, m_T, m_sew, m_psi, m_kin);
 }
 
 double Motoman_50_SJ2_Setup::error() {
     double error = INFINITY;
     std::vector<unsigned> inter = {1, 3, 4};
 
-    for (Eigen::Matrix<double, 7, 1> q : sol.q) {
+    for (Eigen::Matrix<double, 7, 1> q : m_sol.q) {
         Eigen::Matrix3d R_t;
         Eigen::Vector3d T_t;
-        std::vector<Eigen::Vector3d> p_sew_t = kin.forward_kinematics_inter(q, inter, R_t, T_t);
-        double psi_t = sew.fwd_kin(p_sew_t[0], p_sew_t[1], p_sew_t[2]);
-        double error_i = (R_t - R).norm() + (T_t - T).norm() + abs(wrap_to_pi(psi_t - psi));
+        std::vector<Eigen::Vector3d> p_sew_t = m_kin.forward_kinematics_inter(q, inter, R_t, T_t);
+        double psi_t = m_sew.fwd_kin(p_sew_t[0], p_sew_t[1], p_sew_t[2]);
+        double error_i = (R_t - m_R).norm() + (T_t - m_T).norm() + abs(wrap_to_pi(psi_t - m_psi));
 
         if (error_i < error) error = error_i;
     }
@@ -78,8 +78,8 @@ double Motoman_50_SJ2_Setup::error() {
 double Motoman_50_SJ2_Setup::error_to_q_given() const {
     double error = INFINITY;
 
-    for (const Eigen::Matrix<double, 7, 1>& q : sol.q) {
-        double error_i = wrap_to_pi(q - q_given).norm();
+    for (const Eigen::Matrix<double, 7, 1>& q : m_sol.q) {
+        double error_i = wrap_to_pi(q - m_q_given).norm();
         if (error_i < error) error = error_i;
     }
 
@@ -87,18 +87,18 @@ double Motoman_50_SJ2_Setup::error_to_q_given() const {
 }
 
 void Motoman_50_SJ2_Setup::debug() const {
-    std::cout << "q_given: " << q_given.transpose() << std::endl;
-    std::cout << "kin.H: " << std::endl << kin.H << std::endl;
-    std::cout << "kin.P: " << std::endl << kin.P << std::endl;
-    std::cout << "R: " << std::endl << R << std::endl;
-    std::cout << "T: " << T.transpose() << std::endl;
-    std::cout << "psi: " << psi << std::endl;
+    std::cout << "q_given: " << m_q_given.transpose() << std::endl;
+    std::cout << "kin.H: " << std::endl << m_kin.H << std::endl;
+    std::cout << "kin.P: " << std::endl << m_kin.P << std::endl;
+    std::cout << "R: " << std::endl << m_R << std::endl;
+    std::cout << "T: " << m_T.transpose() << std::endl;
+    std::cout << "psi: " << m_psi << std::endl;
     std::cout << "sol.q: " << std::endl;
-    for (const auto& q : sol.q) {
+    for (const auto& q : m_sol.q) {
         std::cout << q.transpose() << std::endl;
     }
     std::cout << "sol.is_ls: " << std::endl;
-    for (const auto& is_ls : sol.is_ls) {
+    for (const auto& is_ls : m_sol.is_ls) {
         std::cout << is_ls << std::endl;
     }
 }
@@ -175,7 +175,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
         unsigned i = zero.second;
 
 
-        partial_q =  calculate_partial_q(p_1W, SEW_class, psi, q1); // Calculate partial_q using all of q1 values
+        partial_q =  calculate_partial_q(kin, p_1W, q1); // Calculate partial_q using all of q1 values
         Eigen::Vector4d q_partial_col = partial_q.col(i);
 
         Eigen::Matrix3d R_01 = rot(kin.H.col(0), q_partial_col[0]);
@@ -215,7 +215,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
 }
 
 // Unlike the error function, loop through all of t1 to calculate the partial_q matrix
-Eigen::Matrix4d Motoman_50_SJ2_Setup::calculate_partial_q(const Eigen::Vector3d &p_1W, const SEWConv &SEW_class, double psi, double q1) {
+Eigen::Matrix4d Motoman_50_SJ2_Setup::calculate_partial_q(const Kinematics<7, 8> &kin, const Eigen::Vector3d &p_1W, double q1) {
     Eigen::Matrix4d partial_q;
     unsigned i_sol = 0;
 
