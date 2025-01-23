@@ -104,7 +104,7 @@ void Motoman_50_SJ2_Setup::debug() const {
 }
 
 
-Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, const SEWConv &SEW_class, double psi, const Kinematics<7, 8> &kin) {
+Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, const SEWConv &SEW_class, double psi, const Kinematics<7, 8> &kin) {
     Solution<7> sol;
 
     Eigen::Vector3d W = p_0T - R_07 * kin.P.col(7);
@@ -175,7 +175,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
         unsigned i = zero.second;
 
 
-        partial_q =  calculate_partial_q(kin, p_1W, q1); // Calculate partial_q using all of q1 values
+        partial_q =  MM50_IK_calculate_partial_q(kin, p_1W, q1); // Calculate partial_q using all of q1 values
         Eigen::Vector4d q_partial_col = partial_q.col(i);
 
         Eigen::Matrix3d R_01 = rot(kin.H.col(0), q_partial_col[0]);
@@ -215,7 +215,7 @@ Solution<7> Motoman_50_SJ2_Setup::MM50_IK(const Eigen::Matrix3d &R_07, const Eig
 }
 
 // Unlike the error function, loop through all of t1 to calculate the partial_q matrix
-Eigen::Matrix4d Motoman_50_SJ2_Setup::calculate_partial_q(const Kinematics<7, 8> &kin, const Eigen::Vector3d &p_1W, double q1) {
+Eigen::Matrix4d MM50_IK_calculate_partial_q(const Kinematics<7, 8> &kin, const Eigen::Vector3d &p_1W, double q1) {
     Eigen::Matrix4d partial_q;
     unsigned i_sol = 0;
 

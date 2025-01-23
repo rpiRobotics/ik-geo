@@ -12,6 +12,7 @@ To compile:
 g++ -Wall -Werror -Wextra -Wshadow -O3 tests_and_demos/test_MM50_SJ2.cpp hardcoded_SEW_IK/Motoman_50_SJ2.cpp SEW_IK/IK_R_2R_R_3R_SJ2.cpp subproblems/sp.cpp utils.cpp -I. -std=c++17 -o test_MM50_SJ2
 */
 
+void test_MM50_minimum_example();
 void test_MM50_random();
 void test_MM50_csv();
 void test_MM50_csv_file();
@@ -22,10 +23,11 @@ void test_wrap_to_pi();
 void test_min_max();
 
 int main() {
+    test_MM50_minimum_example();
     // test_MM50_random();
     // test_MM50_csv();
     // test_MM50_csv_file();
-    test_MM50_csv_file_bulk();
+    // test_MM50_csv_file_bulk();
 
     // test_MM50_single_line(890);
     // find_first_large_error();
@@ -33,6 +35,70 @@ int main() {
     // test_min_max();
     return 0;
 }
+
+void test_MM50_minimum_example() {
+    Eigen::Matrix3d R_07;
+    Eigen::Vector3d p_0T;
+    double psi;
+    Eigen::VectorXd q_given(7);
+    Kinematics<7, 8> kin;
+    SEWConv SEW;
+    Solution<7> sol;
+
+    R_07 << -0.057996647518894, -0.438620746249246, -0.89679887925684,
+            0.000440446470090519, 0.898299606595998, -0.439383229989928,
+            0.998316680659737, -0.0258777462161887, -0.0519051766907153;
+
+    p_0T << 0.115426042890603,0.0931067009559481,-0.130789826252996;
+
+    psi = -1.05587477252154;
+
+    q_given << 0.294565272647012,2.87460022633501,2.92098081384033,-2.15128045457413,2.95682165202307,2.87246465212821,-0.0918875090716771;
+
+    Eigen::Vector3d ex(1, 0, 0);
+    Eigen::Vector3d ey(0, 1, 0);
+    Eigen::Vector3d ez(0, 0, 1);
+    Eigen::Vector3d zv = Eigen::Vector3d::Zero();
+
+    double d1 = 0.540;
+    double a1 = 0.145;
+    double d3 = 0.875;
+    double d5 = 0.610;
+    double dT = 0.350;
+
+    kin.P << d1*ez, a1*ex, zv, d3*ez, d5*ez, zv, zv, dT*ez;
+    kin.H << ez, -ey, ez, -ey, ez, -ey, ez;
+
+    SEW = SEWConv(rot(ey, -M_PI/4) * ez);
+
+    sol = MM50_IK(R_07, p_0T, SEW, psi, kin);
+
+    std::cout << "Solutions:" << std::endl;
+    for (size_t i = 0; i < sol.q.size(); ++i) {
+        std::cout << "Solution " << i + 1 << ": " << sol.q[i].transpose() << std::endl;
+    }
+
+    
+
+    // Find the closest solution to q_given
+    double min_error = std::numeric_limits<double>::max();
+    Eigen::VectorXd closest_solution;
+    int closest_solution_index = -1;
+
+    for (size_t i = 0; i < sol.q.size(); ++i) {
+        double error = wrap_to_pi(sol.q[i] - q_given).norm();
+        if (error < min_error) {
+            min_error = error;
+            closest_solution = sol.q[i];
+            closest_solution_index = i;
+        }
+    }
+
+    std::cout << "Closest solution to q_given: Solution " << closest_solution_index + 1 << ":\n" << closest_solution.transpose() << std::endl;
+    std::cout << "q_given:\n" << q_given.transpose() << std::endl;
+    std::cout << "Error: " << min_error << std::endl;
+}
+
 void test_min_max() {
     auto f = [](double x) {
         return Eigen::Matrix<double, 3, 1>(0, 0, x*x*x - 2*x*x + x); // x^3-2x^2+x

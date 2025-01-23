@@ -3,7 +3,8 @@
 
 #include "../utils.h"
 
-
+Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, const SEWConv &SEW_class, double psi, const Kinematics<7, 8> &kin);
+Eigen::Matrix4d MM50_IK_calculate_partial_q(const Kinematics<7, 8> &kin, const Eigen::Vector3d &p_1W, double q1);
 struct Motoman_50_SJ2_Setup {
     SEWConv m_sew;
     Kinematics<7, 8> m_kin;
@@ -20,8 +21,7 @@ struct Motoman_50_SJ2_Setup {
     double error();
     double error_to_q_given() const;
     void debug() const;
-    Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, const SEWConv &SEW_class, double psi, const Kinematics<7, 8> &kin);
-    Eigen::Matrix4d calculate_partial_q(const Kinematics<7, 8> &kin, const Eigen::Vector3d &p_1W, double q1);
+
 };
 
 #endif // MOTOMAN_50_SJ2_H_
