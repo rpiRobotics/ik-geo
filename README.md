@@ -101,4 +101,8 @@ Make sure to switch to the right branch to see the most recent progress.
 `rust`: Rust implementation
 
 ## Questions and Contributing
-If you have any questions, improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue or send an email. 
+If you have any questions, improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue or send an email.
+
+If you like this repo, give it a star!
+
+[![Star History Chart](https://api.star-history.com/svg?repos=rpiRobotics/ik-geo&type=Date)](https://www.star-history.com/#rpiRobotics/ik-geo&Date)
