@@ -5,6 +5,13 @@ Inverse kinematics and subproblem solutions from ["IK-Geo: Unified robot inverse
 
 Abstract: We present IK-Geo, a highly capable and computationally efficient open-source robot inverse kinematics (IK) solver. In this unifying approach, IK for any 6-DOF all-revolute (6R) manipulator is decomposed into six canonical geometric subproblems solved by intersecting circles with other geometric objects. Subproblems are efficiently solved in all cases including in a continuous and sometimes least-squares sense when a solution does not exist. This continuity requirement means IK-Geo finds all IK solutions including singular solutions and sometimes least-squares solutions. Robots with three intersecting or parallel axes are solved in closed form. All other commercially available robots have at least one pair of intersecting or parallel axes and are solved by searching over one joint angle. Fully general robots are solved by searching over two joint angles. Search solutions may be converted to a system of three or four polynomials in terms of the end effector pose in the tangent half-angle of one joint. A comparison with IKFast and the MATLAB Robotics Toolbox IK solver demonstrates that IK-Geo has faster computation and can solve more classes of robots.
 
+<div align="center">
+ 
+[![](https://img.youtube.com/vi/XS1EA3Nls_k/hqdefault.jpg)](https://www.youtube.com/watch?v=XS1EA3Nls_k) <br />
+ [Video: Least-squares and singular IK solutions for ABB IRB 6640](https://www.youtube.com/watch?v=XS1EA3Nls_k)
+
+</div>
+
 ## Related Repos
 
 We also connect our geometric method with polynomial-based method: 1D and 2D search solutions may be converted to a polynomial in the tangent half-angle of one joint. Examples are found in the [subproblem-polynomial](https://github.com/rpiRobotics/subproblem-polynomial) repo.
