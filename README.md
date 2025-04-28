@@ -31,7 +31,7 @@ Verdant Evolution has a number of forks which improve upon the implementations i
 * [Verdant-Evolution/ik-geo-rust](https://github.com/Verdant-Evolution/ik-geo-rust) updates the Rust implementation. The package can be installed using [https://crates.io/crates/ik-geo](https://crates.io/crates/ik-geo).
 * [Verdant-Evolution/ik-geo-cpp](https://github.com/Verdant-Evolution/ik-geo-cpp) updates the C+ implementation.
 
-If you have a fork which you'd like to add to this list, please start a GitHub issue or send an email.
+If you have a fork which you'd like to add to this list, please start a [GitHub issue](https://github.com/rpiRobotics/ik-geo/issues) or send an email.
 
 ## Inverse Kinematics Solutions
 Robots are classified into kinematic families based on cases of intersecting or parallel joint axes, and robots in the same family use the same IK algorithm.
@@ -108,7 +108,7 @@ Make sure to switch to the right branch to see the most recent progress.
 `rust`: Rust implementation
 
 ## Questions and Contributing
-If you have any questions, improvements you'd like to make, or even ideas or requests for improvements, please start a GitHub issue or send an email.
+If you have any questions, improvements you'd like to make, or even ideas or requests for improvements, please start a [GitHub issue](https://github.com/rpiRobotics/ik-geo/issues) or send an email.
 
 If you like this repo, give it a star!
 
