@@ -183,6 +183,11 @@ namespace IKS {
 							const Eigen::Vector3d& k,
 							double& theta) {
 
+		if ((p1 - p2).norm() < ZERO_THRESH) {
+			theta = 0.0;
+			return false;
+		}
+
 		Eigen::Matrix<double, 3, 1> KxP = k.cross(p1);
 		Eigen::Matrix<double, 3, 2> A;
 		A << KxP, -k.cross(KxP);
