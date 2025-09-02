@@ -42,7 +42,7 @@ end
 
 % Test for nonconsecutive intersecting axes i, i+2
 % There may be a more elegant way to do this
-% Set joint i+1 to three angles and see if it's always intersecting or parallel
+% Set joint i+1 to three angles and see if it's always intersecting
 for i = 1:N-2
     is_intersecting_nonconsecutive(i) = true;
     j = i+1;
@@ -56,7 +56,7 @@ for i = 1:N-2
         ab = pinv([h_i h_k]) * p_ik;
         dist_ik = norm(p_ik - [h_i h_k] * ab);
 
-        if not(dist_ik < THRESH || abs(dot(h_i, h_k)) > 1-THRESH)
+        if not(dist_ik < THRESH)
             is_intersecting_nonconsecutive(i) = false;
             break
         end
