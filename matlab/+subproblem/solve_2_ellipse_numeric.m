@@ -50,6 +50,7 @@ y = y( abs(imag(y)) < 1e-6 ); %y = y(y==real(y));
 y = real(y);
 y = subproblem.uniquetol_manual(y);
 
+% TODO fix edge case where denominator is 0
 x = -(a*fq+a*c1*y.^2-a1*c*y.^2+a*e1*y-a1*e*y-a1*f)./(a*b1*y+a*d1-a1*b*y-a1*d);
 
 xi_1 = x; xi_2 = y;
