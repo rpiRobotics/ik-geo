@@ -58,14 +58,26 @@ x1_vec = x1_vec(1:i_minimum-1);
 x2_vec = x2_vec(1:i_minimum-1);
 soln_num_vec = soln_num_vec(1:i_minimum-1);
 
-opts = optimset("Display", "none");
+% TolFun default: 1e-4
+% TolX default:   1e-4  
+opts = optimset("Display", "none", "TolX", 1e-6, "TolFun", 1e-6);
+% opts = optimset("Display", "none");
 % Optimize each minimum
 for i = 1:length(x1_vec)
 
-    x_12 = fminsearch(@(ip)(select_soln(fun, ip(1), ip(2), soln_num_vec(i))), [x1_vec(i) x2_vec(i)], opts);
-    x1_vec(i) = x_12(1);
-    x2_vec(i) = x_12(2);
+    [x_12, fval] = fminsearch(@(ip)(select_soln(fun, ip(1), ip(2), soln_num_vec(i))), [x1_vec(i) x2_vec(i)], opts);
+    if fval < 1e-5
+        x1_vec(i) = x_12(1);
+        x2_vec(i) = x_12(2);
+    else
+        x1_vec(i) = NaN; % mark invalid
+    end
 end
+
+% % Remove invalid
+x2_vec = x2_vec(~isnan(x1_vec));
+soln_num_vec = soln_num_vec(~isnan(x1_vec));
+x1_vec = x1_vec(~isnan(x1_vec)); % This one last
 
 % Plot results
 if show_plot
@@ -76,7 +88,7 @@ if show_plot
     hold off;
 
     hold on
-    plot(x1_vec, x2_vec, 'xr')
+    % plot(x1_vec, x2_vec, 'xr')
     hold off;
 end
 
@@ -87,9 +99,9 @@ end
 function neighbors_idx = find_blob(x1, x2, bool_mat)
 sz = size(bool_mat);
 Q = [x1;x2];
-coder.varsize('Q', [2 1024]);
+coder.varsize('Q', [2 16*1024]);
 neighbors_idx = [];
-coder.varsize('neighbors_idx', [1 1024]);
+coder.varsize('neighbors_idx', [1 16*1024]);
 
 while width(Q) > 0
     starting_x1 = Q(1,end);
