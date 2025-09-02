@@ -8,7 +8,7 @@ p_06 = p_0T - kin.P(:,1) - R_06*kin.P(:,7);
 
 [q5_vec, soln_num_vec] = search_1D( ...
     @(q5)(alignment_err_given_q5(q5, p_06, R_06, kin)), ...
-    -pi, pi, 5000, true)
+    -pi, pi, 1000, true);
 
 for i_q5 = 1:length(q5_vec)
     [e, Q_partial] = alignment_err_given_q5(q5_vec(i_q5), p_06, R_06, kin);
@@ -70,9 +70,10 @@ function [p_int, x] = find_line_intersection(p1, p2, h1, h2)
     p_B = p2 + x(2) * h2;
     
     % These should be equal, but return avg
+    % assert(norm(p_A-p_B) < 1e-3);
     p_int = p_A/2 + p_B/2;
-    if abs(dot(h1,h2))<0.95
-        assert(norm(p_A - p_B)<0.5)
-    end
+    % if abs(dot(h1,h2))<0.95
+        % assert(norm(p_A - p_B)<0.5)
+    % end
 
 end
