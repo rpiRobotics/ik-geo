@@ -12,6 +12,11 @@ Abstract: We present IK-Geo, a highly capable and computationally efficient open
 
 </div>
 
+## Tutorials and Getting Started
+For a comprehensive introduction to the subproblem decomposition method, see [How to Build a High-Performance UR5 Inverse Kinematics Solver With IK-Geo](https://alexanderelias.com/ur5-ik/).
+
+There are also several examples in `/matlab/robot_examples/`, such as for the [ABB IRB 6640](/matlab/robot_examples/IRB_6640.m).
+
 ## Related Repos
 
 We also connect our geometric method with polynomial-based method: 1D and 2D search solutions may be converted to a polynomial in the tangent half-angle of one joint. Examples are found in the [subproblem-polynomial](https://github.com/rpiRobotics/subproblem-polynomial) repo.
