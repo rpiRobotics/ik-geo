@@ -13,6 +13,17 @@ Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup() {
     m_psi = m_sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
 }
 
+Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup(const Eigen::Matrix<double, 7, 1>& q_given) {
+    initialize_kinematics();
+
+    m_q_given = q_given;
+
+    std::vector<unsigned> inter = {1, 3, 4};
+    std::vector<Eigen::Vector3d> p_sew = m_kin.forward_kinematics_inter(m_q_given, inter, m_R, m_T);
+    m_psi = m_sew.fwd_kin(p_sew[0], p_sew[1], p_sew[2]);
+}
+
+
 Motoman_50_SJ2_Setup::Motoman_50_SJ2_Setup(const std::string& csv_line) {
     initialize_kinematics();
 

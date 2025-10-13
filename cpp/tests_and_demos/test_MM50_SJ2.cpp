@@ -22,6 +22,8 @@ void find_first_large_error();
 void test_wrap_to_pi();
 void test_min_max();
 
+void test_MM50_given_q();
+
 int main() {
     test_MM50_minimum_example();
     // test_MM50_random();
@@ -33,6 +35,8 @@ int main() {
     // find_first_large_error();
     // test_wrap_to_pi();
     // test_min_max();
+
+    test_MM50_given_q();
     return 0;
 }
 
@@ -348,4 +352,13 @@ void find_first_large_error() {
     }
 
     std::cout << "No error larger than " << threshold << " found in the file." << std::endl;
+}
+
+void test_MM50_given_q() {
+     Eigen::VectorXd q_given(7);
+     q_given << 0, 0, 0, -M_PI/2, 0, M_PI/4, 0;
+
+    Motoman_50_SJ2_Setup setup(q_given);
+    setup.run();
+    setup.debug();
 }
