@@ -23,20 +23,23 @@ void test_wrap_to_pi();
 void test_min_max();
 
 void test_MM50_given_q();
+void test_MM50_csv_file_spurious();
 
 int main() {
-    test_MM50_minimum_example();
+    // test_MM50_minimum_example();
     // test_MM50_random();
     // test_MM50_csv();
     // test_MM50_csv_file();
-    // test_MM50_csv_file_bulk();
+    test_MM50_csv_file_bulk();
 
     // test_MM50_single_line(890);
     // find_first_large_error();
     // test_wrap_to_pi();
     // test_min_max();
 
-    test_MM50_given_q();
+    // test_MM50_given_q();
+    // test_MM50_csv_file_spurious();
+
     return 0;
 }
 
@@ -361,4 +364,45 @@ void test_MM50_given_q() {
     Motoman_50_SJ2_Setup setup(q_given);
     setup.run();
     setup.debug();
+}
+
+// Read poses from CSV file
+// Find task-space error of ALL solutions returned
+// (Not just closest q to q_given)
+// This finds spurious solutions that are far from the desired pose
+void test_MM50_csv_file_spurious() {
+    std::ifstream file("data/hardcoded_IK_setup_MM50_SJ2.csv");
+    std::cout << "Reading from data/hardcoded_IK_setup_MM50_SJ2.csv" << std::endl;
+
+    // Three errors: ||Delta p||, angle(Delta R), and |Delta psi|
+    std::vector<double> errs_p;
+    std::vector<double> errs_R;
+    std::vector<double> errs_psi;
+
+    std::string line;
+    //skip the first line
+    std::getline(file, line);
+
+    int lines_to_read = -1; // Change this value to read more or fewer lines, set to -1 to read all lines
+    int line_count = 0;
+    while ((lines_to_read < 0 || line_count < lines_to_read) && std::getline(file, line)) {
+        ++line_count;
+        Motoman_50_SJ2_Setup setup(line);
+
+        // Run the inverse kinematics solver
+        setup.run();
+
+        // Save all task-space errors
+        auto [errs_p_i, errs_R_i, errs_psi_i] = setup.errors_task_space();
+        errs_p.insert(errs_p.end(), errs_p_i.begin(), errs_p_i.end());
+        errs_R.insert(errs_R.end(), errs_R_i.begin(), errs_R_i.end());
+        errs_psi.insert(errs_psi.end(), errs_psi_i.begin(), errs_psi_i.end());
+    }
+
+    // Save the errors to a file
+    std::ofstream error_file("data/task_space_errs.csv");
+    for (size_t i = 0; i < errs_p.size(); ++i) {
+        error_file << errs_p[i] << "," << errs_R[i] << "," << errs_psi[i] << "\n";
+    }
+    error_file.close();
 }

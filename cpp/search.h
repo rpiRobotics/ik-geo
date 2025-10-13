@@ -53,7 +53,8 @@ double find_max(std::function<Eigen::Matrix<double, N, 1>(double)> f, double lef
 template <int N>
 bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i, double &result) {
     const unsigned ITERATIONS = 100;
-    const double EPSILON = 1e-12;
+    const double EPSILON = 1e-12; // Terminate if absolute function value is below this
+    const double EPSILON_TERMINAL = 1e-6; // Once we reach ITERATIONS, return true if absolute function value is below this
     const double EPSILON_X = 1e-12;
 
     double x_left = left;
@@ -99,7 +100,8 @@ bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left
     }
 
     result = best_x;
-    return true;
+    
+    return best_y < EPSILON_TERMINAL;
 }
 
 template<int N>

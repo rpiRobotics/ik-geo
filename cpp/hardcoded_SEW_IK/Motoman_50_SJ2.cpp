@@ -114,6 +114,28 @@ void Motoman_50_SJ2_Setup::debug() const {
     }
 }
 
+std::tuple<std::vector<double>, std::vector<double>, std::vector<double>> Motoman_50_SJ2_Setup::errors_task_space() {
+    std::vector<double> errs_p;
+    std::vector<double> errs_R;
+    std::vector<double> errs_psi;
+
+    for (Eigen::Matrix<double, 7, 1> q : m_sol.q) {
+        Eigen::Matrix3d R_t;
+        Eigen::Vector3d T_t;
+        std::vector<unsigned> inter = {1, 3, 4};
+        std::vector<Eigen::Vector3d> p_sew_t = m_kin.forward_kinematics_inter(q, inter, R_t, T_t);
+        double psi_t = m_sew.fwd_kin(p_sew_t[0], p_sew_t[1], p_sew_t[2]);
+
+
+        errs_p.push_back((T_t - m_T).norm());
+        errs_R.push_back(R2angle(R_t.transpose() * m_R));
+        errs_psi.push_back(abs(wrap_to_pi(psi_t - m_psi)));
+    }
+
+    return std::make_tuple(errs_p, errs_R, errs_psi);
+}
+
+
 
 Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, const SEWConv &SEW_class, double psi, const Kinematics<7, 8> &kin) {
     Solution<7> sol;
@@ -169,7 +191,8 @@ Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, co
         return psi_vec;
     };
 
-    std::vector<std::pair<double, unsigned>> zeros = search_1d_min_max<2>(error, -M_PI, M_PI, 250); // Size 2 rather than 4 because we're skipping half of t4
+    // Left boundary is slightly shifted to account for zeros at +-pi
+    std::vector<std::pair<double, unsigned>> zeros = search_1d_min_max<2>(error, -M_PI-1e-14, M_PI, 250); // Size 2 rather than 4 because we're skipping half of t4
 
     // Each zero representing q1 needs to be duplicated because we only used the first element of t4
     // q1 stays the same, but the solution number is incremented by 2
@@ -184,9 +207,15 @@ Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, co
     for (std::pair<double, unsigned> zero : duplicated_zeros) {
         double q1 = zero.first;
         unsigned i = zero.second;
+        std::vector<bool> partial_q_is_LS;
 
 
-        partial_q =  MM50_IK_calculate_partial_q(kin, p_1W, q1); // Calculate partial_q using all of q1 values
+
+        std::tie(partial_q, partial_q_is_LS) =  MM50_IK_calculate_partial_q(kin, p_1W, q1); // Calculate partial_q using all of q1 values
+
+        // Drop solution if it's a LS 1D search solution
+        if (partial_q_is_LS[i]) continue;
+
         Eigen::Vector4d q_partial_col = partial_q.col(i);
 
         Eigen::Matrix3d R_01 = rot(kin.H.col(0), q_partial_col[0]);
@@ -226,8 +255,10 @@ Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, co
 }
 
 // Unlike the error function, loop through all of t1 to calculate the partial_q matrix
-Eigen::Matrix4d MM50_IK_calculate_partial_q(const Kinematics<7, 8> &kin, const Eigen::Vector3d &p_1W, double q1) {
+// Also, return a vector of bools indicating whether each solution is LS
+std::tuple<Eigen::Matrix4d, std::vector<bool>> MM50_IK_calculate_partial_q(const Kinematics<7, 8> &kin, const Eigen::Vector3d &p_1W, double q1) {
     Eigen::Matrix4d partial_q;
+    std::vector<bool> is_ls;
     unsigned i_sol = 0;
 
     partial_q.fill(NAN);
@@ -236,7 +267,7 @@ Eigen::Matrix4d MM50_IK_calculate_partial_q(const Kinematics<7, 8> &kin, const E
     Eigen::Vector3d p_SW = p_1W - p_1S;
 
     std::vector<double> t4;
-    IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
+    bool t4_is_ls = IKS::sp3_run(kin.P.col(4), -kin.P.col(3), kin.H.col(3), p_SW.norm(), t4);
     if (t4.size() < 2) {
         t4.push_back(t4[0]); // duplicate if LS
     }
@@ -248,7 +279,7 @@ Eigen::Matrix4d MM50_IK_calculate_partial_q(const Kinematics<7, 8> &kin, const E
         t2.push_back(0);
         t3.push_back(0);
 
-        IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3),q4)*kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
+        bool t2_is_ls = IKS::sp2_run(rot(kin.H.col(0), q1).transpose() * p_SW, kin.P.col(3) + rot(kin.H.col(3),q4)*kin.P.col(4), -kin.H.col(1), kin.H.col(2), t2, t3);
         if (t2.size() < 2) {
             // duplicate solns for t2 and t3
             t2.push_back(t2[0]);
@@ -264,8 +295,24 @@ Eigen::Matrix4d MM50_IK_calculate_partial_q(const Kinematics<7, 8> &kin, const E
             q_i << q1, q2, q3, q4;
             partial_q.col(i_sol) = q_i;
             i_sol += 1;
+            is_ls.push_back(t4_is_ls || t2_is_ls);
         }
     }
 
-    return partial_q;
+    return std::make_tuple(partial_q, is_ls);
 };
+
+
+double R2angle(const Eigen::Matrix3d& R) {
+    Eigen::Vector3d s;
+    s << R(2,1) - R(1,2),
+         R(0,2) - R(2,0),
+         R(1,0) - R(0,1);
+    s *= 0.5;
+
+    const double c  = 0.5 * (R.trace() - 1.0);
+    const double sn = s.norm();
+    return std::atan2(sn, c);
+}
+
+
