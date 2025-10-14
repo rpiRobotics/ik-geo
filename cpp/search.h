@@ -3,43 +3,47 @@
 
 #include "utils.h"
 
+// Golden section search
 template <int N>
-double find_min(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i) {
-    const unsigned ITERATIONS = 100;
-    const double EPSILON = 1e-12;
+double find_min(std::function<Eigen::Matrix<double, N, 1>(double)> f,
+                double left, double right, unsigned i){
+    // if (i >= static_cast<unsigned>(N)) {
+    //     throw std::out_of_range("component index i out of range");
+    // }
+    // if (!(left < right)) {
+    //     throw std::invalid_argument("left must be < right");
+    // }
 
-    double x_left = left;
-    double x_right = right;
+    // Golden section constants
+    const double phi = (1.0 + std::sqrt(5.0)) * 0.5;  // ~1.618
+    const double invphi = 1.0 / phi;                  // ~0.618
 
-    double y_left = f(x_left)(i);
-    double y_right = f(x_right)(i);
+    const double xtol = 1e-9;
+    const double ftol = 1e-12;
+    const int max_iter = 200;
 
-    double best_x = x_left;
-    double best_y = y_left;
+    double a = left, b = right;
 
-    for (unsigned n = 0; n < ITERATIONS; ++n) {
-        double x_mid = 0.5 * (x_left + x_right);
-        double y_mid = f(x_mid)(i);
+    double c = b - invphi * (b - a);
+    double d = a + invphi * (b - a);
+    double fc = f(c)(i);
+    double fd = f(d)(i);
 
-        if (y_mid < best_y) {
-            best_x = x_mid;
-            best_y = y_mid;
-        }
-
-        if (fabs(x_right - x_left) < EPSILON || fabs(y_right - y_left) < EPSILON) {
-            break;
-        }
-
-        if (y_left < y_right) {
-            x_right = x_mid;
-            y_right = y_mid;
+    for (int k = 0; k < max_iter; ++k) {
+        if (fc < fd) {
+            b = d;
+            d = c; fd = fc;
+            c = b - invphi * (b - a);
+            fc = f(c)(i);
         } else {
-            x_left = x_mid;
-            y_left = y_mid;
+            a = c;
+            c = d; fc = fd;
+            d = a + invphi * (b - a);
+            fd = f(d)(i);
         }
+        if (std::abs(b - a) <= xtol || std::abs(fd - fc) <= ftol) break;
     }
-
-    return best_x;
+    return (fc < fd) ? c : d;
 }
 
 template <int N>
@@ -50,59 +54,172 @@ double find_max(std::function<Eigen::Matrix<double, N, 1>(double)> f, double lef
     return find_min<N>(neg_f, left, right, i);
 }
 
+// template <int N>
+// bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i, double &result) {
+//     // For debugging: print the initial left and right values and their function values
+//     std::cout << "Finding zero between " << left << " and " << right << std::endl;
+//     std::cout << "f(" << left << ") = " << f(left)(i) << ", f(" << right << ") = " << f(right)(i) << std::endl;
+
+//     const unsigned ITERATIONS = 500;
+//     const double EPSILON = 1e-12; // Terminate if absolute function value is below this
+//     const double EPSILON_TERMINAL = 1e-6; // Once we reach ITERATIONS, return true if absolute function value is below this
+//     const double EPSILON_X = 1e-14;
+
+//     double x_left = left;
+//     double x_right = right;
+
+//     double y_left = f(x_left)(i);
+//     double y_right = f(x_right)(i);
+
+//     double best_x = x_left;
+//     double best_y = fabs(y_left);
+
+//     for (unsigned n = 0; n < ITERATIONS; ++n) {
+//         double delta = y_right - y_left;
+
+//         if (fabs(delta) < EPSILON) {
+//             std::cout << "Delta too small, stopping iteration at n = " << n << std::endl;
+//             break;
+//         }
+
+//         if (fabs(x_right - x_left) < EPSILON_X) {
+//             std::cout << "x interval too small, stopping iteration at n = " << n << std::endl;
+//             break;
+//         }
+
+//         double x_0 = x_left - y_left * (x_right - x_left) / delta;
+//         double y_0 = f(x_0)(i);
+
+//         if (std::isinf(y_0)) {
+//             return false;
+//         }
+
+//         if (fabs(y_0) < best_y) {
+//             best_x = x_0;
+//             best_y = fabs(y_0);
+//         }
+
+//         if ((y_left < 0.0) == (y_0 < 0.0)) { // Same signs
+//             x_left = x_0;
+//             y_left = y_0;
+//         }
+//         else {
+//             x_right = x_0;
+//             y_right = y_0;
+//         }
+//     }
+
+//     result = best_x;
+    
+//     // For debugging: print the best x and its function value
+//     std::cout << "Best x: " << best_x << ", f(best x) = " << f(best_x)(i) << std::endl << std::endl;
+
+//     return best_y < EPSILON_TERMINAL;
+// }
+
+// Brent's method for finding a zero of f in [left, right]
 template <int N>
-bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned i, double &result) {
-    const unsigned ITERATIONS = 100;
-    const double EPSILON = 1e-12; // Terminate if absolute function value is below this
-    const double EPSILON_TERMINAL = 1e-6; // Once we reach ITERATIONS, return true if absolute function value is below this
-    const double EPSILON_X = 1e-12;
+bool find_zero(std::function<Eigen::Matrix<double, N, 1>(double)> f,
+                     double left, double right, unsigned i, double &result)
+{
+    const double tol_f       = 1e-12; // strict success on |f|
+    const double tol_f_term  = 1e-6;  // relaxed success if we bail for other reasons
+    const double tol_x       = 1e-14; // x tolerance used only with a small-|f| gate
+    const int    max_evals   = 50;
 
-    double x_left = left;
-    double x_right = right;
+    double a = left, b = right;
+    double fa = f(a)(i);
+    double fb = f(b)(i);
+    int evals = 2;
 
-    double y_left = f(x_left)(i);
-    double y_right = f(x_right)(i);
+    if (!std::isfinite(fa) || !std::isfinite(fb)) return false;
+    if (fa == 0.0) { result = a; return true; }
+    if (fb == 0.0) { result = b; return true; }
+    if (fa * fb > 0.0) return false; // need a sign change to bracket
 
-    double best_x = x_left;
-    double best_y = fabs(y_left);
+    // Ensure |f(b)| <= |f(a)| so b is the better endpoint
+    if (std::fabs(fa) < std::fabs(fb)) {
+        std::swap(a, b); std::swap(fa, fb);
+    }
 
-    for (unsigned n = 0; n < ITERATIONS; ++n) {
-        double delta = y_right - y_left;
+    // c is the previous best opposite-sign endpoint to b. d is the one before c.
+    double c = a, fc = fa;
+    double d = c;
 
-        if (fabs(delta) < EPSILON) {
-            break;
+    // Track the best-so-far point by function value
+    double x_best = (std::fabs(fa) <= std::fabs(fb)) ? a : b;
+    double f_best = (std::fabs(fa) <= std::fabs(fb)) ? fa : fb;
+
+    bool mflag = true;
+
+    while (evals < max_evals) {
+        // Inverse quadratic interpolation if possible, else secant
+        double s;
+        if (fa != fc && fb != fc && fa != fb) {
+            s = (a*fb*fc)/((fa-fb)*(fa-fc))
+              + (b*fa*fc)/((fb-fa)*(fb-fc))
+              + (c*fa*fb)/((fc-fa)*(fc-fb));
+        } else {
+            s = b - fb*(b - a)/(fb - fa);
         }
 
-        if (fabs(x_right - x_left) < EPSILON_X) {
-            break;
+        // Accept tests, else bisect
+        double s_mid = 0.5*(a + b);
+        bool cond1 = (s < std::min(a, b) || s > std::max(a, b));
+        bool cond2 = (mflag && std::fabs(s - b) >= 0.5*std::fabs(b - c));
+        bool cond3 = (!mflag && std::fabs(s - b) >= 0.5*std::fabs(c - d));
+        bool cond4 = (mflag && std::fabs(b - c) < tol_x);
+        bool cond5 = (!mflag && std::fabs(c - d) < tol_x);
+
+        if (cond1 || cond2 || cond3 || cond4 || cond5) {
+            s = s_mid; // bisection
+            mflag = true;
+        } else {
+            mflag = false;
         }
 
-        double x_0 = x_left - y_left * (x_right - x_left) / delta;
-        double y_0 = f(x_0)(i);
+        double fs = f(s)(i);
+        ++evals;
+        if (!std::isfinite(fs)) return false;
 
-        if (std::isinf(y_0)) {
-            return false;
+        // Update best-so-far
+        if (std::fabs(fs) < std::fabs(f_best)) { x_best = s; f_best = fs; }
+
+        // Success by function value only
+        if (std::fabs(fs) <= tol_f) { result = s; return true; }
+
+        // Do not allow small interval to claim success unless |f| is also small
+        if (std::fabs(b - a) <= tol_x && std::fabs(f_best) <= tol_f_term) {
+            result = x_best; 
+            return true;
         }
 
-        if (fabs(y_0) < best_y) {
-            best_x = x_0;
-            best_y = fabs(y_0);
+        // Shift history and maintain the sign change in [a, b]
+        d = c;  c = b;  fc = fb;
+
+        if ((fa > 0 && fs < 0) || (fa < 0 && fs > 0)) {
+            b = s; fb = fs;
+        } else {
+            a = s; fa = fs;
         }
 
-        if ((y_left < 0.0) == (y_0 < 0.0)) { // Same signs
-            x_left = x_0;
-            y_left = y_0;
-        }
-        else {
-            x_right = x_0;
-            y_right = y_0;
+        // Keep b as the better endpoint
+        if (std::fabs(fa) < std::fabs(fb)) {
+            std::swap(a, b); std::swap(fa, fb);
         }
     }
 
-    result = best_x;
-    
-    return best_y < EPSILON_TERMINAL;
+    // Out of evaluations. Return the best point seen and report success only if |f| is small.
+    result = x_best;
+    return std::fabs(f_best) <= tol_f_term;
 }
+
+
+
+
+
+
+
 
 template<int N>
 std::vector<std::pair<double, unsigned>> search_1d(std::function<Eigen::Matrix<double, N, 1>(double)> f, double left, double right, unsigned initial_samples) {
@@ -234,10 +351,13 @@ std::vector<std::pair<double, unsigned>> search_1d_min_max(std::function<Eigen::
                 }
             }
             } else if (y[1] > y[0] && y[1] > y[2] && y[0] < 0.0 && y[1] < 0.0 && y[2] < 0.0) { // triangle pointing up
+            // std::cout << "Found triangle pointing up at [x0, x1, x2] = [" << x[0] << ", " << x[1] << ", " << x[2] << "] with [y0, y1, y2] = [" << y[0] << ", " << y[1] << ", " << y[2] << "]" << std::endl;
             double max_x = find_max<N>(f, x[0], x[2], i);
+            // std::cout << "Max found at x = " << max_x << " with f(max) = " << f(max_x)(i) << std::endl;
             if (f(max_x)(i) > 0.0) {
                 double z1, z2;
                 if (max_x < x[1]) { // max falls between x[0] and x[1]
+                    // std::cout << "Max falls between x0 and x1" << std::endl;
                     if (find_zero(f, x[0], max_x, i, z1)) {
                         zeros.push_back(std::make_pair(z1, i));
                     }
@@ -245,6 +365,7 @@ std::vector<std::pair<double, unsigned>> search_1d_min_max(std::function<Eigen::
                         zeros.push_back(std::make_pair(z2, i));
                     }
                 } else { // max falls between x[1] and x[2]
+                    // std::cout << "Max falls between x1 and x2" << std::endl;
                     if (find_zero(f, x[1], max_x, i, z1)) {
                         zeros.push_back(std::make_pair(z1, i));
                     }

@@ -17,6 +17,7 @@ void test_MM50_random();
 void test_MM50_csv();
 void test_MM50_csv_file();
 void test_MM50_csv_file_bulk();
+
 void test_MM50_single_line(int line_number);
 void find_first_large_error();
 void test_wrap_to_pi();
@@ -30,15 +31,15 @@ int main() {
     // test_MM50_random();
     // test_MM50_csv();
     // test_MM50_csv_file();
-    test_MM50_csv_file_bulk();
+    // test_MM50_csv_file_bulk();
 
-    // test_MM50_single_line(890);
+    // test_MM50_single_line(7250);
     // find_first_large_error();
     // test_wrap_to_pi();
     // test_min_max();
 
     // test_MM50_given_q();
-    // test_MM50_csv_file_spurious();
+    test_MM50_csv_file_spurious();
 
     return 0;
 }
@@ -405,4 +406,9 @@ void test_MM50_csv_file_spurious() {
         error_file << errs_p[i] << "," << errs_R[i] << "," << errs_psi[i] << "\n";
     }
     error_file.close();
+
+    // Return largest errors without each 3 error types
+    std::cout << "Largest ||Delta p||: " << *std::max_element(errs_p.begin(), errs_p.end()) << std::endl;
+    std::cout << "Largest angle(Delta R): " << *std::max_element(errs_R.begin(), errs_R.end()) << std::endl;
+    std::cout << "Largest |Delta psi|: " << *std::max_element(errs_psi.begin(), errs_psi.end()) << std::endl;
 }

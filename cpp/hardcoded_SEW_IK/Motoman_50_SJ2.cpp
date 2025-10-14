@@ -194,6 +194,12 @@ Solution<7> MM50_IK(const Eigen::Matrix3d &R_07, const Eigen::Vector3d &p_0T, co
     // Left boundary is slightly shifted to account for zeros at +-pi
     std::vector<std::pair<double, unsigned>> zeros = search_1d_min_max<2>(error, -M_PI-1e-14, M_PI, 250); // Size 2 rather than 4 because we're skipping half of t4
 
+    // For debugging: print out the zeros found and their indices
+    // std::cout << "Zeros found (q1, index):" << std::endl;
+    // for (const auto& zero : zeros) {
+    //     std::cout << "(" << zero.first << ", " << zero.second << ")" << std::endl;
+    // }
+
     // Each zero representing q1 needs to be duplicated because we only used the first element of t4
     // q1 stays the same, but the solution number is incremented by 2
     std::vector<std::pair<double, unsigned>> duplicated_zeros;
