@@ -19,6 +19,8 @@ void test_missed_solutions_CSV();
 void run_single_line_CSV_file(int line_number);
 void test_spurious_solutions_CSV();
 
+void test_hardcoded_cases();
+
 int main() {
     // test_GoFa_5_FK();
     // test_GoFa_5_given_q();
@@ -26,9 +28,11 @@ int main() {
     // test_GoFa_5_bulk_random();
     
     // save_test_cases();
-    test_missed_solutions_CSV();
-    // run_single_line_CSV_file(2);
+    // test_missed_solutions_CSV();
+    run_single_line_CSV_file(107);
     // test_spurious_solutions_CSV();
+
+    // test_hardcoded_cases();
 
     return 0;
 }
@@ -287,3 +291,55 @@ void test_spurious_solutions_CSV() {
     }
 }
 
+// Test the following end effector poses
+//
+// pos_x,pos_y,pos_z,rot_w,rot_x,rot_y,rot_z
+// 521.955,-510.198,400.014,0.09808,0.00953,0.99047,-0.09621
+// 680.427,391.578,143.377,0,1,0,0
+// -212.201,567.610,91.625,0,1,0,0
+// 255.376,779.411,206.295,0,1,0,0
+// 420.341,-632.636,865.261,1,0,0,0
+// -212.201,-638.659,793.504,1,0,0,0
+//
+// In the above, pos is in mm and rotation is a quaternion
+// Convert pos to meters and quaternion to rotation matrix
+void test_hardcoded_cases() {
+    std::vector<Eigen::Vector3d> positions_mm = {
+        {521.955, -510.198, 400.014},
+        {680.427, 391.578, 143.377},
+        {-212.201, 567.610, 91.625},
+        {255.376, 779.411, 206.295},
+        {420.341, -632.636, 865.261},
+        {-212.201, -638.659, 793.504}
+    };
+
+    std::vector<Eigen::Quaterniond> quaternions = {
+        {0.09808, 0.00953, 0.99047, -0.09621},
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
+        {0, 1, 0, 0},
+        {1, 0, 0, 0},
+        {1, 0, 0, 0}
+    };
+
+    for (size_t i = 0; i < positions_mm.size(); ++i) {
+        Eigen::Vector3d p_0T = positions_mm[i] / 1000.0; // convert to meters
+        Eigen::Matrix3d R_0T = quaternions[i].toRotationMatrix();
+
+        GoFa_5_Setup setup;
+        setup.m_R_0T = R_0T;
+        setup.m_p_0T = p_0T;
+
+        std::cout << "Test Case " << i + 1 << ":" << std::endl;
+        std::cout << "Target p_0T: " << p_0T.transpose() << std::endl;
+        std::cout << "Target R_0T: " << std::endl << R_0T << std::endl;
+
+        setup.run();
+
+        std::cout << "Solutions found:" << std::endl;
+        for (size_t j = 0; j < setup.m_sol.q.size(); ++j) {
+            std::cout << "Solution " << j + 1 << ": " << setup.m_sol.q[j].transpose() << std::endl;
+        }
+
+    }
+}
