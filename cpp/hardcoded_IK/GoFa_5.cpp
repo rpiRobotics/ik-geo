@@ -22,6 +22,24 @@ GoFa_5_Setup::GoFa_5_Setup(const Eigen::Matrix<double, 6, 1>& q_given) {
     m_R_0T = R_06*m_R_6T;
 }
 
+// Same as previous, but q_given is read from a CSV line
+GoFa_5_Setup::GoFa_5_Setup(const std::string& csv_line) {
+    initialize_kinematics();
+    m_q_given = Eigen::Matrix<double, 6, 1>::Zero();
+
+    std::istringstream ss(csv_line);
+    for (int i = 0; i < 6; ++i) {
+        std::string token;
+        if (!std::getline(ss, token, ',')) break;
+        m_q_given(i) = std::stod(token);
+    }
+
+    // Run FK
+    Eigen::Matrix3d R_06;
+    m_kin.forward_kinematics(m_q_given, R_06, m_p_0T);
+    m_R_0T = R_06*m_R_6T;
+}
+
 void GoFa_5_Setup::initialize_kinematics() {
     Eigen::Vector3d ex(1, 0, 0);
     Eigen::Vector3d ey(0, 1, 0);
