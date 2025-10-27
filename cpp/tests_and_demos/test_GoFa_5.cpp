@@ -28,9 +28,11 @@ int main() {
     // test_GoFa_5_bulk_random();
     
     // save_test_cases();
-    // test_missed_solutions_CSV();
-    run_single_line_CSV_file(107);
-    // test_spurious_solutions_CSV();
+    std::cout << "Testing missed solutions from CSV file..." << std::endl;
+    test_missed_solutions_CSV();
+    // run_single_line_CSV_file(6794);
+    std::cout << "Testing spurious solutions from CSV file..." << std::endl;
+    test_spurious_solutions_CSV();
 
     // test_hardcoded_cases();
 
@@ -186,6 +188,11 @@ void test_missed_solutions_CSV() {
                 first_missed_q = setup.m_q_given;
             }
         }
+
+        // show progress every 1000 lines
+        if (line_count % 1000 == 0) {
+            std::cout << "Processed " << line_count << " lines, missed so far: " << missed_count << std::endl;
+        }   
     }
 
     std::cout << "Total missed solutions: " << missed_count << " out of " << line_count << std::endl;
@@ -266,6 +273,11 @@ void test_spurious_solutions_CSV() {
 
             errs_p.push_back(p_err);
             errs_R.push_back(angle_err);
+        }
+
+        // show progress every 1000 lines
+        if (line_count % 1000 == 0) {
+            std::cout << "Processed " << line_count << " lines." << std::endl;
         }
     }
 

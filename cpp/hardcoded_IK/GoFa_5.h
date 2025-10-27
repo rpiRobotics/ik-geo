@@ -5,6 +5,7 @@
 #include "../IK/IK_2_parallel_2_intersecting.h"
 
 Solution<6> GoFa_5_IK(const Eigen::Matrix3d &R_06, const Eigen::Vector3d &p_06, const Kinematics<6, 7> &kin);
+
 struct GoFa_5_Setup {
     SEWConv m_sew;
     Kinematics<6, 7> m_kin;

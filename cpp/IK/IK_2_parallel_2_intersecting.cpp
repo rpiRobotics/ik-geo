@@ -16,15 +16,18 @@ Solution<6> IK_2_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06
     Eigen::Vector4d Q4 = Eigen::Vector4d::Constant(NAN);
     Eigen::Vector4d Q6 = Eigen::Vector4d::Constant(NAN);
     Eigen::Vector4d T13 = Eigen::Vector4d::Constant(NAN);
+    std::vector<bool> is_ls;
 
-    auto error = [&Q4, &Q6, &T13, &R_06, &p_06, &kin](double q1) mutable {
+    auto error = [&Q4, &Q6, &T13, &R_06, &p_06, &kin, &is_ls](double q1) mutable {
         Q4.setConstant(NAN);
         Q6.setConstant(NAN);
         T13.setConstant(NAN);
+        is_ls.clear();
         Eigen::Matrix3d R_01 = rot(kin.H.col(0), q1);
         unsigned i_sol = 0;
 
         Eigen::Vector4d error_vec = Eigen::Vector4d::Constant(NAN);
+        
 
         // Solve for q6 using subproblem 4
         std::vector<double> t6; t6.push_back(NAN);  // TODO: Refactor sp4_run so it can take empty return vector
@@ -36,7 +39,8 @@ Solution<6> IK_2_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06
             t6);
 
         if (t6_is_ls) {
-            return error_vec;
+            // duplicate soln for t6
+            t6.push_back(t6[0]);
         }
 
         for (double q6 : t6){
@@ -51,16 +55,15 @@ Solution<6> IK_2_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06
                 t4);
 
             if (t4_is_ls) {
-                i_sol += 2;
-                continue;
+                // duplicate soln for t4
+                t4.push_back(t4[0]);
             }
 
             for (double q4 : t4){
                 Eigen::Matrix3d R_34 = rot(kin.H.col(3), q4);
                 // Solve for theta_13 using Subproblem 1
                 double t13;
-                // bool t13_is_ls =
-                IKS::sp1_run(
+                bool t13_is_ls = IKS::sp1_run(
                     R_34 * kin.H.col(4),
                     R_01.transpose() * R_06 * R_56.transpose() * kin.H.col(4),
                     kin.H.col(1),
@@ -74,6 +77,7 @@ Solution<6> IK_2_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06
                 error_vec(i_sol) =
                     (R_01.transpose() * p_06 - kin.P.col(1) - R_13 * kin.P.col(3) - R_13 * R_34 * kin.P.col(4) - R_01.transpose() * R_06 * R_56.transpose() * kin.P.col(5)).norm()
                     - kin.P.col(2).norm();
+                is_ls.push_back(t4_is_ls || t6_is_ls || t13_is_ls);
                 i_sol++;
             }
         }
@@ -81,21 +85,21 @@ Solution<6> IK_2_parallel_2_intersecting(const Eigen::Matrix<double, 3, 3>& R_06
         return error_vec;
     };
 
-
-    std::vector<std::pair<double, unsigned>> zeros = search_1d<4>(error, -M_PI, M_PI, 10e3);
+    // Left boundary is slightly shifted to account for zeros at +-pi
+    std::vector<std::pair<double, unsigned>> zeros = search_1d_min_max<4>(error, -M_PI-1e-14, M_PI, 10e3);
 
     for (std::pair<double, unsigned> zero : zeros) {
         double q1 = zero.first;
         unsigned i = zero.second;
 
         error(q1);
+        if (is_ls[i]) continue; // Drop solution if it's a LS 1D search solution
         Eigen::Matrix3d R_01 = rot(kin.H.col(0), q1);
         Eigen::Matrix3d R_34 = rot(kin.H.col(3), Q4(i));
         Eigen::Matrix3d R_56 = rot(kin.H.col(5), Q6(i));
         Eigen::Matrix3d R_13 = rot(kin.H.col(1), T13(i));
 
         // Solve for q2 and q5 each with Subproblem 1
-
         double q2;
         bool q2_is_ls = IKS::sp1_run(
             kin.P.col(2),
